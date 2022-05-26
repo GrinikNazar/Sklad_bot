@@ -1,6 +1,9 @@
 import gspread
+import os
 
-sa = gspread.service_account(filename="C:\Flarken_bot\GoogleAPI\mypython-351009-5d090fd9b043.json")
+path = os.path.join(os.path.dirname(__file__), os.path.pardir, 'GoogleAPI\mypython-351009-5d090fd9b043.json')
+
+sa = gspread.service_account(filename=path)
 
 sh = sa.open('Test')
 
