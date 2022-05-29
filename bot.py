@@ -58,16 +58,33 @@ def button_inine(call):
     }
 
     model_class = {
-        'cover': [],
+        'cover': ['8', '8Plus', 'se2020','X', 'Xs', 'XsM', 'XR', '11', '11Pro', '11ProMax', '12', '12Pro', '12ProMax', '12mini'],
         'glass': [],
         'touch': []
+    }
+
+    cover_color_choise = (
+        (('8', '8Plus', ), ('gold', 'silver', 'space gray', 'red')),
+        (('se2020'), ('black', 'red', 'white')),
+        (('X'), ('space gray', 'silver')),
+        (('Xs', 'XsM'), ('gold', 'silver', 'space gray')),
+        (('XR'), ('black', 'white', 'blue', 'coral', 'red', 'yellow')),
+        (('11'), ('black', 'white', 'green', 'purple', 'red', 'yellow')),
+        (('11Pro', '11ProMax'), ('gold', 'silver', 'space gray', 'midnight green')),
+        (('12'), ('black', 'white', 'green', 'purple', 'red', 'blue')),
+        (('12Pro', '12ProMax'), ('gold', 'silver', 'pasific blue', 'graphite')),
+        (('12mini'), ('black', 'white', 'blue', 'coral', 'red', 'green'))
+    )
+
+    color_glass = {
+        'black': [],
+        'white': []
     }
 
     #Exapmle
     #cover_take_8_8Plus_black
     #len() = 5
-    len_request = 0
-    if call[1] == 'cover' or call[1] == 'touch' or call[1] == 'glass':
+    if call.split('_')[0] == 'cover' or call.split('_')[0] == 'touch' or call.split('_')[0] == 'glass':
         len_request = 5
     else:
         len_request = 4
@@ -90,9 +107,17 @@ def button_inine(call):
                     list_of_button.append(types.InlineKeyboardButton(f'{but}', callback_data=f'{call}_{but}'))
                 break
         markup.row(*list_of_button)
+
+    #Добавити кольори
     elif len_request == 5:
-        #Добавити кольори
-        pass
+        if call.split('_')[-1] in model_class['cover']:
+            for color in cover_color_choise:
+                if call.split('_')[-1] in color[0]:
+                    for color_mod in color[1]:
+                        list_of_button.append(types.InlineKeyboardButton(f'{color_mod.title()}', callback_data=f'{call}_{color_mod}'))
+                    break
+            markup.row(*list_of_button)
+        return markup
     else:
         #видати заит
         pass
@@ -102,7 +127,7 @@ def button_inine(call):
 @bot.callback_query_handler(func=lambda call: True)
 def handler_mes(call):
     if len(call.data.split('_')) == 5:
-        bot.edit_message_text('Що робим далі?', call.message.chat.id, message_id=call.message.message_id) 
+        bot.edit_message_text(button_inine(call.data), call.message.chat.id, message_id=call.message.message_id) 
     else:
         print(call.data.split('_'))
         bot.edit_message_text('Вибір моделі', call.message.chat.id, message_id=call.message.message_id, reply_markup=button_inine(call.data))
