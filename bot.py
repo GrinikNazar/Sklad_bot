@@ -1,3 +1,4 @@
+from optparse import Values
 import gspread_my_py
 import conf
 import telebot
@@ -49,32 +50,58 @@ def button_inine(call):
     dict_of_models_submodels = {
         '5': ['5', '5s', 'se'],
         '6': ['6', '6s', '6sPlus', '6Plus'],
-        #'7': ['7', '7Plus'],
-        #'8': ['8', '8Plus', 'se2020'],
-        #'X': ['X', 'Xs', 'XsM', 'XR'],
-        #'11': ['11', '11Pro', '11ProMax'],
-        #'12': ['12', '12Pro', '12ProMax', '12mini']
+        '7': ['7', '7Plus'],
+        '8': ['8', '8Plus', 'se2020'],
+        'X': ['X', 'Xs', 'XsM', 'XR'],
+        '11': ['11', '11Pro', '11ProMax'],
+        '12': ['12', '12Pro', '12ProMax', '12mini']
     }
 
+    model_class = {
+        'cover': [],
+        'glass': [],
+        'touch': []
+    }
+
+    #Exapmle
+    #cover_take_8_8Plus_black
+    #len() = 5
+    len_request = 0
+    if call[1] == 'cover' or call[1] == 'touch' or call[1] == 'glass':
+        len_request = 5
+    else:
+        len_request = 4
+
+    len_call = len(call.split('_')) 
+    list_of_button = []
     markup = types.InlineKeyboardMarkup()
-    if call[-1] not in dict_of_models_submodels.keys():
-        st = ''
+
+    if len_call == 2:
         #якщо запит не має ключа з словника тоді виводити клавіатуру з моделями
         for key in dict_of_models_submodels.keys():
-            st += f"types.InlineKeyboardButton('{key}', callback_data='{call}_{key}'),"
-        markup.add(eval(st))    
+            list_of_button.append(types.InlineKeyboardButton(f'{key}', callback_data=f'{call}_{key}'))
+        markup.row(*list_of_button)    
 
-    elif call[-1] in dict_of_models_submodels.keys():
+    elif len_call == 3:
         #якщо ключ в запиті вказаний тоді виводити підмоделі
+        for key, values in dict_of_models_submodels.items():
+            if key == call.split('_')[-1]:
+                for but in values:
+                    list_of_button.append(types.InlineKeyboardButton(f'{but}', callback_data=f'{call}_{but}'))
+                break
+        markup.row(*list_of_button)
+    elif len_request == 5:
+        #Добавити кольори
         pass
     else:
-        print('Помилка')
+        #видати заит
+        pass
 
     return markup
 
 @bot.callback_query_handler(func=lambda call: True)
 def handler_mes(call):
-    if len(call.data.split('_')) == 3:
+    if len(call.data.split('_')) == 5:
         bot.edit_message_text('Що робим далі?', call.message.chat.id, message_id=call.message.message_id) 
     else:
         print(call.data.split('_'))
