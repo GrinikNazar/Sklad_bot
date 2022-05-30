@@ -114,12 +114,15 @@ def button_inine(call):
                     markup.row(*[types.InlineKeyboardButton(f'{color_mod.title()}', callback_data=f'{call}_{color_mod}') for color_mod in color[1]])
                     break
 
+    elif len_call == 5:
+        markup.row(*[types.InlineKeyboardButton(f'{i}', callback_data=f'{call}_{i}') for i in range(1, 11)])
+
     return markup
 
 
 @bot.callback_query_handler(func=lambda call: True)
 def handler_mes(call):
-    if len(call.data.split('_')) == 5:
+    if len(call.data.split('_')) == 6:
         bot.edit_message_text(call.data, call.message.chat.id, message_id=call.message.message_id)
     else:
         bot.edit_message_text('Вибір моделі', call.message.chat.id, message_id=call.message.message_id, reply_markup=button_inine(call.data))
