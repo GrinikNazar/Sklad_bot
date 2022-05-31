@@ -48,19 +48,13 @@ def some_func(message):
 
 def button_inine(call):
     dict_of_models_submodels = {
-        '5': ['5', '5s', 'se'],
-        '6': ['6', '6s', '6sPlus', '6Plus'],
-        '7': ['7', '7Plus'],
-        '8': ['8', '8Plus', 'se2020'],
-        'X': ['X', 'Xs', 'XsM', 'XR'],
-        '11': ['11', '11Pro', '11ProMax'],
-        '12': ['12', '12Pro', '12ProMax', '12mini']
-    }
-
-    model_class = {
-        'cover': ['8', '8Plus', 'se2020','X', 'Xs', 'XsM', 'XR', '11', '11Pro', '11ProMax', '12', '12Pro', '12ProMax', '12mini'],
-        'glass': [],
-        'touch': []
+        '5': [['5', '5s', 'se'], (), ('akb', 'backlight')],
+        '6': [['6', '6s', '6sPlus', '6Plus'], (), ('akb', 'backlight')],
+        '7': [['7', '7Plus'], (), ('akb', 'backlight')],
+        '8': [['8', '8Plus', 'se2020'], ('cover'), ('akb', 'backlight')],
+        'X': [['X', 'Xs', 'XsM', 'XR'], ('cover'), ('akb', 'backlight')],
+        '11': [['11', '11Pro', '11ProMax'], ('cover'), ('akb', 'backlight')],
+        '12': [['12', '12Pro', '12ProMax', '12mini'], ('cover'), ('akb')]
     }
 
     cover_color_choise = (
@@ -81,50 +75,60 @@ def button_inine(call):
         'white': []
     }
 
-    len_call = len(call.split('_')) 
-
     list_of_button = []
     markup = types.InlineKeyboardMarkup()
 
-    if len_call == 2:
+    if len(call.split('_')) == 2:
         #якщо запит не має ключа з словника тоді виводити клавіатуру з моделями
-        for key in dict_of_models_submodels.keys():
-            list_of_button.append(types.InlineKeyboardButton(f'{key}', callback_data=f'{call}_{key}'))
+        for key, values in dict_of_models_submodels.items():
+            if call.split('_')[0] in values[1]:
+                list_of_button.append(types.InlineKeyboardButton(f'{key}', callback_data=f'{call}_{key}'))
+            elif call.split('_')[0] in values[2]:
+                list_of_button.append(types.InlineKeyboardButton(f'{key}', callback_data=f'{call}_{key}'))
+        list_of_button.append(types.InlineKeyboardButton(f'back', callback_data=f'{call}_back'))
         markup.row(*list_of_button)    
 
-    elif len_call == 3:
+    elif len(call.split('_')) == 3:
         #якщо ключ в запиті вказаний тоді виводити підмоделі
         for key, values in dict_of_models_submodels.items():
             if key == call.split('_')[-1]:
-                if call.split('_')[0] in model_class.keys():
-                    for but in values:
+                if call.split('_')[0] in values[1]:
+                    for but in values[0]:
                         list_of_button.append(types.InlineKeyboardButton(f'{but}', callback_data=f'{call}_{but}'))
                     break
                 else:
-                    for but in values:
-                        list_of_button.append(types.InlineKeyboardButton(f'{but}', callback_data=f'{call}_{but}_{but}'))
+                    for but in values[0]:
+                        list_of_button.append(types.InlineKeyboardButton(f'{but}', callback_data=f'{call}_{but}_nocolor'))
                     break
         markup.row(*list_of_button)
 
     #Добавити кольори
-    elif call.split('_')[0] in model_class.keys() and len_call == 4:
-        if call.split('_')[-1] in model_class['cover']:
-            for color in cover_color_choise:
-                if call.split('_')[-1] in color[0]:
-                    markup.row(*[types.InlineKeyboardButton(f'{color_mod.title()}', callback_data=f'{call}_{color_mod}') for color_mod in color[1]])
-                    break
-
-    elif len_call == 5:
-        markup.row(*[types.InlineKeyboardButton(f'{i}', callback_data=f'{call}_{i}') for i in range(1, 11)])
+    elif len(call.split('_')) == 4:
+        for color in cover_color_choise:
+            if call.split('_')[-1] in color[0]:
+                markup.row(*[types.InlineKeyboardButton(f'{color_mod.title()}', callback_data=f'{call}_{color_mod}') for color_mod in color[1]])
+                break
+    
+    #добавити кількість
+    elif len(call.split('_')) == 5:
+        markup.row(types.InlineKeyboardButton(f'1', callback_data=f'{call}_1'))
+        markup.add(*[types.InlineKeyboardButton(f'{i}', callback_data=f'{call}_{i}') for i in range(2, 11)])
 
     return markup
 
 
 @bot.callback_query_handler(func=lambda call: True)
 def handler_mes(call):
-    if len(call.data.split('_')) == 6:
+    print(pre_reqest)
+    if call.data.split('_')[-1] == 'back':
+        bot.edit_message_text('Вибір моделі', call.message.chat.id, message_id=call.message.message_id, reply_markup=button_inine(pre_reqest))
+
+    elif len(call.data.split('_')) == 6:
         bot.edit_message_text(call.data, call.message.chat.id, message_id=call.message.message_id)
+
     else:
+        pre_reqest = call.data
+        print(call.data.split('_'))
         bot.edit_message_text('Вибір моделі', call.message.chat.id, message_id=call.message.message_id, reply_markup=button_inine(call.data))
 
 
