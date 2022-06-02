@@ -1,19 +1,23 @@
 import sqlite3
 import os
 
-db = sqlite3.connect(os.path.join(os.path.dirname(__file__), 'iphone_parts.db'))
+with sqlite3. connect(os.path.join(os.path.dirname(__file__), 'iphone_parts.db'), check_same_thread=False) as db:
 
-cb = db.cursor()
+    cb = db.cursor()
 
-search = 'cover'
+#Запит на першому кроці
+    def choise_models(search):
+        result = cb.execute('SELECT model FROM models WHERE akb = ? OR glass = ? OR backlight = ? OR touch = ? OR frame = ? OR cover = ?', (search, search, search, search, search, search)).fetchall()
+        return [i[0] for i in result]
+        
+# model = 'X'
 
-# r = cb.execute('SELECT model FROM models WHERE akb = ? OR glass = ? OR backlight = ? OR touch = ? OR frame = ? OR cover = ?', (search, search, search, search, search, search)).fetchall()
+# r = cb.execute(f'SELECT model FROM submodels WHERE akb = ? OR glass = ? OR backlight = ? OR touch = ? OR frame = ? OR cover = ? AND model LIKE "{model}%"', (search, search, search, search, search, search,)).fetchall()
 # print(r)
+# for i in r:
+#     print(i[0])
 
-model = '8'
+# model = 'XsMax'
 
-r = cb.execute('SELECT cover FROM colors WHERE model = ?', (model,)).fetchall()
-print(r[0][0])
-
-print(r[0][0].split('\r\n'))
-db.close()
+# r = cb.execute(f'SELECT {search} FROM colors WHERE model = ?', (model,)).fetchall()
+# print(r[0][0])
