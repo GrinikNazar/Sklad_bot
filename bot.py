@@ -24,13 +24,13 @@ def send_message_welcome(message):
     markup.row(button_1)
 
     #Те що закінчилось
-    chat_id_bot = 375385945
+    # chat_id_bot = 375385945
     if gspread_my_py.get_cover_null():
-        bot.send_message(chat_id_bot, '!!!Кришки які закінчились!!!', reply_markup=markup)
+        bot.send_message(message.chat.id, '!!!Кришки які закінчились!!!', reply_markup=markup)
         string_of_covers_null = gspread_my_py.get_cover_null()
-        bot.send_message(chat_id_bot, string_of_covers_null)
+        bot.send_message(message.chat.id, string_of_covers_null)
     else:
-        bot.send_message(chat_id_bot, '!!!Всі кришки є!!!', reply_markup=markup)
+        bot.send_message(message.chat.id, '!!!Всі кришки є!!!', reply_markup=markup)
 
 def action_menu_categories(message):
     menu_change_categories = {'Кришки': 'cover', 'АКБ': 'akb', 'Скло': 'glass', 'Підсвітки': 'backlight', 'Сенсори': 'touch', 'Рамки': 'frame'}
@@ -51,10 +51,11 @@ def button_inine(call):
     markup = types.InlineKeyboardMarkup()
 
     if len(call.split('_')) == 2:
-        #якщо запит не має ключа з словника тоді виводити клавіатуру з моделями
         markup.row(*[types.InlineKeyboardButton(f'{key}', callback_data=f'{call}_{key}') for key in iphone_db.choise_models(call.split('_')[0])])
 
 
+    elif len(call.split('_')) == 3:
+        markup.row(*[types.InlineKeyboardButton(f'{key}', callback_data=f'{call}_{key}') for key in iphone_db.choise_submodels(call.split('_')[0], call.split('_')[-1])])
     # elif len(call.split('_')) == 3:
     #     #якщо ключ в запиті вказаний тоді виводити підмоделі
     #     for key, values in dict_of_models_submodels.items():
@@ -70,7 +71,10 @@ def button_inine(call):
     #     markup.row(*list_of_button)
 
     #Добавити кольори
-    # elif len(call.split('_')) == 4:
+    elif len(call.split('_')) == 4:
+        string_color = iphone_db.choise_colors(call.split('_')[0], call.split('_')[-1])
+        if not string_color:
+            markup.row(*[types.InlineKeyboardButton(f'{color_mod.title()}', callback_data=f'{call}_{color_mod}') for color_mod in color[1]])
     #     for color in cover_color_choise:
     #         if call.split('_')[-1] in color[0]:
     #             markup.row(*[types.InlineKeyboardButton(f'{color_mod.title()}', callback_data=f'{call}_{color_mod}') for color_mod in color[1]])
