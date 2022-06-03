@@ -65,12 +65,13 @@ def button_inine(call):
 
     #Добавити кольори
     elif len(call.split('_')) == 4:
-        print(call.split('_'))
         string_color = iphone_db.choise_colors(call.split('_')[0], call.split('_')[-1])
         if string_color:
             string_color = string_color.split('\r\n')
             markup.row(*[types.InlineKeyboardButton(f'{color_mod.title()}', callback_data=f'{call}_{color_mod}') for color_mod in string_color])
             markup.row(types.InlineKeyboardButton('Назад', callback_data=f'{call}_back'))
+        else:
+            markup.row(*[types.InlineKeyboardButton(f'{key}', callback_data=f'{call}_nocolor') for key in iphone_db.choise_submodels(call.split('_')[0], call.split('_')[-1])])
 
     #добавити кількість
     elif len(call.split('_')) == 5:
@@ -92,11 +93,9 @@ def handler_mes(call):
         bot.edit_message_text(text_message, call.message.chat.id, message_id=call.message.message_id, reply_markup=button_inine(('_').join(call.data.split('_')[:-2])))
 
     elif len(call.data.split('_')) == 6:
-        print(call.data.split('_'))
         bot.edit_message_text(call.data, call.message.chat.id, message_id=call.message.message_id)
 
     else:
-        print(call.data.split('_'))
         bot.edit_message_text('Вибір моделі', call.message.chat.id, message_id=call.message.message_id, reply_markup=button_inine(call.data))
 
 bot.polling()
