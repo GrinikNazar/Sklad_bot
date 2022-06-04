@@ -21,3 +21,6 @@ with sqlite3. connect(os.path.join(os.path.dirname(__file__), 'iphone_parts.db')
         
     def gen_keyboard(uk):
         return cb.execute('SELECT eng FROM keyboard WHERE uk = ?', (uk,)).fetchone()[0]
+    
+    def ret_uk_request(en):
+        return cb.execute('SELECT uk FROM keyboard WHERE eng = ?', (en,)).fetchone()[0]

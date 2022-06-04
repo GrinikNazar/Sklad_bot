@@ -14,12 +14,12 @@ def send_message_welcome(message):
     #Головна клавіатура
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
     button_1 = types.KeyboardButton('/start')
-    button_2 = types.KeyboardButton('Кришки')
-    button_3 = types.KeyboardButton('АКБ')
-    button_4 = types.KeyboardButton('Скло')
-    button_5 = types.KeyboardButton('Підсвітки')
-    button_6 = types.KeyboardButton('Сенсори')
-    button_7 = types.KeyboardButton('Рамки')  
+    button_2 = types.KeyboardButton('\U0001F6BDКришки')
+    button_3 = types.KeyboardButton('\U0001F50BАКБ')
+    button_4 = types.KeyboardButton('\U0001F60EСкло')
+    button_5 = types.KeyboardButton('\U0001F526Пiдсвiтки')
+    button_6 = types.KeyboardButton('\U0001F4F2Сенсори')
+    button_7 = types.KeyboardButton('\U0001F4A9Рамки')  
     markup.row(button_3, button_4, button_5)
     markup.row(button_6, button_7, button_2)
     markup.row(button_1)
@@ -35,7 +35,7 @@ def send_message_welcome(message):
 
 #функція для створення клавіатури
 def action_menu_categories(message):
-    change_categories = iphone_db.gen_keyboard(message)
+    change_categories = iphone_db.gen_keyboard(message[1:])
     markup = types.InlineKeyboardMarkup()
     markup.add(types.InlineKeyboardButton('Взяти', callback_data=f'{change_categories}_take'), types.InlineKeyboardButton('Знайти', callback_data=f'{change_categories}_search'))
     return markup
@@ -46,6 +46,7 @@ def some_func(message):
     global text_message
     text_message = message.text
     bot.send_message(message.chat.id, f'{message.text}', reply_markup=action_menu_categories(message.text))
+
 
 #функція створення клавіатури для вибору моделей і кольорів
 def button_inine(call):
@@ -109,10 +110,13 @@ def handler_mes(call):
     elif len(call.data.split('_')) == 6:
         # print('finally', call.data.split('_'))
         bot.edit_message_text(call.data, call.message.chat.id, message_id=call.message.message_id)
+        bot.send_message(call.message.chat.id, gspread_my_py.switch_sheet(call.data))
+        #bot.send_message(message.chat.id, f'{message.text}', reply_markup=action_menu_categories(message.text))
 
     else:
         # print('ok', call.data.split('_'))
         markup_key = button_inine(call.data)
         bot.edit_message_text(f'{text_message}:  {markup_key[1]}', call.message.chat.id, message_id=call.message.message_id, reply_markup=markup_key[0])
+
 
 bot.polling()
