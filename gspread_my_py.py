@@ -11,17 +11,17 @@ sh = sa.open('Test') #відкриває файл таблиці
 # wks = sh.worksheet('') #вибір конкретного листа
 
 
-#Функція яка описує що користувач взяв кришку
-def get_thing(model, value, workseet):
+#Функція яка описує що користувач взяв щось
+def get_thing(model, value, workseet, sheet):
     for i, row in enumerate(workseet.get_all_values()):
-        if 'iPhone ' + model == row[0].rstrip(' '):
+        if  'iPhone' + model == row[0].replace(' ', ''):
             thing_value = int(row[1])
             value = int(value)
             workseet.update_cell(i + 1, 2, thing_value - value)
-            return f'Взяв шось на iPhone {model} - {value} шт, залишилось {thing_value - value}!'
+            return f'Взяв {sheet} на iPhone {model} - {value} шт.\nЗалишилось {thing_value - value} шт!'
 
 
-def switch_sheet(command):
+def main(command):
     #akb_take_6_6_nocolor_1
     command = command.split('_')
     #del command[2] # - nocolor
@@ -35,25 +35,36 @@ def switch_sheet(command):
     model = command[3]
     value = command[5]
 
-    wks = sh.worksheet(iphone_db.ret_uk_request(command[0])) #вибрали лист
-    result = get_thing(model, value, wks)
+    sheet = iphone_db.ret_uk_request(command[0])
+    wks = sh.worksheet(sheet) #вибрали лист
+    result = get_thing(model, value, wks, sheet)
 
     return result
 
-#print(switch_sheet('akb_take_6_6s_nocolor_1'))
+# print(main('akb_take_6_6_nocolor_1'))
 
-#Отримуєє всі кришки які закінчились
-def get_cover_null(wks):
-    string_of_covers_null = ''
-    for row in wks.get_all_values():
-        if row[1] == '0':
-            string_of_covers_null += row[0] + ' ' + row[1] + '\n'
-    if string_of_covers_null == '':
+#Отримуєє все що закінчилось
+def get_cover_null():
+    sheets = iphone_db.all_sheets()
+    string_of_null_list = ''
+    string_of_null = '\U0000274C Все що зкінчилось \U0000274C' + '\n'
+
+    for wks in sheets:
+        wk = sh.worksheet(wks[0])
+        string_of_null += wks[0] + ':' + '\n'
+        for row in wk.get_all_values():
+            if row[1] == '0':
+                string_of_null_list += '- ' + row[0] + ' ' + row[1] + '\n'
+        if string_of_null_list:
+            string_of_null += string_of_null_list
+        else:
+            string_of_null += 'Все є!' + '\n'
+        string_of_null_list = ''
+
+    if string_of_null == '':
         return None
     else:  
-        return string_of_covers_null.rstrip()
-
-
+        return string_of_null.rstrip()
 
 
 #Пошук кришок

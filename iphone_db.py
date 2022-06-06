@@ -24,3 +24,6 @@ with sqlite3. connect(os.path.join(os.path.dirname(__file__), 'iphone_parts.db')
     
     def ret_uk_request(en):
         return cb.execute('SELECT uk FROM keyboard WHERE eng = ?', (en,)).fetchone()[0]
+
+    def all_sheets():
+        return cb.execute('SELECT uk FROM keyboard').fetchall()

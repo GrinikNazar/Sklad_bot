@@ -26,11 +26,10 @@ def send_message_welcome(message):
 
     #Те що закінчилось
     if gspread_my_py.get_cover_null():
-        bot.send_message(message.chat.id, '!!!Кришки які закінчились!!!', reply_markup=markup)
         string_of_covers_null = gspread_my_py.get_cover_null()
         bot.send_message(message.chat.id, string_of_covers_null)
     else:
-        bot.send_message(message.chat.id, '!!!Всі кришки є!!!', reply_markup=markup)
+        bot.send_message(message.chat.id, '!!!Все є!!!', reply_markup=markup)
 
 
 #функція для створення клавіатури
@@ -110,8 +109,10 @@ def handler_mes(call):
     elif len(call.data.split('_')) == 6:
         # print('finally', call.data.split('_'))
         bot.edit_message_text(call.data, call.message.chat.id, message_id=call.message.message_id)
-        bot.send_message(call.message.chat.id, gspread_my_py.switch_sheet(call.data))
-        #bot.send_message(message.chat.id, f'{message.text}', reply_markup=action_menu_categories(message.text))
+        result_main = gspread_my_py.main(call.data) #результат повернення функції
+        bot.send_message(call.message.chat.id, result_main)
+        if call.data.split('_')[1] == 'take':
+            bot.send_message(-674239373, f'{call.from_user.first_name} {result_main}')
 
     else:
         # print('ok', call.data.split('_'))
