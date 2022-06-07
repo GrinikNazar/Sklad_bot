@@ -1,4 +1,3 @@
-from cgitb import text
 import gspread_my_py
 import iphone_db
 import conf
@@ -26,8 +25,9 @@ def send_message_welcome(message):
 
     #Те що закінчилось
     if gspread_my_py.get_cover_null():
-        string_of_covers_null = gspread_my_py.get_cover_null()
-        bot.send_message(message.chat.id, string_of_covers_null)
+        #string_of_covers_null = gspread_my_py.get_cover_null()
+        #bot.send_message(message.chat.id, string_of_covers_null, reply_markup=markup)
+        bot.send_message(message.chat.id, 'Привіт, вибирай дію \U0001F916', reply_markup=markup)
     else:
         bot.send_message(message.chat.id, '!!!Все є!!!', reply_markup=markup)
 

@@ -12,36 +12,60 @@ sh = sa.open('Test') #відкриває файл таблиці
 
 
 #Функція яка описує що користувач взяв щось
-def get_thing(model, value, workseet, sheet):
-    for i, row in enumerate(workseet.get_all_values()):
-        if  'iPhone' + model == row[0].replace(' ', ''):
-            thing_value = int(row[1])
-            value = int(value)
-            workseet.update_cell(i + 1, 2, thing_value - value)
-            return f'Взяв {sheet} на iPhone {model} - {value} шт.\nЗалишилось {thing_value - value} шт!'
+def get_thing(model, value, workseet, sheet, *args):
+    if args:
+        model_pat = 'iPhone' + model + args[0]
+        model_pat = model_pat.lower().replace(' ', '') #iphone8spacegray
+        for i, row in enumerate(workseet.get_all_values()):
+            if model.lower() in row[0].lower().replace(' ', ''):
+                row_res = row[0].lower().replace(' ', '')
+                if model_pat == row_res:
+                    thing_value = int(row[1])
+                    value = int(value)
+                    workseet.update_cell(i + 1, 2, thing_value - value)
+                    return f'Взяв {sheet} на iPhone {model} - {value} шт.\nЗалишилось {thing_value - value} шт!'
+    else:
+        for i, row in enumerate(workseet.get_all_values()):
+            if  'iPhone' + model == row[0].replace(' ', ''):
+                thing_value = int(row[1])
+                value = int(value)
+                workseet.update_cell(i + 1, 2, thing_value - value)
+                return f'Взяв {sheet} на iPhone {model} - {value} шт.\nЗалишилось {thing_value - value} шт!'
 
 
 def main(command):
     #akb_take_6_6_nocolor_1
+    #cover_take_8_8_space gray_1
     command = command.split('_')
-    #del command[2] # - nocolor
-    
     #['akb', 'take', '6', '6s', 'nocolor', '1']
     #[0] akb - з якого листа
     #[1] take - що зробити
-    #[3] 6 - це група моделей, пункт не важливий
-    #[4] 6s - конкретна модель
+    #[2] 6 - це група моделей, пункт не важливий
+    #[3] 6s - конкретна модель
+    #[4] nocolor - колір\без кольору
     #[5] 1 - кількість
+
     model = command[3]
     value = command[5]
+    color = command[4]
 
-    sheet = iphone_db.ret_uk_request(command[0])
+    sheet = iphone_db.ret_uk_request(command[0]) #назва листа
     wks = sh.worksheet(sheet) #вибрали лист
-    result = get_thing(model, value, wks, sheet)
 
+    if command[1] == 'take':
+        #взяти щось
+        if color == 'nocolor':
+            result = get_thing(model, value, wks, sheet)
+        else:
+            result = get_thing(model, value, wks, sheet, color, command[0])
+    else:
+        pass
+        #пошук чогось
+        #result = search_thing()
     return result
 
 # print(main('akb_take_6_6_nocolor_1'))
+# print(main('cover_take_8_8Plus_gold_1'))
 
 #Отримуєє все що закінчилось
 def get_cover_null():
@@ -68,7 +92,7 @@ def get_cover_null():
 
 
 #Пошук кришок
-def search_covers(search_cover, sheet):
+def search_thing(search_cover, sheet):
     tuple_of_colors = (
         'gold', 'graphite', 'pasific', 'silver', 
         'black', 'blue', 'purple', 'red', 'white', 'green',
