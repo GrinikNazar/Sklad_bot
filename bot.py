@@ -6,6 +6,13 @@ from telebot import types
 
 bot = telebot.TeleBot(conf.config['token'])
 
+users = {
+    'Назар': 375385945,
+    'Ваня': 239724045,
+    'Саша': 350257882,
+    'Артур': 372369919,
+}
+
 #Привітання, а також повідомлення яких кришок немає
 @bot.message_handler(commands=['start'])
 def send_message_welcome(message):
@@ -23,14 +30,24 @@ def send_message_welcome(message):
     markup.row(button_6, button_7, button_2)
     markup.row(button_1)
 
-    #Те що закінчилось
-    if gspread_my_py.get_cover_null():
-        #string_of_covers_null = gspread_my_py.get_cover_null()
-        #bot.send_message(message.chat.id, string_of_covers_null, reply_markup=markup)
+    #авторизація
+    if message.from_user.id in users.values():
         bot.send_message(message.chat.id, 'Привіт, вибирай дію \U0001F916', reply_markup=markup)
     else:
-        bot.send_message(message.chat.id, '!!!Все є!!!', reply_markup=markup)
+        bot.send_message(message.chat.id, 'Ти не авторизований, та й таке \U0001F4A9')
+        bot.send_message(users['Назар'], f'{message.from_user.first_name}: {message.from_user.username}: {message.from_user.id}')
+    #Те що закінчилось
+    # if gspread_my_py.get_cover_null():
+    #     #string_of_covers_null = gspread_my_py.get_cover_null()
+    #     #bot.send_message(message.chat.id, string_of_covers_null, reply_markup=markup)
+    #     bot.send_message(message.chat.id, 'Привіт, вибирай дію \U0001F916', reply_markup=markup)
+    # else:
+    #     bot.send_message(message.chat.id, '!!!Все є!!!', reply_markup=markup)
 
+
+@bot.message_handler(commands=['my_id'])
+def get_my_id(message):
+    bot.send_message(375385945, f'{message.from_user.first_name}: {message.from_user.username}: {message.from_user.id}')
 
 #функція для створення клавіатури
 def action_menu_categories(message):

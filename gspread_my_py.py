@@ -14,6 +14,8 @@ sh = sa.open('Test') #відкриває файл таблиці
 #Функція яка описує що користувач взяв щось
 def get_thing(model, value, workseet, sheet, *args):
     if args:
+        if 'se' in model.lower():
+            model = model[1:]
         model_pat = 'iPhone' + model + args[0]
         model_pat = model_pat.lower().replace(' ', '') #iphone8spacegray
         for i, row in enumerate(workseet.get_all_values()):
@@ -25,8 +27,12 @@ def get_thing(model, value, workseet, sheet, *args):
                     workseet.update_cell(i + 1, 2, thing_value - value)
                     return f'Взяв {sheet} на iPhone {model} - {value} шт.\nЗалишилось {thing_value - value} шт!'
     else:
+        if 'se' in model.lower():
+            model = model[1:]
+        model_pat = 'iphone' + model     
         for i, row in enumerate(workseet.get_all_values()):
-            if  'iPhone' + model == row[0].replace(' ', ''):
+            row_res = row[0].lower().replace(' ', '')
+            if  model_pat == row_res:
                 thing_value = int(row[1])
                 value = int(value)
                 workseet.update_cell(i + 1, 2, thing_value - value)
@@ -65,7 +71,7 @@ def main(command):
     return result
 
 # print(main('akb_take_6_6_nocolor_1'))
-# print(main('cover_take_8_8Plus_gold_1'))
+# print(main('akb_take_8_8se2020_nocolor_1'))
 
 #Отримуєє все що закінчилось
 def get_cover_null():
