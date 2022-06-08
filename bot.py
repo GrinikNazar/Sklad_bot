@@ -20,7 +20,6 @@ def send_message_welcome(message):
     
     #Головна клавіатура
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
-    button_1 = types.KeyboardButton('/start')
     button_2 = types.KeyboardButton('\U0001F6BDКришки')
     button_3 = types.KeyboardButton('\U0001F50BАКБ')
     button_4 = types.KeyboardButton('\U0001F60EСкло')
@@ -29,7 +28,6 @@ def send_message_welcome(message):
     button_7 = types.KeyboardButton('\U0001F4A9Рамки')  
     markup.row(button_3, button_4, button_5)
     markup.row(button_6, button_7, button_2)
-    markup.row(button_1)
 
     #авторизація
     if message.from_user.id in users.values():
@@ -88,4 +86,7 @@ def handler_mes(call):
         bot.edit_message_text(f'{text_message}:  {markup_key[1]}', call.message.chat.id, message_id=call.message.message_id, reply_markup=markup_key[0])
 
 
-bot.polling()
+try:
+    bot.polling()
+except bot.ReadTimeout:
+    print('Time out')

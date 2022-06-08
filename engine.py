@@ -1,3 +1,4 @@
+from operator import mod
 import gspread
 import iphone_db
 import os
@@ -8,36 +9,43 @@ sa = gspread.service_account(filename=path)
 
 sh = sa.open('Test') #відкриває файл таблиці
 
-# wks = sh.worksheet('') #вибір конкретного листа
-
-
 #Функція яка описує що користувач взяв щось
 def get_thing(model, value, workseet, sheet, *args):
     if args:
         if 'se' in model.lower():
             model = model[1:]
-        model_pat = 'iPhone' + model + args[0]
+        iphone = 'iphone'
+        model_pat = iphone + model + args[0]
         model_pat = model_pat.lower().replace(' ', '') #iphone8spacegray
         for i, row in enumerate(workseet.get_all_values()):
             if model.lower() in row[0].lower().replace(' ', ''):
                 row_res = row[0].lower().replace(' ', '')
-                if model_pat == row_res:
+                row_res = row_res[:-len(args[0])]
+                row_res = list(map(lambda x: iphone + x.replace(' ', '') + args[0].lower(), row_res[len(iphone):].split('/')))
+                if  model_pat in row_res:
                     thing_value = int(row[1])
-                    value = int(value)
-                    workseet.update_cell(i + 1, 2, thing_value - value)
-                    return f'Взяв {sheet} на iPhone {model} - {value} шт.\nЗалишилось {thing_value - value} шт!'
+                    if thing_value == 0:
+                        return f'🔴 {sheet} на {iphone} {model} {args[0]} - закінчились! 🔴'
+                    else:
+                        value = int(value)
+                        workseet.update_cell(i + 1, 2, thing_value - value)
+                        return f'Взяв {sheet} на iPhone {model} - {value} шт.\nЗалишилось {thing_value - value} шт!'
     else:
         if 'se' in model.lower():
             model = model[1:]
-        model_pat = 'iphone' + model.lower()    
+        iphone = 'iphone'
+        model_pat = iphone + model.lower()    
         for i, row in enumerate(workseet.get_all_values()):
             row_res = row[0].lower().replace(' ', '')
-            row_res = list(map(lambda x: 'iphone' + x.replace(' ', ''), row_res[6:].split('/')))
+            row_res = list(map(lambda x: iphone + x.replace(' ', ''), row_res[len(iphone):].split('/')))
             if  model_pat in row_res:
                 thing_value = int(row[1])
-                value = int(value)
-                workseet.update_cell(i + 1, 2, thing_value - value)
-                return f'Взяв {sheet} на iPhone {model} - {value} шт.\nЗалишилось {thing_value - value} шт!'
+                if thing_value == 0:
+                    return f'🔴 {sheet} на {iphone} {model} - закінчились! 🔴'
+                else:
+                    value = int(value)
+                    workseet.update_cell(i + 1, 2, thing_value - value)
+                    return f'Взяв {sheet} на iPhone {model} - {value} шт.\nЗалишилось {thing_value - value} шт!'
 
 
 #Отримуєє все що закінчилось
@@ -76,8 +84,6 @@ def search_thing(wks, sheet):
 
 
 def main(command):
-    #akb_take_6_6_nocolor_1
-    #cover_take_8_8_space gray_1
     command = command.split('_')
     #['akb', 'take', '6', '6s', 'nocolor', '1']
     #[0] akb - з якого листа
@@ -104,5 +110,5 @@ def main(command):
 
     return result
 
-# print(main('akb_take_12_12Pro_nocolor_1'))
+# print(main('backlight_take_7_7_Вкладиш_1'))
 # print(main('akb_take_8_8se2020_nocolor_1'))
