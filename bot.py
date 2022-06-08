@@ -1,4 +1,5 @@
-import gspread_my_py
+import engine
+import keyboard
 import iphone_db
 import conf
 import telebot
@@ -35,7 +36,7 @@ def send_message_welcome(message):
         bot.send_message(message.chat.id, 'Привіт, вибирай дію \U0001F916', reply_markup=markup)
     else:
         bot.send_message(message.chat.id, 'Ти не авторизований, та й таке \U0001F4A9')
-        bot.send_message(users['Назар'], f'{message.from_user.first_name}: {message.from_user.username}: {message.from_user.id}')
+        bot.send_message(users['Назар'], f'Спроба запуску бота:\n{message.from_user.first_name}\n{message.from_user.username}\n{message.from_user.id}')
     #Те що закінчилось
     # if gspread_my_py.get_cover_null():
     #     #string_of_covers_null = gspread_my_py.get_cover_null()
@@ -49,66 +50,12 @@ def send_message_welcome(message):
 def get_my_id(message):
     bot.send_message(375385945, f'{message.from_user.first_name}: {message.from_user.username}: {message.from_user.id}')
 
-#функція для створення клавіатури
-def action_menu_categories(message):
-    change_categories = iphone_db.gen_keyboard(message[1:])
-    markup = types.InlineKeyboardMarkup()
-    markup.add(types.InlineKeyboardButton('Взяти', callback_data=f'{change_categories}_take'), types.InlineKeyboardButton('Знайти', callback_data=f'{change_categories}_search'))
-    return markup
-
 
 @bot.message_handler(content_types=['text'])
 def some_func(message):
     global text_message
     text_message = message.text
-    bot.send_message(message.chat.id, f'{message.text}', reply_markup=action_menu_categories(message.text))
-
-
-#функція створення клавіатури для вибору моделей і кольорів
-def button_inine(call):
-
-    title_message = ''
-
-    markup = types.InlineKeyboardMarkup()
-    #добавити модель
-    if len(call.split('_')) == 2:
-        title_message += 'Вибір моделі'
-        markup.row(*[types.InlineKeyboardButton(f'{key}', callback_data=f'{call}_{key}') for key in iphone_db.choise_models(call.split('_')[0])])
-        markup.row(types.InlineKeyboardButton('Назад', callback_data=f'{call}_back'))
-
-    #добавити підмодель
-    elif len(call.split('_')) == 3:
-        title_message += 'Вибір моделі'
-        fr_db_data = iphone_db.choise_submodels(call.split('_')[0], call.split('_')[-1])
-        if not fr_db_data:
-            markup.row(*[types.InlineKeyboardButton(f'{key}', callback_data=f'{call}_{key}_nocolor') for key in fr_db_data])
-        else:
-            markup.row(*[types.InlineKeyboardButton(f'{key}', callback_data=f'{call}_{key}') for key in fr_db_data])
-        markup.row(types.InlineKeyboardButton('Назад', callback_data=f'{call}_back'))
-
-    #Добавити кольори
-    elif len(call.split('_')) == 4:
-        string_color = iphone_db.choise_colors(call.split('_')[0], call.split('_')[-1])
-        if string_color:
-            title_message += 'Вибір кольору чи підпункту'
-            string_color = string_color.split('\r\n')
-            markup.row(*[types.InlineKeyboardButton(f'{color_mod.title()}', callback_data=f'{call}_{color_mod}') for color_mod in string_color])
-            markup.row(types.InlineKeyboardButton('Назад', callback_data=f'{call}_back'))
-        else:
-            title_message += 'Кількість'
-            markup.row(types.InlineKeyboardButton(f'1', callback_data=f'{call}_nocolor_1'))
-            markup.add(*[types.InlineKeyboardButton(f'{i}', callback_data=f'{call}_nocolor_{i}') for i in range(2, 11)])
-            markup.row(types.InlineKeyboardButton('Назад', callback_data=f'{call}_back'))
-
-    #добавити кількість
-    elif len(call.split('_')) == 5:
-        title_message += 'Кількість'
-        markup.row(types.InlineKeyboardButton(f'1', callback_data=f'{call}_1'))
-        markup.add(*[types.InlineKeyboardButton(f'{i}', callback_data=f'{call}_{i}') for i in range(2, 11)])
-        markup.row(types.InlineKeyboardButton('Назад', callback_data=f'{call}_back'))
-
-    #функція повертає клавіатуру в залежності від умов
-    return (markup, title_message)
+    bot.send_message(message.chat.id, f'{message.text}', reply_markup=keyboard.action_menu_categories(message.text))
 
 
 @bot.callback_query_handler(func=lambda call: True)
@@ -116,24 +63,28 @@ def handler_mes(call):
     
     if call.data.split('_')[-1] == 'back' and len(call.data.split('_')) == 3:
         # print('3 back', call.data.split('_'))
-        bot.edit_message_text(text_message, call.message.chat.id, message_id=call.message.message_id, reply_markup=action_menu_categories(text_message))
+        bot.edit_message_text(text_message, call.message.chat.id, message_id=call.message.message_id, reply_markup=keyboard.action_menu_categories(text_message))
     
     elif call.data.split('_')[-1] == 'back':
         # print('back', call.data.split('_'))
-        markup_key = button_inine(('_').join(call.data.split('_')[:-2]))
+        markup_key = keyboard.button_inine(('_').join(call.data.split('_')[:-2]))
         bot.edit_message_text(f'{text_message}:  {markup_key[1]}', call.message.chat.id, message_id=call.message.message_id, reply_markup=markup_key[0])
 
-    elif len(call.data.split('_')) == 6:
-        # print('finally', call.data.split('_'))
+    elif len(call.data.split('_')) == 6 or call.data.split('_')[1] == 'search':
         bot.edit_message_text(call.data, call.message.chat.id, message_id=call.message.message_id)
-        result_main = gspread_my_py.main(call.data) #результат повернення функції
-        bot.send_message(call.message.chat.id, result_main)
+
         if call.data.split('_')[1] == 'take':
+            result_main = engine.main(call.data) #результат повернення функції
+            bot.edit_message_text(result_main, call.message.chat.id, message_id=call.message.message_id)
             bot.send_message(-674239373, f'{call.from_user.first_name} {result_main}')
+
+        elif call.data.split('_')[1] == 'search':
+            result_main = engine.main(call.data)
+            bot.edit_message_text(result_main, call.message.chat.id, message_id=call.message.message_id)
 
     else:
         # print('ok', call.data.split('_'))
-        markup_key = button_inine(call.data)
+        markup_key = keyboard.button_inine(call.data)
         bot.edit_message_text(f'{text_message}:  {markup_key[1]}', call.message.chat.id, message_id=call.message.message_id, reply_markup=markup_key[0])
 
 
