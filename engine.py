@@ -29,7 +29,7 @@ def get_thing(model, model_begin, value, workseet, sheet, *args):
                         return f'🔴 {sheet} на {apple} {model} {color_mode} - закінчились! 🔴'
                     else:
                         value = int(value)
-                        workseet.update_cell(i + 1, 2, thing_value - value)
+                        workseet.update_cell(i + 2, 2, thing_value - value)
                         return f'Взяв {sheet.lower()} на {apple} {model} {args[0].lower()} - {value} шт.\n🔵 Залишилось {thing_value - value} шт! 🔵'
     else:
         if 'se' in model.lower():
@@ -112,5 +112,5 @@ def main(command):
 
     return result
 
-# print(main('cover_take_X_Xs_space gray_1'))
+# print(main('glass_take_5_5s_white_1'))
 # print(main('akb_take_8_8se2020_nocolor_1'))
