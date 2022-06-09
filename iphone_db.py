@@ -9,11 +9,15 @@ with sqlite3. connect(os.path.join(os.path.dirname(__file__), 'iphone_parts.db')
     def choise_models(search):
         result = cb.execute('SELECT model FROM models WHERE akb = ? OR glass = ? OR backlight = ? OR touch = ? OR frame = ? OR cover = ?', (search, search, search, search, search, search)).fetchall()
         return [i[0] for i in result]
+
+    def artic(model):
+        result = cb.execute('SELECT article FROM models WHERE model = ?',(model,)).fetchone()
+        return result[0]
         
 #Запит на другому кроці
     def choise_submodels(search, model):
-        result = cb.execute(f'SELECT model FROM submodels WHERE akb = ? OR glass = ? OR backlight = ? OR touch = ? OR frame = ? OR cover = ?', (search, search, search, search, search, search,)).fetchall()
-        return [i[0] for i in result if i[0][0] == model or i[0][:2] == model]
+        result = cb.execute(f'SELECT model, article FROM submodels WHERE akb = ? OR glass = ? OR backlight = ? OR touch = ? OR frame = ? OR cover = ?', (search, search, search, search, search, search,)).fetchall()
+        return [i[0] for i in result if i[1] == model]
 
 #Запит для вибору кольору
     def choise_colors(search, model):
@@ -28,4 +32,4 @@ with sqlite3. connect(os.path.join(os.path.dirname(__file__), 'iphone_parts.db')
     def all_sheets():
         return cb.execute('SELECT uk FROM keyboard').fetchall()
 
-#print(choise_colors('cover', '8'))
+# print(choise_submodels('touch', 'mini'))

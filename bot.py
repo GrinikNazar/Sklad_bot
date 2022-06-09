@@ -26,8 +26,10 @@ def send_message_welcome(message):
     button_5 = types.KeyboardButton('\U0001F526Пiдсвiтки')
     button_6 = types.KeyboardButton('\U0001F4F2Сенсори')
     button_7 = types.KeyboardButton('\U0001F4A9Рамки')  
+    button_8 = types.KeyboardButton('\U0001F4F2Сенсори iPad')
     markup.row(button_3, button_4, button_5)
     markup.row(button_6, button_7, button_2)
+    markup.row(button_8)
 
     #авторизація
     if message.from_user.id in users.values():
