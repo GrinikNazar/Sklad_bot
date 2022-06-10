@@ -1,3 +1,4 @@
+from email import message
 import engine
 import keyboard
 import iphone_db
@@ -72,15 +73,16 @@ def handler_mes(call):
 
     elif len(call.data.split('_')) == 6 or call.data.split('_')[1] == 'search':
         bot.edit_message_text(call.data, call.message.chat.id, message_id=call.message.message_id)
+        # bot.edit_message_text('Хуярю...', call.message.chat.id, message_id=call.message.message_id)
+        result_main = engine.main(call.data) #результат повернення функції
 
         if call.data.split('_')[1] == 'take':
-            result_main = engine.main(call.data) #результат повернення функції
-            bot.edit_message_text(result_main, call.message.chat.id, message_id=call.message.message_id)
-            bot.send_message(-674239373, f'{call.from_user.first_name} {result_main}')
+            bot.edit_message_text(result_main[0], call.message.chat.id, message_id=call.message.message_id)
+            if result_main[1]:
+                bot.send_message(-674239373, f'{call.from_user.first_name}: {result_main[0]}')
 
         elif call.data.split('_')[1] == 'search':
-            result_main = engine.main(call.data)
-            bot.edit_message_text(result_main, call.message.chat.id, message_id=call.message.message_id)
+            bot.edit_message_text(result_main[0], call.message.chat.id, message_id=call.message.message_id)
 
     else:
         # print('ok', call.data.split('_'))
@@ -90,5 +92,5 @@ def handler_mes(call):
 
 try:
     bot.polling()
-except bot.ReadTimeout:
-    print('Time out')
+except NameError:
+    bot.polling()

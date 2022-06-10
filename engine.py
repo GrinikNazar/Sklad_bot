@@ -12,28 +12,31 @@ sh = sa.open('Test') #відкриває файл таблиці
 #Функція яка описує що користувач взяв щось
 def get_thing(model, model_begin, value, workseet, sheet, *args):
     if args:
-        if 'se' in model.lower():
-            model = model[1:]
         apple = iphone_db.artic(model_begin)
         color_mode = args[0].replace(' ', '')
         model_pat = apple + model + color_mode
-        model_pat = model_pat.lower().replace(' ', '') #iphone8spacegray
+        model_pat = model_pat.lower().replace(' ', '')
         for i, row in enumerate(workseet.get_all_values()):
             if model.lower() in row[0].lower().replace(' ', ''):
                 row_res = row[0].lower().replace(' ', '')
-                row_res = row_res[:-len(color_mode)]
-                row_res = list(map(lambda x: apple + x.replace(' ', '') + color_mode.lower(), row_res[len(apple):].split('/')))
+                color_row = row_res.split(model.lower())[-1]
+                row_res = row_res[:-len(color_row)]
+                row_res = list(map(lambda x: apple + x.replace(' ', '') + color_row.lower(), row_res[len(apple):].split('/')))
                 if  model_pat in row_res:
                     thing_value = int(row[1])
+                    value = int(value)
                     if thing_value == 0:
-                        return f'🔴 {sheet} на {apple} {model} {color_mode} - закінчились! 🔴'
+                        return [f'🔴 {sheet} на {apple} {model} {color_mode} - закінчились! 🔴', True]
+                    elif value > thing_value:
+                        return [f'Не можна взяти більше ніж є. В наявності {thing_value} потрібна кількість {value}', False]
                     else:
-                        value = int(value)
-                        workseet.update_cell(i + 2, 2, thing_value - value)
-                        return f'Взяв {sheet.lower()} на {apple} {model} {args[0].lower()} - {value} шт.\n🔵 Залишилось {thing_value - value} шт! 🔵'
+                        workseet.update_cell(i + 1, 2, thing_value - value)
+                        if thing_value - value == 0:
+                            ost = f'🔴 Залишилось {thing_value - value} шт! 🔴'
+                        else:
+                            ost = f'🔵 Залишилось {thing_value - value} шт! 🔵'
+                        return [f'Взяв {sheet.lower()} на {apple} {model} {args[0].lower()} - {value} шт.\n🔵 Залишилось {thing_value - value} шт! 🔵', True]
     else:
-        if 'se' in model.lower():
-            model = model[1:]
         apple = iphone_db.artic(model_begin)
         model_pat = apple + model.lower()    
         for i, row in enumerate(workseet.get_all_values()):
@@ -41,12 +44,18 @@ def get_thing(model, model_begin, value, workseet, sheet, *args):
             row_res = list(map(lambda x: apple + x.replace(' ', ''), row_res[len(apple):].split('/')))
             if  model_pat in row_res:
                 thing_value = int(row[1])
+                value = int(value)
                 if thing_value == 0:
-                    return f'🔴 {sheet} на {apple} {model} - закінчились! 🔴'
+                    return [f'🔴 {sheet} на {apple} {model} - закінчились! 🔴', True]
+                elif value > thing_value:
+                    return [f'Не можна взяти більше ніж є. В наявності {thing_value} потрібна кількість {value}', False]
                 else:
-                    value = int(value)
                     workseet.update_cell(i + 1, 2, thing_value - value)
-                    return f'Взяв {sheet.lower()} на iPhone {model} - {value} шт.\n🔵 Залишилось {thing_value - value} шт! 🔵'
+                    if thing_value - value == 0:
+                        ost = f'🔴 Залишилось {thing_value - value} шт! 🔴'
+                    else:
+                        ost = f'🔵 Залишилось {thing_value - value} шт! 🔵'
+                    return [f'Взяв {sheet.lower()} на iPhone {model} - {value} шт.\n{ost}', True]
 
 
 #Отримуєє все що закінчилось
@@ -112,5 +121,5 @@ def main(command):
 
     return result
 
-# print(main('glass_take_5_5s_white_1'))
+print(main('backlight_take_7_7_Вкладиш_1'))
 # print(main('akb_take_8_8se2020_nocolor_1'))
