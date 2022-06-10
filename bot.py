@@ -27,10 +27,16 @@ def send_message_welcome(message):
     button_5 = types.KeyboardButton('\U0001F526Пiдсвiтки')
     button_6 = types.KeyboardButton('\U0001F4F2Сенсори')
     button_7 = types.KeyboardButton('\U0001F4A9Рамки')  
-    button_8 = types.KeyboardButton('\U0001F4F2Сенсори iPad')
-    markup.row(button_3, button_4, button_5)
-    markup.row(button_6, button_7, button_2)
-    markup.row(button_8)
+    button_8 = types.KeyboardButton('\U0001F4F2iPad')
+    button_9 = types.KeyboardButton('\U0001F250Модулi Копії')
+    button_10 = types.KeyboardButton('\U0001FA79Клей АКБ + проклейки')
+    button_11 = types.KeyboardButton('\U0001F50CFace ID + 11 АКБ')
+    # markup.row(button_3, button_4, button_5)
+    # markup.row(button_6, button_7, button_2)
+    # markup.row(button_8, button_9, button_10, button_11)
+    markup.row(button_3, button_4, button_5, button_6)
+    markup.row(button_7, button_2, button_8, button_9)
+    markup.row(button_10, button_11)
 
     #авторизація
     if message.from_user.id in users.values():
@@ -72,8 +78,8 @@ def handler_mes(call):
         bot.edit_message_text(f'{text_message}:  {markup_key[1]}', call.message.chat.id, message_id=call.message.message_id, reply_markup=markup_key[0])
 
     elif len(call.data.split('_')) == 6 or call.data.split('_')[1] == 'search':
-        bot.edit_message_text(call.data, call.message.chat.id, message_id=call.message.message_id)
-        # bot.edit_message_text('Хуярю...', call.message.chat.id, message_id=call.message.message_id)
+        # bot.edit_message_text(call.data, call.message.chat.id, message_id=call.message.message_id)
+        bot.edit_message_text('Хуярю...', call.message.chat.id, message_id=call.message.message_id)
         result_main = engine.main(call.data) #результат повернення функції
 
         if call.data.split('_')[1] == 'take':

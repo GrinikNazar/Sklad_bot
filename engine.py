@@ -9,6 +9,12 @@ sa = gspread.service_account(filename=path)
 
 sh = sa.open('Test') #відкриває файл таблиці
 
+def gen_list_models(s, apple):
+    ks = s.split(' ')[-1].lower()
+    s = s.lower().replace(' ', '')[len(apple):-len(ks)]
+    s = s.split('/')
+    return list(map(lambda x: apple + x + ks, s))
+
 #Функція яка описує що користувач взяв щось
 def get_thing(model, model_begin, value, workseet, sheet, *args):
     if args:
@@ -18,10 +24,11 @@ def get_thing(model, model_begin, value, workseet, sheet, *args):
         model_pat = model_pat.lower().replace(' ', '')
         for i, row in enumerate(workseet.get_all_values()):
             if model.lower() in row[0].lower().replace(' ', ''):
-                row_res = row[0].lower().replace(' ', '')
-                color_row = row_res.split(model.lower())[-1]
-                row_res = row_res[:-len(color_row)]
-                row_res = list(map(lambda x: apple + x.replace(' ', '') + color_row.lower(), row_res[len(apple):].split('/')))
+                # row_res = row[0].lower().replace(' ', '')
+                row_res = gen_list_models(row[0], apple)
+                # color_row = row_res.split(model.lower())[-1]
+                # row_res = row_res[:-len(color_row)]
+                # row_res = list(map(lambda x: apple + x.replace(' ', '') + color_row.lower(), row_res[len(apple):].split('/')))
                 if  model_pat in row_res:
                     thing_value = int(row[1])
                     value = int(value)
@@ -121,5 +128,5 @@ def main(command):
 
     return result
 
-print(main('backlight_take_7_7_Вкладиш_1'))
+# print(main('backlight_take_7_7_Вкладиш_1'))
 # print(main('akb_take_8_8se2020_nocolor_1'))
