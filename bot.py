@@ -1,4 +1,3 @@
-from email import message
 import engine
 import keyboard
 import iphone_db
@@ -13,9 +12,12 @@ users = {
     'Ваня': 239724045,
     'Саша': 350257882,
     'Артур': 372369919,
+    'Льоша': 522646080,
+    'Вадим': 1318753542
+
 }
 
-#Привітання, а також повідомлення яких кришок немає
+
 @bot.message_handler(commands=['start'])
 def send_message_welcome(message):
     
@@ -41,13 +43,7 @@ def send_message_welcome(message):
     else:
         bot.send_message(message.chat.id, 'Ти не авторизований, та й таке \U0001F4A9')
         bot.send_message(users['Назар'], f'Спроба запуску бота:\n{message.from_user.first_name}\n{message.from_user.username}\n{message.from_user.id}')
-    #Те що закінчилось
-    # if gspread_my_py.get_cover_null():
-    #     #string_of_covers_null = gspread_my_py.get_cover_null()
-    #     #bot.send_message(message.chat.id, string_of_covers_null, reply_markup=markup)
-    #     bot.send_message(message.chat.id, 'Привіт, вибирай дію \U0001F916', reply_markup=markup)
-    # else:
-    #     bot.send_message(message.chat.id, '!!!Все є!!!', reply_markup=markup)
+
 
 
 @bot.message_handler(commands=['my_id'])
@@ -75,8 +71,8 @@ def handler_mes(call):
         bot.edit_message_text(f'{text_message}:  {markup_key[1]}', call.message.chat.id, message_id=call.message.message_id, reply_markup=markup_key[0])
 
     elif len(call.data.split('_')) == 6 or call.data.split('_')[1] == 'search':
-        bot.edit_message_text(call.data, call.message.chat.id, message_id=call.message.message_id)
-        # bot.edit_message_text('Хуярю...', call.message.chat.id, message_id=call.message.message_id)
+        # bot.edit_message_text(call.data, call.message.chat.id, message_id=call.message.message_id)
+        bot.edit_message_text('Хуярю...', call.message.chat.id, message_id=call.message.message_id)
         result_main = engine.main(call.data) #результат повернення функції
 
         if call.data.split('_')[1] == 'take':
