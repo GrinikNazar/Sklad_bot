@@ -7,7 +7,7 @@ with sqlite3. connect(os.path.join(os.path.dirname(__file__), 'iphone_parts.db')
 
 #Запит на першому кроці
     def choise_models(search):
-        result = cb.execute('SELECT model FROM models WHERE akb = ? OR glass = ? OR backlight = ? OR touch = ? OR frame = ? OR cover = ?', (search, search, search, search, search, search)).fetchall()
+        result = cb.execute('SELECT model FROM models WHERE akb = ? OR glass = ? OR backlight = ? OR touch = ? OR frame = ? OR cover = ? OR copy = ? OR gluepr = ? OR faceid = ?', (search, search, search, search, search, search, search, search, search)).fetchall()
         return [i[0] for i in result]
 
     def artic(model):
@@ -16,7 +16,7 @@ with sqlite3. connect(os.path.join(os.path.dirname(__file__), 'iphone_parts.db')
         
 #Запит на другому кроці
     def choise_submodels(search, model):
-        result = cb.execute(f'SELECT model, article FROM submodels WHERE akb = ? OR glass = ? OR backlight = ? OR touch = ? OR frame = ? OR cover = ?', (search, search, search, search, search, search,)).fetchall()
+        result = cb.execute(f'SELECT model, article FROM submodels WHERE akb = ? OR glass = ? OR backlight = ? OR touch = ? OR frame = ? OR cover = ? OR copy = ? OR gluepr = ? OR faceid = ?', (search, search, search, search, search, search, search, search, search,)).fetchall()
         return [i[0] for i in result if i[1] == model]
 
 #Запит для вибору кольору

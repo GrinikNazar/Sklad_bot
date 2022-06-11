@@ -128,5 +128,5 @@ def main(command):
 
     return result
 
-# print(main('backlight_take_7_7_Вкладиш_1'))
+# print(main('gluepr_take_X_X_Клей АКБ_1'))
 # print(main('akb_take_8_8se2020_nocolor_1'))
