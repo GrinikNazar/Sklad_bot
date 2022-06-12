@@ -66,7 +66,7 @@ def get_thing(model, model_begin, value, workseet, sheet, *args):
 
 
 #Отримуєє все що закінчилось
-def get_cover_null():
+def get_null_things():
     sheets = iphone_db.all_sheets()
     string_of_null_list = ''
     string_of_null = '\U0000274C Все що зкінчилось \U0000274C' + '\n'
@@ -87,6 +87,32 @@ def get_cover_null():
         return None
     else:  
         return string_of_null.rstrip()
+
+#список на реф
+def list_ref_parts():
+    sheets = iphone_db.all_sheets()
+    list_of_ref = []
+    string_of_ref = ''
+    for wks in sheets:
+        wk = sh.worksheet(wks[0])
+        for row in wk.get_all_values():
+            if not row[4]:
+                continue
+            if row[1] <= row[3]:
+                result = int(row[1]) + (int(row[2]) - int(row[1]))
+                string_of_ref += row[4] + ' - ' + str(result) + '\n'
+            if len(result) + len(string_of_ref) >= 4000:
+                list_of_ref.append(string_of_ref.rstrip())
+                string_of_ref = ''
+            
+
+    if string_of_ref == '':
+        return None
+    elif string_of_ref < 4000:
+        list_of_ref.append(string_of_ref.rstrip())
+        return list_of_ref
+    else:  
+        return list_of_ref
 
 
 #Пошук всього по категорії
@@ -130,3 +156,4 @@ def main(command):
 
 # print(main('gluepr_take_X_X_Клей АКБ_1'))
 # print(main('akb_take_8_8se2020_nocolor_1'))
+# print(list_ref_parts())

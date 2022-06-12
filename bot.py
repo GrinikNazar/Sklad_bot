@@ -51,6 +51,23 @@ def get_my_id(message):
     bot.send_message(375385945, f'{message.from_user.first_name}: {message.from_user.username}: {message.from_user.id}')
 
 
+@bot.message_handler(commands=['list_ref'])
+def get_list_ref(message):
+    result = engine.list_ref_parts()
+    for res in result:
+        bot.send_message(message.chat.id, res)
+    # if len(result) > 4096:
+    #     for x in range(0, len(result), 4096):
+    #         bot.send_message(message.chat.id, result[x: x + 4096])
+    # else:            
+    #     bot.send_message(message.chat.id, result)
+
+
+@bot.message_handler(commands=['add_to_list'])
+def add_to_list(message):
+    bot.send_message(message.chat.id, message.text)
+
+
 @bot.message_handler(content_types=['text'])
 def some_func(message):
     global text_message
@@ -93,3 +110,5 @@ try:
     bot.polling()
 except NameError:
     bot.polling()
+# except TypeError:
+#     bot.polling()
