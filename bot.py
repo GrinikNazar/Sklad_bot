@@ -18,6 +18,14 @@ users = {
 }
 
 
+#commands
+# start - Запустити бота
+# my_id - Дізнатись id
+# list_ref - Список на реф
+# add_to_list - Добавити до списку
+# get_zero - Список відсутніх позицій
+
+
 @bot.message_handler(commands=['start'])
 def send_message_welcome(message):
     
@@ -56,11 +64,6 @@ def get_list_ref(message):
     result = engine.list_ref_parts()
     for res in result:
         bot.send_message(message.chat.id, res)
-    # if len(result) > 4096:
-    #     for x in range(0, len(result), 4096):
-    #         bot.send_message(message.chat.id, result[x: x + 4096])
-    # else:            
-    #     bot.send_message(message.chat.id, result)
 
 
 @bot.message_handler(commands=['add_to_list'])

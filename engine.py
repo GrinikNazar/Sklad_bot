@@ -91,6 +91,7 @@ def get_null_things():
 #список на реф
 def list_ref_parts():
     sheets = iphone_db.all_sheets()
+    sum_order = 0
     list_of_ref = []
     string_of_ref = ''
     for wks in sheets:
@@ -101,17 +102,22 @@ def list_ref_parts():
             if row[1] <= row[3]:
                 result = int(row[1]) + (int(row[2]) - int(row[1]))
                 string_of_ref += row[4] + ' - ' + str(result) + '\n'
-            if len(result) + len(string_of_ref) >= 4000:
+
+                sum_order += float(row[5].replace(',', '.'))
+            if len(string_of_ref) >= 4000:
                 list_of_ref.append(string_of_ref.rstrip())
                 string_of_ref = ''
-            
-
+    
+    sum_order_string = f'Сумма замовлення - {round(sum_order, 2)} $'
+    
     if string_of_ref == '':
         return None
-    elif string_of_ref < 4000:
+    elif len(string_of_ref) < 4000:
         list_of_ref.append(string_of_ref.rstrip())
+        list_of_ref.append(sum_order_string)
         return list_of_ref
-    else:  
+    else:
+        list_of_ref.append(sum_order_string)  
         return list_of_ref
 
 

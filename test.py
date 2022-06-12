@@ -5,4 +5,12 @@ def gen_list(s, apple):
     return list(map(lambda x: apple + x + ks, s))
 
 
-print(gen_list('iPhone 7/8/X black', 'iphone'))
+def five(num):
+    max_num = 30
+    s = max_num - num
+    
+
+    return s
+
+print(five(21))
+# print(gen_list('iPhone 7/8/X black', 'iphone'))
