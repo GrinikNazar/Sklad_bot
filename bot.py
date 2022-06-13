@@ -1,5 +1,6 @@
 import engine
 import keyboard
+import win32clipboard
 import iphone_db
 import conf
 import telebot
@@ -62,8 +63,22 @@ def get_my_id(message):
 @bot.message_handler(commands=['list_ref'])
 def get_list_ref(message):
     result = engine.list_ref_parts()
-    for res in result:
+    global clipboard_list
+    clipboard_list = ''
+    for res in result[:-1]:
         bot.send_message(message.chat.id, res)
+        clipboard_list += res
+    else:
+        bot.send_message(message.chat.id, result[-1])
+
+    win32clipboard.OpenClipboard()
+    win32clipboard.EmptyClipboard()
+    win32clipboard.SetClipboardText(clipboard_list)
+    win32clipboard.CloseClipboard()
+
+    markup = types.InlineKeyboardMarkup()
+    markup.add(types.InlineKeyboardButton('Скопіювати ще раз', callback_data='copy_list'))
+    bot.send_message(message.chat.id, 'Список добавлений в буфер обміну', reply_markup=markup)
 
 
 @bot.message_handler(commands=['add_to_list'])
@@ -80,20 +95,25 @@ def some_func(message):
 
 @bot.callback_query_handler(func=lambda call: True)
 def handler_mes(call):
+
+    if call.data == 'copy_list':
+        win32clipboard.OpenClipboard()
+        win32clipboard.EmptyClipboard()
+        win32clipboard.SetClipboardText(clipboard_list)
+        win32clipboard.CloseClipboard()
+        bot.answer_callback_query(call.id, 'Список скопійовано')
     
-    if call.data.split('_')[-1] == 'back' and len(call.data.split('_')) == 3:
-        # print('3 back', call.data.split('_'))
+    elif call.data.split('_')[-1] == 'back' and len(call.data.split('_')) == 3:
         bot.edit_message_text(text_message, call.message.chat.id, message_id=call.message.message_id, reply_markup=keyboard.action_menu_categories(text_message))
     
     elif call.data.split('_')[-1] == 'back':
-        # print('back', call.data.split('_'))
         markup_key = keyboard.button_inine(('_').join(call.data.split('_')[:-2]))
         bot.edit_message_text(f'{text_message}:  {markup_key[1]}', call.message.chat.id, message_id=call.message.message_id, reply_markup=markup_key[0])
 
     elif len(call.data.split('_')) == 6 or call.data.split('_')[1] == 'search':
         # bot.edit_message_text(call.data, call.message.chat.id, message_id=call.message.message_id)
         bot.edit_message_text('Хуярю...', call.message.chat.id, message_id=call.message.message_id)
-        result_main = engine.main(call.data) #результат повернення функції
+        result_main = engine.main(call.data)
 
         if call.data.split('_')[1] == 'take':
             bot.edit_message_text(result_main[0], call.message.chat.id, message_id=call.message.message_id)
@@ -104,7 +124,6 @@ def handler_mes(call):
             bot.edit_message_text(result_main, call.message.chat.id, message_id=call.message.message_id)
 
     else:
-        # print('ok', call.data.split('_'))
         markup_key = keyboard.button_inine(call.data)
         bot.edit_message_text(f'{text_message}:  {markup_key[1]}', call.message.chat.id, message_id=call.message.message_id, reply_markup=markup_key[0])
 

@@ -88,6 +88,14 @@ def get_null_things():
     else:  
         return string_of_null.rstrip()
 
+
+def five(num, max_num):
+    s = max_num - num
+    while s % 5 != 0:
+        s += 1    
+
+    return s
+
 #список на реф
 def list_ref_parts():
     sheets = iphone_db.all_sheets()
@@ -96,17 +104,20 @@ def list_ref_parts():
     string_of_ref = ''
     for wks in sheets:
         wk = sh.worksheet(wks[0])
-        for row in wk.get_all_values():
-            if not row[4]:
+        for number, row in enumerate(wk.get_all_values()):
+            if not row[4] or number == 0:
                 continue
-            if row[1] <= row[3]:
+            if int(row[1]) <= int(row[3]):
                 result = int(row[1]) + (int(row[2]) - int(row[1]))
+                # result = five(int(row[1]), int(row[2]))
                 string_of_ref += row[4] + ' - ' + str(result) + '\n'
 
-                sum_order += float(row[5].replace(',', '.'))
+                sum_order += float(row[5].replace(',', '.')) * result
+
             if len(string_of_ref) >= 4000:
                 list_of_ref.append(string_of_ref.rstrip())
                 string_of_ref = ''
+
     
     sum_order_string = f'Сумма замовлення - {round(sum_order, 2)} $'
     
