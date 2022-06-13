@@ -7,7 +7,8 @@ path = os.path.join(os.path.dirname(__file__), os.path.pardir, 'GoogleAPI\mypyth
 
 sa = gspread.service_account(filename=path)
 
-sh = sa.open('Test') #відкриває файл таблиці
+sh = sa.open('inStyle_parts')
+# sh = sa.open('Test_copy')
 
 def gen_list_models(s, apple):
     ks = s.split(' ')[-1].lower()
@@ -24,11 +25,7 @@ def get_thing(model, model_begin, value, workseet, sheet, *args):
         model_pat = model_pat.lower().replace(' ', '')
         for i, row in enumerate(workseet.get_all_values()):
             if model.lower() in row[0].lower().replace(' ', ''):
-                # row_res = row[0].lower().replace(' ', '')
                 row_res = gen_list_models(row[0], apple)
-                # color_row = row_res.split(model.lower())[-1]
-                # row_res = row_res[:-len(color_row)]
-                # row_res = list(map(lambda x: apple + x.replace(' ', '') + color_row.lower(), row_res[len(apple):].split('/')))
                 if  model_pat in row_res:
                     thing_value = int(row[1])
                     value = int(value)
@@ -108,8 +105,8 @@ def list_ref_parts():
             if not row[4] or number == 0:
                 continue
             if int(row[1]) <= int(row[3]):
-                result = int(row[1]) + (int(row[2]) - int(row[1]))
-                # result = five(int(row[1]), int(row[2]))
+                # result = int(row[1]) + (int(row[2]) - int(row[1]))
+                result = five(int(row[1]), int(row[2]))
                 string_of_ref += row[4] + ' - ' + str(result) + '\n'
 
                 sum_order += float(row[5].replace(',', '.')) * result
