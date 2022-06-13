@@ -105,8 +105,8 @@ def list_ref_parts():
             if not row[4] or number == 0:
                 continue
             if int(row[1]) <= int(row[3]):
-                # result = int(row[1]) + (int(row[2]) - int(row[1]))
-                result = five(int(row[1]), int(row[2]))
+                result = int(row[1]) + (int(row[2]) - int(row[1]))
+                # result = five(int(row[1]), int(row[2]))
                 string_of_ref += row[4] + ' - ' + str(result) + '\n'
 
                 sum_order += float(row[5].replace(',', '.')) * result
