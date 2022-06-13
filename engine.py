@@ -93,6 +93,18 @@ def five(num, max_num):
 
     return s
 
+
+def sum_parts():
+    sheets = iphone_db.all_sheets()
+    sum_order = 0
+    for wks in sheets:
+        wk = sh.worksheet(wks[0])
+        for number, row in enumerate(wk.get_all_values()):
+            if number == 0 or row[5] == '':
+                continue
+            sum_order += int(row[1]) * float(row[5].replace(',', '.'))
+    return sum_order
+
 #список на реф
 def list_ref_parts():
     sheets = iphone_db.all_sheets()
@@ -105,7 +117,8 @@ def list_ref_parts():
             if not row[4] or number == 0:
                 continue
             if int(row[1]) <= int(row[3]):
-                result = int(row[1]) + (int(row[2]) - int(row[1]))
+            # if int(row[1]) < int(row[2]):
+                result = int(row[2]) - int(row[1])
                 # result = five(int(row[1]), int(row[2]))
                 string_of_ref += row[4] + ' - ' + str(result) + '\n'
 
@@ -171,3 +184,4 @@ def main(command):
 # print(main('gluepr_take_X_X_Клей АКБ_1'))
 # print(main('akb_take_8_8se2020_nocolor_1'))
 # print(list_ref_parts())
+# print(sum_parts())
