@@ -75,7 +75,7 @@ def get_list_ref(message):
 @bot.message_handler(commands=['add_to_list'])
 def add_to_list(message):
     markup = types.InlineKeyboardMarkup()
-    markup.add(types.InlineKeyboardButton('Добавити', switch_inline_query_current_chat='\n'), types.InlineKeyboardButton('Очистити', callback_data=f'aqq'))
+    markup.add(types.InlineKeyboardButton('Добавити', switch_inline_query_current_chat='\n'), types.InlineKeyboardButton('Очистити', callback_data=f'clean_worksheet'))
     bot.send_message(message.chat.id, 'Список додаткових позицій', reply_markup=markup)
 
 
@@ -97,6 +97,10 @@ def handler_mes(call):
     if call.data.split('_')[-1] == 'back' and len(call.data.split('_')) == 3:
         bot.edit_message_text(text_message, call.message.chat.id, message_id=call.message.message_id, reply_markup=keyboard.action_menu_categories(text_message))
     
+    elif call.data == 'clean_worksheet':
+        engine.clean_worksheet()
+        bot.send_message(call.message.chat.id, 'Додатковий список очищено!')
+
     elif call.data.split('_')[-1] == 'back':
         markup_key = keyboard.button_inine(('_').join(call.data.split('_')[:-2]))
         bot.edit_message_text(f'{text_message}:  {markup_key[1]}', call.message.chat.id, message_id=call.message.message_id, reply_markup=markup_key[0])

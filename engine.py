@@ -166,6 +166,10 @@ def add_to_list(string):
 
     return string
 
+def clean_worksheet():
+    workseet = sh.worksheet('Додатковий')
+    workseet.clear()
+
 
 def main(command):
     command = command.split('_')
