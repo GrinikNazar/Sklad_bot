@@ -71,39 +71,30 @@ def get_list_ref(message):
     else:
         bot.send_message(message.chat.id, result[-1])
 
-    win32clipboard.OpenClipboard()
-    win32clipboard.EmptyClipboard()
-    win32clipboard.SetClipboardText(clipboard_list)
-    win32clipboard.CloseClipboard()
-
-    markup = types.InlineKeyboardMarkup()
-    markup.add(types.InlineKeyboardButton('Скопіювати ще раз', callback_data='copy_list'))
-    bot.send_message(message.chat.id, 'Список добавлений в буфер обміну', reply_markup=markup)
-
 
 @bot.message_handler(commands=['add_to_list'])
 def add_to_list(message):
-    bot.send_message(message.chat.id, message.text)
+    markup = types.InlineKeyboardMarkup()
+    markup.add(types.InlineKeyboardButton('Добавити', switch_inline_query_current_chat='\n'), types.InlineKeyboardButton('Очистити', callback_data=f'aqq'))
+    bot.send_message(message.chat.id, 'Список додаткових позицій', reply_markup=markup)
 
 
 @bot.message_handler(content_types=['text'])
 def some_func(message):
     global text_message
     text_message = message.text
-    bot.send_message(message.chat.id, f'{message.text}', reply_markup=keyboard.action_menu_categories(message.text))
+    if message.text.split('\n')[0].rstrip() == '@FlarkenCatBot':
+        bot.send_message(message.chat.id, 'Їбашу...')
+        engine.add_to_list(message.text)
+        bot.send_message(message.chat.id, 'Добавлено\U0001F91F')
+    else:
+        bot.send_message(message.chat.id, f'{message.text}', reply_markup=keyboard.action_menu_categories(message.text))
 
 
 @bot.callback_query_handler(func=lambda call: True)
 def handler_mes(call):
-
-    if call.data == 'copy_list':
-        win32clipboard.OpenClipboard()
-        win32clipboard.EmptyClipboard()
-        win32clipboard.SetClipboardText(clipboard_list)
-        win32clipboard.CloseClipboard()
-        bot.answer_callback_query(call.id, 'Список скопійовано')
     
-    elif call.data.split('_')[-1] == 'back' and len(call.data.split('_')) == 3:
+    if call.data.split('_')[-1] == 'back' and len(call.data.split('_')) == 3:
         bot.edit_message_text(text_message, call.message.chat.id, message_id=call.message.message_id, reply_markup=keyboard.action_menu_categories(text_message))
     
     elif call.data.split('_')[-1] == 'back':
@@ -132,5 +123,5 @@ try:
     bot.polling()
 except NameError:
     bot.polling()
-# except TypeError:
-#     bot.polling()
+except TypeError:
+    bot.polling()

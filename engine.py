@@ -90,7 +90,6 @@ def five(num, max_num):
     s = max_num - num
     while s % 5 != 0:
         s += 1    
-
     return s
 
 
@@ -104,6 +103,7 @@ def sum_parts():
                 continue
             sum_order += int(row[1]) * float(row[5].replace(',', '.'))
     return sum_order
+
 
 #список на реф
 def list_ref_parts():
@@ -151,6 +151,20 @@ def search_thing(wks, sheet):
             string_of_things += f'{num}. {row[0]} - {row[1]}\n'
   
     return string_of_things.rstrip()
+
+
+
+def add_to_list(string):
+    workseet = sh.worksheet('Додатковий')
+    string = string.split('\n')[1:]
+    result_list = [f'{row[0]}*{row[1]}' for row in workseet.get_all_values()]
+    result_list += string
+
+    for i, value in enumerate(result_list):
+        workseet.update_cell(i + 1, 1, value.split('*')[0])
+        workseet.update_cell(i + 1, 2, value.split('*')[1])
+
+    return string
 
 
 def main(command):
