@@ -1,22 +1,12 @@
-import win32clipboard
+import time
+from schedule import every, repeat, run_pending
+import schedule
+import engine
 
-def gen_list(s, apple):
-    ks = s.split(' ')[-1].lower()
-    s = s.lower().replace(' ', '')[len(apple):-len(ks)]
-    s = s.split('/')
-    return list(map(lambda x: apple + x + ks, s))
+@repeat(every(1).minutes)
+def test_f():
+    print('qwe')
 
-
-def five(num, max_num):
-    s = max_num - num
-    while s % 5 != 0:
-        s += 1    
-
-    return s
-l = ['Назар', 'wegweg', 'qqq']
-
-for i in l:
-    win32clipboard.OpenClipboard()
-    win32clipboard.EmptyClipboard()
-    win32clipboard.SetClipboardText()
-    win32clipboard.CloseClipboard()
+while True:
+    run_pending()
+    time.sleep(1)

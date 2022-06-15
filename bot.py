@@ -5,6 +5,7 @@ import iphone_db
 import conf
 import telebot
 from telebot import types
+import time
 
 bot = telebot.TeleBot(conf.config['token'])
 
@@ -53,6 +54,16 @@ def send_message_welcome(message):
         bot.send_message(message.chat.id, 'Ти не авторизований, та й таке \U0001F4A9')
         bot.send_message(users['Назар'], f'Спроба запуску бота:\n{message.from_user.first_name}\n{message.from_user.username}\n{message.from_user.id}')
 
+    # time_b = '07:58'
+
+    # while True:
+    #     t = time.time()
+    #     t = time.localtime(t)
+    #     t = time.strftime('%S', t)
+    #     if t == '00':
+    #         bot.send_message(message.chat.id, engine.get_null_things())
+    #         time.sleep(60)
+    #     # time.sleep(60)
 
 
 @bot.message_handler(commands=['my_id'])
@@ -123,9 +134,5 @@ def handler_mes(call):
         bot.edit_message_text(f'{text_message}:  {markup_key[1]}', call.message.chat.id, message_id=call.message.message_id, reply_markup=markup_key[0])
 
 
-try:
-    bot.polling()
-except NameError:
-    bot.polling()
-except TypeError:
-    bot.polling()
+
+bot.polling(non_stop=True, timeout=20)
