@@ -30,7 +30,7 @@ with sqlite3. connect(os.path.join(os.path.dirname(__file__), 'iphone_parts.db')
         return cb.execute('SELECT uk FROM keyboard WHERE eng = ?', (en,)).fetchone()[0]
 
     def all_sheets():
-        return cb.execute('SELECT uk FROM keyboard').fetchall()
+        return cb.execute('SELECT uk, round FROM keyboard').fetchall()
 
 # print(choise_submodels('touch', 'mini'))
 # print(all_sheets())

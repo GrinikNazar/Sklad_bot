@@ -7,59 +7,83 @@ path = os.path.join(os.path.dirname(__file__), os.path.pardir, 'GoogleAPI\mypyth
 
 sa = gspread.service_account(filename=path)
 
-sh = sa.open('inStyle_parts')
-# sh = sa.open('Test_copy')
+# sh = sa.open('inStyle_parts')
+sh = sa.open('Test_copy')
 
-def gen_list_models(s, apple):
+
+def gen_list_models_with_color(s, apple):
     ks = s.split(' ')[-1].lower()
     s = s.lower().replace(' ', '')[len(apple):-len(ks)]
     s = s.split('/')
     return list(map(lambda x: apple + x + ks, s))
 
-#Функція яка описує що користувач взяв щось
-def get_thing(model, model_begin, value, workseet, sheet, *args):
-    if args:
-        apple = iphone_db.artic(model_begin)
-        color_mode = args[0].replace(' ', '')
-        model_pat = apple + model + color_mode
-        model_pat = model_pat.lower().replace(' ', '')
-        for i, row in enumerate(workseet.get_all_values()):
-            if model.lower() in row[0].lower().replace(' ', ''):
-                row_res = gen_list_models(row[0], apple)
-                if  model_pat in row_res:
-                    thing_value = int(row[1])
-                    value = int(value)
-                    if thing_value == 0:
-                        return [f'🔴 {sheet} на {apple} {model} {color_mode} - закінчились! 🔴', True]
-                    elif value > thing_value:
-                        return [f'Не можна взяти більше ніж є. В наявності {thing_value} потрібна кількість {value}', False]
-                    else:
-                        workseet.update_cell(i + 1, 2, thing_value - value)
-                        if thing_value - value == 0:
-                            ost = f'🔴 Залишилось {thing_value - value} шт! 🔴'
-                        else:
-                            ost = f'🔵 Залишилось {thing_value - value} шт! 🔵'
-                        return [f'Взяв {sheet.lower()} на {apple} {model} {args[0].lower()} - {value} шт.\n🔵 Залишилось {thing_value - value} шт! 🔵', True]
+
+def circle_color_choose(availability, min_value):
+    yellow = '🟡'
+    blue = '🔵'
+    red = '🔴'
+    if availability == 0:
+        return red
+    elif int(availability) <= int(min_value):
+        return yellow
     else:
-        apple = iphone_db.artic(model_begin)
-        model_pat = apple + model.lower()    
-        for i, row in enumerate(workseet.get_all_values()):
-            row_res = row[0].lower().replace(' ', '')
-            row_res = list(map(lambda x: apple + x.replace(' ', ''), row_res[len(apple):].split('/')))
+        return blue
+
+
+def remnant_part(thing_value, value, min_value):
+    remnant = thing_value - value
+    if thing_value - value == 0:
+        return f'{circle_color_choose(remnant, min_value)} Залишилось {thing_value - value} шт! {circle_color_choose(remnant, min_value)}'
+    else:
+        return f'{circle_color_choose(remnant, min_value)} Залишилось {thing_value - value} шт! {circle_color_choose(remnant, min_value)}'
+
+
+#Функція яка описує що користувач взяв щось
+def get_thing_with_color(model, model_begin, value, workseet, sheet, *args):
+    apple = iphone_db.artic(model_begin)
+    color_mode = args[0].replace(' ', '')
+    model_pat = apple + model + color_mode
+    model_pat = model_pat.lower().replace(' ', '')
+    for i, row in enumerate(workseet.get_all_values()):
+        if model.lower() in row[0].lower().replace(' ', ''):
+            row_res = gen_list_models_with_color(row[0], apple)
             if  model_pat in row_res:
                 thing_value = int(row[1])
                 value = int(value)
                 if thing_value == 0:
-                    return [f'🔴 {sheet} на {apple} {model} - закінчились! 🔴', True]
+                    return [f'{circle_color_choose(thing_value, row[3])} {sheet} на {apple} {model} {color_mode} - закінчились! {circle_color_choose(thing_value, row[3])}', True]
                 elif value > thing_value:
                     return [f'Не можна взяти більше ніж є. В наявності {thing_value} потрібна кількість {value}', False]
                 else:
                     workseet.update_cell(i + 1, 2, thing_value - value)
-                    if thing_value - value == 0:
-                        ost = f'🔴 Залишилось {thing_value - value} шт! 🔴'
-                    else:
-                        ost = f'🔵 Залишилось {thing_value - value} шт! 🔵'
-                    return [f'Взяв {sheet.lower()} на iPhone {model} - {value} шт.\n{ost}', True]
+                    ost = remnant_part(thing_value, value, row[3])
+
+                    return [f'Взяв {sheet.lower()} на {apple} {model} {args[0].lower()} - {value} шт.\n{ost}', True]
+
+
+def gen_list_wth_color(s, apple):
+    s = s.lower().replace(' ', '')[len(apple):]
+    s = s.split('/')
+    return list(map(lambda x: apple + x, s))
+
+
+def get_thing(model, model_begin, value, workseet, sheet):
+    apple = iphone_db.artic(model_begin)
+    model_pat = apple + model.lower()    
+    for i, row in enumerate(workseet.get_all_values()):
+        row_res = gen_list_wth_color(row[0], apple)
+        if  model_pat in row_res:
+            thing_value = int(row[1])
+            value = int(value)
+            if thing_value == 0:
+                return [f'{circle_color_choose(thing_value, row[3])} {sheet} на {apple} {model} - закінчились! {circle_color_choose(thing_value, row[3])}', True]
+            elif value > thing_value:
+                return [f'Не можна взяти більше ніж є. В наявності {thing_value} потрібна кількість {value}', False]
+            else:
+                workseet.update_cell(i + 1, 2, thing_value - value)
+                ost = remnant_part(thing_value, value, row[3])
+
+                return [f'Взяв {sheet.lower()} на iPhone {model} - {value} шт.\n{ost}', True]
 
 
 #Отримуєє все що закінчилось
@@ -113,24 +137,27 @@ def list_ref_parts():
     string_of_ref = ''
     for wks in sheets:
         wk = sh.worksheet(wks[0])
-        for number, row in enumerate(wk.get_all_values()):
-            if not row[4] or number == 0:
-                continue
-            if int(row[1]) <= int(row[3]):
-            # if int(row[1]) < int(row[2]):
-                result = int(row[2]) - int(row[1])
-                # result = five(int(row[1]), int(row[2]))
-                string_of_ref += row[4] + ' - ' + str(result) + '\n'
+        if wks[0] == 'Додатковий':
+            for row in wk.get_all_values():
+                string_of_ref += row[0] + ' - ' + row[1] + '\n'
+        else:
+            for number, row in enumerate(wk.get_all_values()):
+                if not row[4] or number == 0:
+                    continue
+                if int(row[1]) <= int(row[3]):
+                    if wks[1] == 'five':
+                        result = five(int(row[1]), int(row[2]))
+                    else:
+                        result = int(row[2]) - int(row[1])
+                    string_of_ref += row[4] + ' - ' + str(result) + '\n'
+                    sum_order += float(row[5].replace(',', '.')) * result
 
-                sum_order += float(row[5].replace(',', '.')) * result
+                if len(string_of_ref) >= 4000:
+                    list_of_ref.append(string_of_ref.rstrip())
+                    string_of_ref = ''
 
-            if len(string_of_ref) >= 4000:
-                list_of_ref.append(string_of_ref.rstrip())
-                string_of_ref = ''
-
-    
     sum_order_string = f'Сумма замовлення - {round(sum_order, 2)} $'
-    
+
     if string_of_ref == '':
         return None
     elif len(string_of_ref) < 4000:
@@ -153,7 +180,6 @@ def search_thing(wks, sheet):
     return string_of_things.rstrip()
 
 
-
 def add_to_list(string):
     workseet = sh.worksheet('Додатковий')
     string = string.split('\n')[1:]
@@ -165,6 +191,7 @@ def add_to_list(string):
         workseet.update_cell(i + 1, 2, value.split('*')[1])
 
     return string
+
 
 def clean_worksheet():
     workseet = sh.worksheet('Додатковий')
@@ -193,13 +220,13 @@ def main(command):
         if color == 'nocolor':
             result = get_thing(model, model_begin, value, wks, sheet)
         else:
-            result = get_thing(model, model_begin, value, wks, sheet, color, command[0])
+            result = get_thing_with_color(model, model_begin, value, wks, sheet, color, command[0])
     else:
         result = search_thing(wks, sheet)
 
     return result
 
-# print(main('gluepr_take_X_X_Клей АКБ_1'))
-# print(main('akb_take_8_8se2020_nocolor_1'))
+# print(main('touch_take_11_11Pro_NoChip_1'))
+# print(main('faceid_take_5_5s_OCA_1'))
 # print(list_ref_parts())
 # print(sum_parts())
