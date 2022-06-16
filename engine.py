@@ -7,8 +7,8 @@ path = os.path.join(os.path.dirname(__file__), os.path.pardir, 'GoogleAPI\mypyth
 
 sa = gspread.service_account(filename=path)
 
-# sh = sa.open('inStyle_parts')
-sh = sa.open('Test_copy')
+sh = sa.open('inStyle_parts')
+# sh = sa.open('Test_copy')
 
 
 def gen_list_models_with_color(s, apple):
@@ -20,8 +20,8 @@ def gen_list_models_with_color(s, apple):
 
 def circle_color_choose(availability, min_value):
     yellow = '🟡'
-    blue = '🔵'
-    red = '🔴'
+    blue = '🔷'
+    red = '🔶'
     if availability == 0:
         return red
     elif int(availability) <= int(min_value):
