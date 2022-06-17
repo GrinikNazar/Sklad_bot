@@ -10,7 +10,7 @@ def button_inine(call):
     #добавити модель
     if len(call.split('_')) == 2:
         title_message += 'Вибір моделі'
-        markup.row(*[types.InlineKeyboardButton(f'{key}', callback_data=f'{call}_{key}') for key in iphone_db.choise_models(call.split('_')[0])])
+        markup.add(*[types.InlineKeyboardButton(f'{key}', callback_data=f'{call}_{key}') for key in iphone_db.choise_models(call.split('_')[0])], row_width=7)
         markup.row(types.InlineKeyboardButton('Назад', callback_data=f'{call}_back'))
 
     #добавити підмодель
@@ -18,9 +18,9 @@ def button_inine(call):
         title_message += 'Вибір моделі'
         fr_db_data = iphone_db.choise_submodels(call.split('_')[0], call.split('_')[-1])
         if not fr_db_data:
-            markup.row(*[types.InlineKeyboardButton(f'{key}', callback_data=f'{call}_{key}_nocolor') for key in fr_db_data])
+            markup.add(*[types.InlineKeyboardButton(f'{key}', callback_data=f'{call}_{key}_nocolor') for key in fr_db_data], row_width=7)
         else:
-            markup.row(*[types.InlineKeyboardButton(f'{key}', callback_data=f'{call}_{key}') for key in fr_db_data])
+            markup.add(*[types.InlineKeyboardButton(f'{key}', callback_data=f'{call}_{key}') for key in fr_db_data], row_width=7)
         markup.row(types.InlineKeyboardButton('Назад', callback_data=f'{call}_back'))
 
     #Добавити кольори
@@ -29,7 +29,7 @@ def button_inine(call):
         if string_color:
             title_message += 'Вибір кольору чи підпункту'
             string_color = string_color.split('\r\n')
-            markup.row(*[types.InlineKeyboardButton(f'{color_mod.title()}', callback_data=f'{call}_{color_mod}') for color_mod in string_color])
+            markup.add(*[types.InlineKeyboardButton(f'{color_mod.title()}', callback_data=f'{call}_{color_mod}') for color_mod in string_color])
             markup.row(types.InlineKeyboardButton('Назад', callback_data=f'{call}_back'))
         else:
             title_message += 'Кількість'

@@ -42,7 +42,7 @@ def send_message_welcome(message):
     button_8 = types.KeyboardButton('\U0001F4F2Touch iPad')
     button_9 = types.KeyboardButton('\U0001F250Копії')
     button_10 = types.KeyboardButton('\U0001FA79Клей АКБ + проклейки')
-    button_11 = types.KeyboardButton('\U0001F50CFace ID + 11 АКБ')
+    button_11 = types.KeyboardButton('\U0001F50CІнше')
     markup.row(button_3, button_4, button_5, button_6)
     markup.row(button_7, button_2, button_8, button_9)
     markup.row(button_10, button_11)

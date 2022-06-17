@@ -21,7 +21,7 @@ def gen_list_models_with_color(s, apple):
 def circle_color_choose(availability, min_value):
     yellow = '🟡'
     blue = '🔷'
-    red = '🔶'
+    red = '❗️'
     if availability == 0:
         return red
     elif int(availability) <= int(min_value):
@@ -83,7 +83,7 @@ def get_thing(model, model_begin, value, workseet, sheet):
                 workseet.update_cell(i + 1, 2, thing_value - value)
                 ost = remnant_part(thing_value, value, row[3])
 
-                return [f'Взяв {sheet.lower()} на iPhone {model} - {value} шт.\n{ost}', True]
+                return [f'Взяв {sheet.lower()} на {apple} {model} - {value} шт.\n{ost}', True]
 
 
 #Отримуєє все що закінчилось
@@ -226,7 +226,7 @@ def main(command):
 
     return result
 
-# print(main('touch_take_11_11Pro_NoChip_1'))
+# print(main('other_take_Трістар_1608A1_nocolor_1'))
 # print(main('faceid_take_5_5s_OCA_1'))
 # print(list_ref_parts())
 # print(sum_parts())
