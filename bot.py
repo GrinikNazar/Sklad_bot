@@ -54,36 +54,36 @@ def send_message_welcome(message):
         bot.send_message(users['Назар'], f'Спроба запуску бота:\n{message.from_user.first_name}\n{message.from_user.username}\n{message.from_user.id}')
 
 
-    def time_mod(tm):
-        time_b_list = tm.split(':')
-        time_b_list = list(map(lambda x: int(x), time_b_list))
-        result = (time_b_list[0] * 60) * 60 + time_b_list[1] * 60 + time_b_list[2]
-        return result
+    # def time_mod(tm):
+    #     time_b_list = tm.split(':')
+    #     time_b_list = list(map(lambda x: int(x), time_b_list))
+    #     result = (time_b_list[0] * 60) * 60 + time_b_list[1] * 60 + time_b_list[2]
+    #     return result
 
-    def sleep_time(start_time, end_time):
-        result = end_time - start_time
-        if result < 0:
-            result = result * -1
-            s_tome_min = (24 * 60) * 60
-            result = s_tome_min - result
-        return result
+    # def sleep_time(start_time, end_time):
+    #     result = end_time - start_time
+    #     if result < 0:
+    #         result = result * -1
+    #         s_tome_min = (24 * 60) * 60
+    #         result = s_tome_min - result
+    #     return result
 
-    def str_time_t():
-        t = time.time()
-        t = time.localtime(t)
-        t = time.strftime('%H:%M:%S', t)
-        return t
+    # def str_time_t():
+    #     t = time.time()
+    #     t = time.localtime(t)
+    #     t = time.strftime('%H:%M:%S', t)
+    #     return t
 
-    t = str_time_t()
+    # t = str_time_t()
 
-    time_b = '08:42:00'
+    # time_b = '10:45:00'
 
-    while True:
-        time_sleep = sleep_time(time_mod(t), time_mod(time_b))
-        time.sleep(time_sleep)
-        bot.send_message(message.chat.id, engine.get_null_things())
-        time.sleep(1)
-        t = str_time_t()
+    # while True:
+    #     time_sleep = sleep_time(time_mod(t), time_mod(time_b))
+    #     time.sleep(time_sleep)
+    #     bot.send_message(message.chat.id, engine.get_null_things())
+    #     time.sleep(1)
+    #     t = str_time_t()
 
 
 @bot.message_handler(commands=['my_id'])
