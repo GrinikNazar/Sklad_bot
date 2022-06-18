@@ -1,6 +1,5 @@
 import engine
 import keyboard
-import win32clipboard
 import iphone_db
 import conf
 import telebot
@@ -54,16 +53,37 @@ def send_message_welcome(message):
         bot.send_message(message.chat.id, 'Ти не авторизований, та й таке \U0001F4A9')
         bot.send_message(users['Назар'], f'Спроба запуску бота:\n{message.from_user.first_name}\n{message.from_user.username}\n{message.from_user.id}')
 
-    # time_b = '07:58'
 
-    # while True:
-    #     t = time.time()
-    #     t = time.localtime(t)
-    #     t = time.strftime('%S', t)
-    #     if t == '00':
-    #         bot.send_message(message.chat.id, engine.get_null_things())
-    #         time.sleep(60)
-    #     # time.sleep(60)
+    def time_mod(tm):
+        time_b_list = tm.split(':')
+        time_b_list = list(map(lambda x: int(x), time_b_list))
+        result = (time_b_list[0] * 60) * 60 + time_b_list[1] * 60 + time_b_list[2]
+        return result
+
+    def sleep_time(start_time, end_time):
+        result = end_time - start_time
+        if result < 0:
+            result = result * -1
+            s_tome_min = (24 * 60) * 60
+            result = s_tome_min - result
+        return result
+
+    def str_time_t():
+        t = time.time()
+        t = time.localtime(t)
+        t = time.strftime('%H:%M:%S', t)
+        return t
+
+    t = str_time_t()
+
+    time_b = '08:42:00'
+
+    while True:
+        time_sleep = sleep_time(time_mod(t), time_mod(time_b))
+        time.sleep(time_sleep)
+        bot.send_message(message.chat.id, engine.get_null_things())
+        time.sleep(1)
+        t = str_time_t()
 
 
 @bot.message_handler(commands=['my_id'])
@@ -108,6 +128,10 @@ def handler_mes(call):
     if call.data.split('_')[-1] == 'back' and len(call.data.split('_')) == 3:
         bot.edit_message_text(text_message, call.message.chat.id, message_id=call.message.message_id, reply_markup=keyboard.action_menu_categories(text_message))
     
+    elif call.data.split('_')[:2] == 'list_order'.split('_'):
+        result = engine.list_copy_and_battery(call.data.split('_')[-1], text_message)
+        bot.edit_message_text(result, call.message.chat.id, message_id=call.message.message_id)
+
     elif call.data == 'clean_worksheet':
         engine.clean_worksheet()
         bot.send_message(call.message.chat.id, 'Додатковий список очищено!')
@@ -134,5 +158,5 @@ def handler_mes(call):
         bot.edit_message_text(f'{text_message}:  {markup_key[1]}', call.message.chat.id, message_id=call.message.message_id, reply_markup=markup_key[0])
 
 
-
-bot.polling(non_stop=True, timeout=25)
+if __name__ == '__main__':
+    bot.polling(non_stop=True, timeout=25)

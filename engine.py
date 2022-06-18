@@ -1,4 +1,4 @@
-from operator import mod
+import time
 import gspread
 import iphone_db
 import os
@@ -167,6 +167,20 @@ def list_ref_parts():
     else:
         list_of_ref.append(sum_order_string)  
         return list_of_ref
+
+
+def list_copy_and_battery(part, emod):
+    sheet = iphone_db.ret_uk_request(part)
+    wk = sh.worksheet(sheet)
+    list_order = f'{emod[0]}{sheet}: Кількість до максимуму\n'
+    num = 0
+    for row in wk.get_all_values()[1:]:
+        row_max = int(row[2])
+        row_avail = int(row[1])
+        if row_avail < row_max:
+            num += 1
+            list_order += f'{num}. {row[0]} - {row_max - row_avail}\n'
+    return list_order.rstrip()
 
 
 #Пошук всього по категорії

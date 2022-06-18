@@ -24,7 +24,7 @@ with sqlite3. connect(os.path.join(os.path.dirname(__file__), 'iphone_parts.db')
         return cb.execute(f'SELECT {search} FROM colors WHERE model = ?', (model,)).fetchall()[0][0]
         
     def gen_keyboard(uk):
-        return cb.execute('SELECT eng FROM keyboard WHERE uk = ?', (uk,)).fetchone()[0]
+        return cb.execute('SELECT eng, list FROM keyboard WHERE uk = ?', (uk,)).fetchone()
     
     def ret_uk_request(en):
         return cb.execute('SELECT uk FROM keyboard WHERE eng = ?', (en,)).fetchone()[0]
@@ -33,4 +33,4 @@ with sqlite3. connect(os.path.join(os.path.dirname(__file__), 'iphone_parts.db')
         return cb.execute('SELECT uk, round FROM keyboard').fetchall()
 
 # print(choise_submodels('touch', 'mini'))
-# print(all_sheets())
+# print(gen_keyboard('АКБ'))
