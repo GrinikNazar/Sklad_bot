@@ -5,6 +5,8 @@ import conf
 import telebot
 from telebot import types
 import time
+import threading
+import random
 
 bot = telebot.TeleBot(conf.config['token'])
 
@@ -19,12 +21,19 @@ users = {
 }
 
 
-#commands
-# start - Запустити бота
-# my_id - Дізнатись id
-# list_ref - Список на реф
-# add_to_list - Добавити до списку
-# get_zero - Список відсутніх позицій
+expect = [
+    '🇺🇦 Слава Україні 🇺🇦',
+    'Ой у лузі червона калина...',
+    'рускій корабль іді нахуй',
+    '..тін хуйло',
+    '2-3 секунди і готово',
+    'Так тримати, молодець \U0001F60E',
+    'Хочу додому😭',
+    'Працюю, на відміну від декого...',
+    'Їбашу...',
+    'Зараз блять...',
+    'Хуярю...'
+]
 
 
 @bot.message_handler(commands=['start'])
@@ -54,38 +63,6 @@ def send_message_welcome(message):
         bot.send_message(users['Назар'], f'Спроба запуску бота:\n{message.from_user.first_name}\n{message.from_user.username}\n{message.from_user.id}')
 
 
-    def time_mod(tm):
-        time_b_list = tm.split(':')
-        time_b_list = list(map(lambda x: int(x), time_b_list))
-        result = (time_b_list[0] * 60) * 60 + time_b_list[1] * 60 + time_b_list[2]
-        return result
-
-    def sleep_time(start_time, end_time):
-        result = end_time - start_time
-        if result < 0:
-            result = result * -1
-            s_tome_min = (24 * 60) * 60
-            result = s_tome_min - result
-        return result
-
-    def str_time_t():
-        t = time.time()
-        t = time.localtime(t)
-        t = time.strftime('%H:%M:%S', t)
-        return t
-
-    t = str_time_t()
-
-    time_b = '08:42:00'
-
-    while True:
-        time_sleep = sleep_time(time_mod(t), time_mod(time_b))
-        time.sleep(time_sleep)
-        bot.send_message(message.chat.id, engine.get_null_things())
-        time.sleep(1)
-        t = str_time_t()
-
-
 @bot.message_handler(commands=['my_id'])
 def get_my_id(message):
     bot.send_message(375385945, f'{message.from_user.first_name}: {message.from_user.username}: {message.from_user.id}')
@@ -108,6 +85,11 @@ def add_to_list(message):
     markup = types.InlineKeyboardMarkup()
     markup.add(types.InlineKeyboardButton('Добавити', switch_inline_query_current_chat='\n'), types.InlineKeyboardButton('Очистити', callback_data=f'clean_worksheet'))
     bot.send_message(message.chat.id, 'Список додаткових позицій', reply_markup=markup)
+
+
+@bot.message_handler(commands=['get_null'])
+def get_null(message):
+    bot.send_message(message.chat.id, engine.get_null_things())
 
 
 @bot.message_handler(content_types=['text'])
@@ -142,7 +124,7 @@ def handler_mes(call):
 
     elif len(call.data.split('_')) == 6 or call.data.split('_')[1] == 'search':
         # bot.edit_message_text(call.data, call.message.chat.id, message_id=call.message.message_id)
-        bot.edit_message_text('Хуярю...', call.message.chat.id, message_id=call.message.message_id)
+        bot.edit_message_text(random.choice(expect), call.message.chat.id, message_id=call.message.message_id)
         result_main = engine.main(call.data)
 
         if call.data.split('_')[1] == 'take':
@@ -159,4 +141,9 @@ def handler_mes(call):
 
 
 if __name__ == '__main__':
+
+    time_bud = '10:00:00'
+
+    threading.Thread(target=engine.main_time, args=((time_bud, bot))).start()
+
     bot.polling(non_stop=True, timeout=25)

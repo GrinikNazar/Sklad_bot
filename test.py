@@ -1,35 +1,33 @@
 import time
+import threading
+import random
 
-def main_time(time_b):
+expect = [
+    '🇺🇦 Слава Україні 🇺🇦',
+    'Ой у лузі червона калина...',
+    'рускій корабль іді нахуй',
+    '..тін хуйло',
+    '2-3 секунди і готово',
+    'Так тримати, молодець \U0001F60E',
+    'Хочу додому😭',
+    'Працюю, на відміну від декого...',
+    'Їбашу',
+    'Зараз блять...'
+]
 
-    def time_mod(tm):
-        time_b_list = tm.split(':')
-        time_b_list = list(map(lambda x: int(x), time_b_list))
-        result = (time_b_list[0] * 60) * 60 + time_b_list[1] * 60 + time_b_list[2]
-        return result
-
-    def sleep_time(start_time, end_time):
-        result = end_time - start_time
-        if result < 0:
-            result = result * -1
-            s_tome_min = (24 * 60) * 60
-            result = s_tome_min - result
-        return result
-
-    def str_time_t():
-        t = time.time()
-        t = time.localtime(t)
-        t = time.strftime('%H:%M:%S', t)
-        return t
-
-    t = str_time_t()
-
+def test_mod(data, expect):
+    i = 0
     while True:
-        time_sleep = sleep_time(time_mod(t), time_mod(time_b))
-        time.sleep(time_sleep)
-        print('Ура')
-        time.sleep(1)
-        t = str_time_t()
+        i += 1
+        print(f'{i} : [{threading.currentThread().name}] - {data}')
+        print(f'{random.choice(expect)}')
+        time.sleep(5)
 
 
-main_time('08:10:00')
+# time_bud = '07:40:00'
+
+
+# thr = threading.Thread(target=main_time, args=(time_bud,), name='thr-1')
+# thr.start()
+
+test_mod(str(time.time()), expect)

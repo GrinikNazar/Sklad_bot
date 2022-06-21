@@ -38,7 +38,6 @@ def remnant_part(thing_value, value, min_value):
         return f'{circle_color_choose(remnant, min_value)} Залишилось {thing_value - value} шт! {circle_color_choose(remnant, min_value)}'
 
 
-#Функція яка описує що користувач взяв щось
 def get_thing_with_color(model, model_begin, value, workseet, sheet, *args):
     apple = iphone_db.artic(model_begin)
     color_mode = args[0].replace(' ', '')
@@ -86,7 +85,6 @@ def get_thing(model, model_begin, value, workseet, sheet):
                 return [f'Взяв {sheet.lower()} на {apple} {model} - {value} шт.\n{ost}', True]
 
 
-#Отримуєє все що закінчилось
 def get_null_things():
     sheets = iphone_db.all_sheets()
     string_of_null_list = ''
@@ -129,7 +127,6 @@ def sum_parts():
     return sum_order
 
 
-#список на реф
 def list_ref_parts():
     sheets = iphone_db.all_sheets()
     sum_order = 0
@@ -214,23 +211,15 @@ def clean_worksheet():
 
 def main(command):
     command = command.split('_')
-    #['akb', 'take', '6', '6s', 'nocolor', '1']
-    #[0] akb - з якого листа
-    #[1] take - що зробити
-    #[2] 6 - це група моделей
-    #[3] 6s - конкретна модель
-    #[4] nocolor - колір\без кольору
-    #[5] 1 - кількість
 
-    sheet = iphone_db.ret_uk_request(command[0]) #назва листа
-    wks = sh.worksheet(sheet) #вибрали лист
+    sheet = iphone_db.ret_uk_request(command[0])
+    wks = sh.worksheet(sheet)
 
     if command[1] == 'take':
         model = command[3]
         value = command[5]
         color = command[4]
         model_begin = command[2]
-        #взяти щось
         if color == 'nocolor':
             result = get_thing(model, model_begin, value, wks, sheet)
         else:
@@ -240,7 +229,32 @@ def main(command):
 
     return result
 
-# print(main('other_take_Трістар_1608A1_nocolor_1'))
-# print(main('faceid_take_5_5s_OCA_1'))
-# print(list_ref_parts())
-# print(sum_parts())
+def main_time(time_b, bot):
+    def time_mod(tm):
+        time_b_list = tm.split(':')
+        time_b_list = list(map(lambda x: int(x), time_b_list))
+        result = (time_b_list[0] * 60) * 60 + time_b_list[1] * 60 + time_b_list[2]
+        return result
+
+    def sleep_time(start_time, end_time):
+        result = end_time - start_time
+        if result < 0:
+            result = result * -1
+            s_tome_min = (24 * 60) * 60
+            result = s_tome_min - result
+        return result
+
+    def str_time_t():
+        t = time.time()
+        t = time.localtime(t)
+        t = time.strftime('%H:%M:%S', t)
+        return t
+
+    t = str_time_t()
+
+    while True:
+        time_sleep = sleep_time(time_mod(t), time_mod(time_b))
+        time.sleep(time_sleep)
+        bot.send_message(-674239373, get_null_things())
+        time.sleep(1)
+        t = str_time_t()
