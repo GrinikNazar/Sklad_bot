@@ -52,3 +52,8 @@ def action_menu_categories(message):
         markup.add(types.InlineKeyboardButton('Взяти', callback_data=f'{change_categories[0]}_take'), types.InlineKeyboardButton('Знайти', callback_data=f'{change_categories[0]}_search'))
     return markup
     
+
+def add_to_list():
+    markup = types.InlineKeyboardMarkup()
+    markup.add(types.InlineKeyboardButton('Добавити', switch_inline_query_current_chat='\n'), types.InlineKeyboardButton('Очистити', callback_data=f'clean_worksheet'))
+    return markup

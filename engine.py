@@ -1,4 +1,5 @@
 import time
+from turtle import title
 import gspread
 import iphone_db
 import os
@@ -92,14 +93,12 @@ def get_null_things():
 
     for wks in sheets:
         wk = sh.worksheet(wks[0])
-        string_of_null += wks[0] + ':' + '\n'
+        title = wks[0] + ':' + '\n'
         for row in wk.get_all_values():
             if row[1] == '0':
                 string_of_null_list += '- ' + row[0] + ' ' + row[1] + '\n'
         if string_of_null_list:
-            string_of_null += string_of_null_list
-        else:
-            string_of_null += 'Все є!' + '\n'
+            string_of_null += title + string_of_null_list
         string_of_null_list = ''
 
     if string_of_null == '':

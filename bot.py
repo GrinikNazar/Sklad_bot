@@ -23,22 +23,30 @@ users = {
 
 expect = [
     '🇺🇦 Слава Україні 🇺🇦',
-    'Ой у лузі червона калина...',
-    'рускій корабль іді нахуй',
-    '..тін хуйло',
     '2-3 секунди і готово',
     'Так тримати, молодець \U0001F60E',
     'Хочу додому😭',
     'Працюю, на відміну від декого...',
-    'Зараз блять...',
-    'Хуярю...'
+    'Секундочку...',
+    'Вже майже майже...',
+    'Скидиш',
 ]
 
 
+def autorize_hose(func):
+    def wrapper(message):
+        if message.from_user.id in users.values():
+            result = func(message)
+        else:
+            result = bot.send_message(message.chat.id, 'Ти не авторизований, та й таке \U0001F4A9')
+            bot.send_message(users['Назар'], f'Спроба запуску бота:\n{message.from_user.first_name}\n{message.from_user.username}\n{message.from_user.id}')
+        return result
+    return wrapper
+
+
 @bot.message_handler(commands=['start'])
+@autorize_hose
 def send_message_welcome(message):
-    
-    #Головна клавіатура
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
     button_2 = types.KeyboardButton('\U0001F6BDКришки')
     button_3 = types.KeyboardButton('\U0001F50BАКБ')
@@ -54,12 +62,7 @@ def send_message_welcome(message):
     markup.row(button_7, button_2, button_8, button_9)
     markup.row(button_10, button_11)
 
-    #авторизація
-    if message.from_user.id in users.values():
-        bot.send_message(message.chat.id, 'Привіт, вибирай дію \U0001F916', reply_markup=markup)
-    else:
-        bot.send_message(message.chat.id, 'Ти не авторизований, та й таке \U0001F4A9')
-        bot.send_message(users['Назар'], f'Спроба запуску бота:\n{message.from_user.first_name}\n{message.from_user.username}\n{message.from_user.id}')
+    bot.send_message(message.chat.id, 'Привіт, вибирай дію \U0001F916', reply_markup=markup)
 
 
 @bot.message_handler(commands=['my_id'])
@@ -68,37 +71,40 @@ def get_my_id(message):
 
 
 @bot.message_handler(commands=['list_ref'])
+@autorize_hose
 def get_list_ref(message):
     result = engine.list_ref_parts()
-    global clipboard_list
-    clipboard_list = ''
     for res in result[:-1]:
         bot.send_message(message.chat.id, res)
-        clipboard_list += res
     else:
         bot.send_message(message.chat.id, result[-1])
 
 
 @bot.message_handler(commands=['add_to_list'])
+@autorize_hose
 def add_to_list(message):
-    markup = types.InlineKeyboardMarkup()
-    markup.add(types.InlineKeyboardButton('Добавити', switch_inline_query_current_chat='\n'), types.InlineKeyboardButton('Очистити', callback_data=f'clean_worksheet'))
-    bot.send_message(message.chat.id, 'Список додаткових позицій', reply_markup=markup)
+    result = keyboard.add_to_list()
+    bot.send_message(message.chat.id, 'Список додаткових позицій\nІнструкція: Позиція*кількість\nПриклад: АКБ iPhone 6 ( 0-2 циклу) оригінал*2', reply_markup=result)
 
 
 @bot.message_handler(commands=['get_null'])
+@autorize_hose
 def get_null(message):
     bot.send_message(message.chat.id, engine.get_null_things())
 
 
 @bot.message_handler(content_types=['text'])
+@autorize_hose
 def some_func(message):
     global text_message
     text_message = message.text
     if message.text.split('\n')[0].rstrip() == '@FlarkenCatBot':
-        bot.send_message(message.chat.id, 'Їбашу...')
-        engine.add_to_list(message.text)
-        bot.send_message(message.chat.id, 'Добавлено\U0001F91F')
+        bot.send_message(message.chat.id, 'Секундочку...')
+        try:
+            engine.add_to_list(message.text)
+            bot.send_message(message.chat.id, 'Добавлено\U0001F91F')
+        except IndexError:
+            bot.send_message(message.chat.id, 'Невірний формат вводу, спробуй ще раз')
     else:
         bot.send_message(message.chat.id, f'{message.text}', reply_markup=keyboard.action_menu_categories(message.text))
 
