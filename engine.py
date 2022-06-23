@@ -140,6 +140,7 @@ def list_ref_parts():
             for number, row in enumerate(wk.get_all_values()):
                 if not row[4] or number == 0:
                     continue
+                
                 if int(row[1]) <= int(row[3]):
                     if wks[1] == 'five':
                         result = five(int(row[1]), int(row[2]))
@@ -255,5 +256,5 @@ def main_time(time_b, bot):
         time_sleep = sleep_time(time_mod(t), time_mod(time_b))
         time.sleep(time_sleep)
         bot.send_message(-674239373, get_null_things())
-        time.sleep(1)
+        time.sleep(60)
         t = str_time_t()

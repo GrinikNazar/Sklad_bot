@@ -57,3 +57,8 @@ def add_to_list():
     markup = types.InlineKeyboardMarkup()
     markup.add(types.InlineKeyboardButton('Добавити', switch_inline_query_current_chat='\n'), types.InlineKeyboardButton('Очистити', callback_data=f'clean_worksheet'))
     return markup
+
+# def list_ref_parts():
+#     markup = types.InlineKeyboardMarkup()
+#     markup.add(types.InlineKeyboardButton('Список менше мінімуму', callback_data=''), types.InlineKeyboardButton('Список до повного', callback_data=''))
+#     return markup

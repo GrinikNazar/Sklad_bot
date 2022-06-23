@@ -73,6 +73,7 @@ def get_my_id(message):
 @bot.message_handler(commands=['list_ref'])
 @autorize_hose
 def get_list_ref(message):
+    
     result = engine.list_ref_parts()
     for res in result[:-1]:
         bot.send_message(message.chat.id, res)
@@ -151,4 +152,4 @@ if __name__ == '__main__':
 
     threading.Thread(target=engine.main_time, args=((time_bud, bot))).start()
 
-    bot.polling(non_stop=True, timeout=25)
+    bot.polling(non_stop=True, timeout=600)
