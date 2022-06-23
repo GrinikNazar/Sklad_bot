@@ -1,10 +1,10 @@
 import time
-from turtle import title
 import gspread
 import iphone_db
 import os
 
 path = os.path.join(os.path.dirname(__file__), os.path.pardir, 'GoogleAPI\mypython-351009-5d090fd9b043.json')
+# path = 'mypython-351009-5d090fd9b043.json'
 
 sa = gspread.service_account(filename=path)
 
