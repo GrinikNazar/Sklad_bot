@@ -32,5 +32,10 @@ with sqlite3. connect(os.path.join(os.path.dirname(__file__), 'iphone_parts.db')
     def all_sheets():
         return cb.execute('SELECT uk, round FROM keyboard').fetchall()
 
+    def change_time(time):
+        result = cb.execute(f'UPDATE time SET time = "{time}" WHERE count = 1')
+        return result
+
+
 # print(choise_submodels('touch', 'mini'))
 # print(gen_keyboard('АКБ'))

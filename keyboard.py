@@ -55,10 +55,17 @@ def action_menu_categories(message):
 
 def add_to_list():
     markup = types.InlineKeyboardMarkup()
-    markup.add(types.InlineKeyboardButton('Добавити', switch_inline_query_current_chat='\n'), types.InlineKeyboardButton('Очистити', callback_data=f'clean_worksheet'))
+    markup.add(types.InlineKeyboardButton('Добавити', switch_inline_query_current_chat='_add_list\n'), types.InlineKeyboardButton('Очистити', callback_data=f'clean_worksheet'))
     return markup
 
-# def list_ref_parts():
-#     markup = types.InlineKeyboardMarkup()
-#     markup.add(types.InlineKeyboardButton('Список менше мінімуму', callback_data=''), types.InlineKeyboardButton('Список до повного', callback_data=''))
-#     return markup
+
+def list_ref_parts():
+    markup = types.InlineKeyboardMarkup()
+    markup.add(types.InlineKeyboardButton('Список менше мінімуму', callback_data='ref_parts_min'), types.InlineKeyboardButton('Список до повного', callback_data='ref_parts_full'))
+    return markup
+
+
+def other_key():
+    markup = types.InlineKeyboardMarkup()
+    markup.add(types.InlineKeyboardButton('Зміна часу відсутніх позицій', switch_inline_query_current_chat='_time\n'))
+    return markup

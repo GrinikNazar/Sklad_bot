@@ -73,12 +73,8 @@ def get_my_id(message):
 @bot.message_handler(commands=['list_ref'])
 @autorize_hose
 def get_list_ref(message):
-    
-    result = engine.list_ref_parts()
-    for res in result[:-1]:
-        bot.send_message(message.chat.id, res)
-    else:
-        bot.send_message(message.chat.id, result[-1])
+    result = keyboard.list_ref_parts()
+    bot.send_message(message.chat.id, 'Виберіть варіант формування списку:', reply_markup=result)
 
 
 @bot.message_handler(commands=['add_to_list'])
@@ -94,18 +90,30 @@ def get_null(message):
     bot.send_message(message.chat.id, engine.get_null_things())
 
 
+@bot.message_handler(commands=['other'])
+@autorize_hose
+def other_function(message):
+    result = keyboard.other_key()
+    bot.send_message(message.chat.id, 'Додаткові можливості Флеркена', reply_markup=result)
+
+
 @bot.message_handler(content_types=['text'])
 @autorize_hose
 def some_func(message):
     global text_message
     text_message = message.text
-    if message.text.split('\n')[0].rstrip() == '@FlarkenCatBot':
+    if message.text.split('\n')[0].rstrip() == '@FlarkenCatBot _add_list':
         bot.send_message(message.chat.id, 'Секундочку...')
         try:
             engine.add_to_list(message.text)
             bot.send_message(message.chat.id, 'Добавлено\U0001F91F')
         except IndexError:
             bot.send_message(message.chat.id, 'Невірний формат вводу, спробуй ще раз')
+
+    if message.text.split('\n')[0].rstrip() == '@FlarkenCatBot _time':
+        engine.change_time_null(message.text)
+        bot.send_message(message.chat.id, 'Час змінено\U0001F91F')
+        
     else:
         bot.send_message(message.chat.id, f'{message.text}', reply_markup=keyboard.action_menu_categories(message.text))
 
@@ -123,6 +131,20 @@ def handler_mes(call):
     elif call.data == 'clean_worksheet':
         engine.clean_worksheet()
         bot.send_message(call.message.chat.id, 'Додатковий список очищено!')
+
+    elif call.data.split('_')[:-1] == 'ref_parts'.split('_'):
+        if call.data.split('_')[-1] == 'min':
+            result = engine.list_ref_parts(1)
+            for res in result[:-1]:
+                bot.edit_message_text(res, call.message.chat.id, message_id=call.message.message_id)
+            else:
+                bot.send_message(call.message.chat.id, result[-1])
+        else:
+            result = engine.list_ref_parts()
+            for res in result[:-1]:
+                bot.edit_message_text(res, call.message.chat.id, message_id=call.message.message_id)
+            else:
+                bot.send_message(call.message.chat.id, result[-1])
 
     elif call.data.split('_')[-1] == 'back':
         markup_key = keyboard.button_inine(('_').join(call.data.split('_')[:-2]))

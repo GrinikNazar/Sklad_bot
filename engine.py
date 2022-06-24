@@ -1,3 +1,4 @@
+from ast import arg
 import time
 import gspread
 import iphone_db
@@ -126,7 +127,7 @@ def sum_parts():
     return sum_order
 
 
-def list_ref_parts():
+def list_ref_parts(*args):
     sheets = iphone_db.all_sheets()
     sum_order = 0
     list_of_ref = []
@@ -141,13 +142,24 @@ def list_ref_parts():
                 if not row[4] or number == 0:
                     continue
                 
-                if int(row[1]) <= int(row[3]):
-                    if wks[1] == 'five':
-                        result = five(int(row[1]), int(row[2]))
-                    else:
-                        result = int(row[2]) - int(row[1])
-                    string_of_ref += row[4] + ' - ' + str(result) + '\n'
-                    sum_order += float(row[5].replace(',', '.')) * result
+                if args:
+                    if int(row[1]) <= int(row[3]):
+
+                        if wks[1] == 'five':
+                            result = five(int(row[1]), int(row[2]))
+                        else:
+                            result = int(row[2]) - int(row[1])
+                        string_of_ref += row[4] + ' - ' + str(result) + '\n'
+                        sum_order += float(row[5].replace(',', '.')) * result
+                else:
+                    if int(row[1]) < int(row[2]):
+
+                        if wks[1] == 'five':
+                            result = five(int(row[1]), int(row[2]))
+                        else:
+                            result = int(row[2]) - int(row[1])
+                        string_of_ref += row[4] + ' - ' + str(result) + '\n'
+                        sum_order += float(row[5].replace(',', '.')) * result
 
                 if len(string_of_ref) >= 4000:
                     list_of_ref.append(string_of_ref.rstrip())
@@ -258,3 +270,8 @@ def main_time(time_b, bot):
         bot.send_message(-674239373, get_null_things())
         time.sleep(60)
         t = str_time_t()
+
+
+def change_time_null(string):
+    string = string.split('\n')[1:]
+    iphone_db.change_time(string)
