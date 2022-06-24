@@ -136,13 +136,13 @@ def handler_mes(call):
         if call.data.split('_')[-1] == 'min':
             result = engine.list_ref_parts(1)
             for res in result[:-1]:
-                bot.edit_message_text(res, call.message.chat.id, message_id=call.message.message_id)
+                bot.send_message(call.message.chat.id, res)
             else:
                 bot.send_message(call.message.chat.id, result[-1])
         else:
             result = engine.list_ref_parts()
             for res in result[:-1]:
-                bot.edit_message_text(res, call.message.chat.id, message_id=call.message.message_id)
+                bot.send_message(call.message.chat.id, res)
             else:
                 bot.send_message(call.message.chat.id, result[-1])
 
