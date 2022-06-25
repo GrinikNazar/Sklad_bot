@@ -47,22 +47,7 @@ def autorize_hose(func):
 @bot.message_handler(commands=['start'])
 @autorize_hose
 def send_message_welcome(message):
-    markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
-    button_2 = types.KeyboardButton('\U0001F6BDКришки')
-    button_3 = types.KeyboardButton('\U0001F50BАКБ')
-    button_4 = types.KeyboardButton('\U0001F60EСкло')
-    button_5 = types.KeyboardButton('\U0001F526Пiдсвiтки')
-    button_6 = types.KeyboardButton('\U0001F4F2Сенсори')
-    button_7 = types.KeyboardButton('\U0001F4A9Рамки')  
-    button_8 = types.KeyboardButton('\U0001F4F2Touch iPad')
-    button_9 = types.KeyboardButton('\U0001F250Копії')
-    button_10 = types.KeyboardButton('\U0001FA79Клей АКБ + проклейки')
-    button_11 = types.KeyboardButton('\U0001F50CІнше')
-    markup.row(button_3, button_4, button_5, button_6)
-    markup.row(button_7, button_2, button_8, button_9)
-    markup.row(button_10, button_11)
-
-    bot.send_message(message.chat.id, 'Привіт, вибирай дію \U0001F916', reply_markup=markup)
+    bot.send_message(message.chat.id, 'Привіт, вибирай дію \U0001F916', reply_markup=keyboard.main_board())
 
 
 @bot.message_handler(commands=['my_id'])
@@ -93,8 +78,7 @@ def get_null(message):
 @bot.message_handler(commands=['other'])
 @autorize_hose
 def other_function(message):
-    result = keyboard.other_key()
-    bot.send_message(message.chat.id, 'Додаткові можливості Флеркена', reply_markup=result)
+    bot.send_message(message.chat.id, 'Додаткові можливості Флеркена', reply_markup=keyboard.other_key())
 
 
 @bot.message_handler(content_types=['text'])
@@ -170,7 +154,7 @@ def handler_mes(call):
 
 if __name__ == '__main__':
 
-    time_bud = '10:00:00'
+    time_bud = iphone_db.time_base()
 
     threading.Thread(target=engine.main_time, args=((time_bud, bot))).start()
 

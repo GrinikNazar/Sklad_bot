@@ -2,6 +2,27 @@ from telebot import types
 import iphone_db
 
 
+def main_board():
+    markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
+    button_2 = types.KeyboardButton('\U0001F6BDКришки')
+    button_3 = types.KeyboardButton('\U0001F50BАКБ')
+    button_4 = types.KeyboardButton('\U0001F60EСкло')
+    button_5 = types.KeyboardButton('\U0001F526Пiдсвiтки')
+    button_6 = types.KeyboardButton('\U0001F4F2Сенсори')
+    button_7 = types.KeyboardButton('\U0001F4A9Рамки')  
+    button_8 = types.KeyboardButton('\U0001F4F2Touch iPad')
+    button_9 = types.KeyboardButton('\U0001F250Копії')
+    button_10 = types.KeyboardButton('\U0001FA79Клей АКБ + проклейки')
+    button_11 = types.KeyboardButton('\U0001F50CІнше')
+    row1 = [button_3, button_4, button_5, button_6]
+    row2 = [button_7, button_2, button_8, button_9]
+    row3 = [button_10, button_11]
+    board = [row1, row2, row3]
+    for row in board:
+        markup.row(*row)
+    return markup
+
+
 def button_inine(call):
 
     title_message = ''
