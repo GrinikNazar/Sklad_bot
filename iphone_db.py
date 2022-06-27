@@ -40,6 +40,27 @@ with sqlite3. connect(os.path.join(os.path.dirname(__file__), 'iphone_parts.db')
         result = cb.execute('SELECT time FROM time WHERE count = 1').fetchall()[0]
         return result[0].split("'")[1]
 
+    def tabble_for_hose(user, args, db = db):
+        cb.execute(f"""CREATE TABLE IF NOT EXISTS {user} (
+                device TEXT,
+                number INTEGER,
+                wp_device TEXT,
+                wp_number
+            )""")
+        
+        result = f'{args[0]} {args[1]} {args[2]}'
+
+        cb.execute(f"INSERT INTO {user} (device, number) VALUES ('{result}', {int(args[-1])})")
+
+        
+        db.commit()
+
+
+    def delete_from_table(user, db = db):
+        cb.execute(f"DELETE FROM {user}")
+        db.commit()
+
+
 
 # print(choise_submodels('touch', 'mini'))
 # print(gen_keyboard('АКБ'))

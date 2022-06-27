@@ -1,5 +1,6 @@
 from telebot import types
 import iphone_db
+import engine
 
 
 def main_board():
@@ -88,5 +89,5 @@ def list_ref_parts():
 
 def other_key():
     markup = types.InlineKeyboardMarkup()
-    markup.add(types.InlineKeyboardButton('Зміна часу відсутніх позицій', switch_inline_query_current_chat='_time\n'))
+    markup.add( types.InlineKeyboardButton('WorkProgress', switch_inline_query=f'_wp\n{engine.maket()}'), types.InlineKeyboardButton('Зміна часу відсутніх позицій', switch_inline_query_current_chat='_time\n'))
     return markup

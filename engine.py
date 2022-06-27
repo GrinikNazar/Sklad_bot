@@ -1,4 +1,3 @@
-from ast import arg
 import time
 import gspread
 import iphone_db
@@ -59,7 +58,7 @@ def get_thing_with_color(model, model_begin, value, workseet, sheet, *args):
                     workseet.update_cell(i + 1, 2, thing_value - value)
                     ost = remnant_part(thing_value, value, row[3])
 
-                    return [f'Взяв {sheet.lower()} на {apple} {model} {args[0].lower()} - {value} шт.\n{ost}', True]
+                    return [f'Взяв {sheet.lower()} на {apple} {model} {args[0].lower()} - {value} шт.\n{ost}', True, [apple, model, sheet, value]]
 
 
 def gen_list_wth_color(s, apple):
@@ -84,7 +83,7 @@ def get_thing(model, model_begin, value, workseet, sheet):
                 workseet.update_cell(i + 1, 2, thing_value - value)
                 ost = remnant_part(thing_value, value, row[3])
 
-                return [f'Взяв {sheet.lower()} на {apple} {model} - {value} шт.\n{ost}', True]
+                return [f'Взяв {sheet.lower()} на {apple} {model} - {value} шт.\n{ost}', True, [apple, model, sheet, value]]
 
 
 def get_null_things():
@@ -275,3 +274,25 @@ def main_time(time_b, bot):
 def change_time_null(string):
     string = string.split('\n')[1:]
     iphone_db.change_time(string)
+
+
+def maket():
+    st = [
+        'Переклеїв екранів -',
+        'Видано готових - ',
+        'Вдано клієнтських -',
+        'Не виданих - ',
+        '',
+        'Готові',
+        'iPhone 7 - АКБ нова',
+        '',
+        'Клієнтські',
+        'iPhone 8 - переклейка',
+        '',
+        'Не видані',
+        '',
+    ]
+    result = ''
+    for s in st:
+        result += s + '\n'
+    return result

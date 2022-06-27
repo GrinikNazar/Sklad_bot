@@ -7,6 +7,7 @@ from telebot import types
 import time
 import threading
 import random
+import handler_wp
 
 bot = telebot.TeleBot(conf.config['token'])
 
@@ -36,7 +37,12 @@ expect = [
 def autorize_hose(func):
     def wrapper(message):
         if message.from_user.id in users.values():
-            result = func(message)
+            if message.chat.id == -740139442 and message.text.split('\n')[0].rstrip() == '@FlarkenCatBot _wp':
+                result = func(message)
+            elif message.chat.id == -740139442:
+                return None
+            else:
+                result = func(message)
         else:
             result = bot.send_message(message.chat.id, 'Ти не авторизований, та й таке \U0001F4A9')
             bot.send_message(users['Назар'], f'Спроба запуску бота:\n{message.from_user.first_name}\n{message.from_user.username}\n{message.from_user.id}')
@@ -53,6 +59,8 @@ def send_message_welcome(message):
 @bot.message_handler(commands=['my_id'])
 def get_my_id(message):
     bot.send_message(375385945, f'{message.from_user.first_name}: {message.from_user.username}: {message.from_user.id}')
+    if message.from_user.id != message.chat.id:
+        bot.send_message(375385945, f'id чату:{message.chat.id}')
 
 
 @bot.message_handler(commands=['list_ref'])
@@ -94,10 +102,16 @@ def some_func(message):
         except IndexError:
             bot.send_message(message.chat.id, 'Невірний формат вводу, спробуй ще раз')
 
-    if message.text.split('\n')[0].rstrip() == '@FlarkenCatBot _time':
+    elif message.text.split('\n')[0].rstrip() == '@FlarkenCatBot _time':
         engine.change_time_null(message.text)
         bot.send_message(message.chat.id, 'Час змінено\U0001F91F')
         
+    elif message.text.split('\n')[0].rstrip() == '@FlarkenCatBot _wp':
+        result = handler_wp.handler_wp(message.text) #можна добавити в базу
+        # вивести звіт
+        # видалити всі дані з табилці
+        iphone_db.delete_from_table(message.from_user.username)
+    
     else:
         bot.send_message(message.chat.id, f'{message.text}', reply_markup=keyboard.action_menu_categories(message.text))
 
@@ -141,6 +155,8 @@ def handler_mes(call):
 
         if call.data.split('_')[1] == 'take':
             bot.edit_message_text(result_main[0], call.message.chat.id, message_id=call.message.message_id)
+            if len(result_main) > 2:
+                iphone_db.tabble_for_hose(call.from_user.username, result_main[2])
             if result_main[1]:
                 bot.send_message(-674239373, f'{call.from_user.first_name}: {result_main[0]}')
 
