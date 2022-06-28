@@ -61,6 +61,11 @@ with sqlite3. connect(os.path.join(os.path.dirname(__file__), 'iphone_parts.db')
         db.commit()
 
 
+    def select_table_user(user):
+        return cb.execute(f"SELECT device, number FROM {user}").fetchall()
 
+
+# for i in select_table_user('Ha3aVr'):
+#     print(i)
 # print(choise_submodels('touch', 'mini'))
 # print(gen_keyboard('АКБ'))

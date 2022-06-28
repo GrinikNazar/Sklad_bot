@@ -8,8 +8,8 @@ path = os.path.join(os.path.dirname(__file__), os.path.pardir, 'GoogleAPI\mypyth
 
 sa = gspread.service_account(filename=path)
 
-sh = sa.open('inStyle_parts')
-# sh = sa.open('Test_copy')
+# sh = sa.open('inStyle_parts')
+sh = sa.open('Test_copy')
 
 
 def gen_list_models_with_color(s, apple):
@@ -285,9 +285,12 @@ def maket():
         '',
         'Готові',
         'iPhone 7 - АКБ нова',
+        'iPhone 6 - підсвітка',
         '',
         'Клієнтські',
         'iPhone 8 - переклейка',
+        'iPhone X - переклейка сенсора',
+        'iPhone XsMax - переклейка сенсора',
         '',
         'Не видані',
         '',
