@@ -157,8 +157,8 @@ def handler_mes(call):
             bot.edit_message_text(result_main[0], call.message.chat.id, message_id=call.message.message_id)
             if len(result_main) > 2:
                 iphone_db.tabble_for_hose(call.from_user.username, result_main[2])
-            # if result_main[1]:
-            #     bot.send_message(-674239373, f'{call.from_user.first_name}: {result_main[0]}')
+            if result_main[1]:
+                bot.send_message(-674239373, f'{call.from_user.first_name}: {result_main[0]}')
 
         elif call.data.split('_')[1] == 'search':
             bot.edit_message_text(result_main, call.message.chat.id, message_id=call.message.message_id)

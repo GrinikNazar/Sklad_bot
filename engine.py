@@ -3,13 +3,13 @@ import gspread
 import iphone_db
 import os
 
-path = os.path.join(os.path.dirname(__file__), os.path.pardir, 'GoogleAPI\mypython-351009-5d090fd9b043.json')
+path = os.path.join(os.path.dirname(__file__), os.path.pardir, 'GoogleAPI/mypython-351009-5d090fd9b043.json')
 # path = 'mypython-351009-5d090fd9b043.json'
 
 sa = gspread.service_account(filename=path)
 
-# sh = sa.open('inStyle_parts')
-sh = sa.open('Test_copy')
+sh = sa.open('inStyle_parts')
+# sh = sa.open('Test_copy')
 
 
 def gen_list_models_with_color(s, apple):
