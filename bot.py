@@ -177,5 +177,5 @@ if __name__ == '__main__':
     try:
         bot.polling(non_stop=True, timeout=600)
     except ConnectionError:
-        bot.send_message(375385945, 'Зламався')
         bot.polling(non_stop=True, timeout=600)
+        bot.send_message(375385945, 'Зламався')
