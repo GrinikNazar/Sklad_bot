@@ -86,7 +86,7 @@ def get_null(message):
 @bot.message_handler(commands=['other'])
 @autorize_hose
 def other_function(message):
-    bot.send_message(message.chat.id, 'Додаткові можливості Флеркена', reply_markup=keyboard.other_key())
+    bot.send_message(message.chat.id, 'Додаткові можливості Флеркена', reply_markup=keyboard.other_key(message.from_user.username))
 
 
 @bot.message_handler(content_types=['text'])
@@ -107,11 +107,18 @@ def some_func(message):
         bot.send_message(message.chat.id, 'Час змінено\U0001F91F')
         
     elif message.text.split('\n')[0].rstrip() == '@FlarkenCatBot _wp':
-        result = handler_wp.handler_wp(message.text, message.from_user.username) #можна добавити в базу
-        # вивести звіт
-        # видалити всі дані з табилці
-        iphone_db.delete_from_table(message.from_user.username)
-    
+        result = handler_wp.handler_wp(message.text, message.from_user.username)
+        if result == '':
+            bot.send_message(message.chat.id, 'Все зійшлось')
+            # iphone_db.delete_from_table(message.from_user.username)
+            wp_result = '\n'.join(message.text.split('\n')[1:])
+            work_progress_finnaly = f"{message.from_user.username}\n{wp_result}"
+            bot.send_message(-740139442, work_progress_finnaly)
+        else:
+            iphone_db.update_work_progress(message.from_user.username, message.text)
+            # bot.delete_message(message.chat.id, message.message_id)
+            bot.send_message(message.chat.id, result)
+        
     else:
         bot.send_message(message.chat.id, f'{message.text}', reply_markup=keyboard.action_menu_categories(message.text))
 
@@ -157,8 +164,8 @@ def handler_mes(call):
             bot.edit_message_text(result_main[0], call.message.chat.id, message_id=call.message.message_id)
             if len(result_main) > 2:
                 iphone_db.tabble_for_hose(call.from_user.username, result_main[2])
-            if result_main[1]:
-                bot.send_message(-674239373, f'{call.from_user.first_name}: {result_main[0]}')
+            # if result_main[1]:
+            #     bot.send_message(-674239373, f'{call.from_user.first_name}: {result_main[0]}')
 
         elif call.data.split('_')[1] == 'search':
             bot.edit_message_text(result_main, call.message.chat.id, message_id=call.message.message_id)

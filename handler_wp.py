@@ -1,20 +1,41 @@
 import engine
 import iphone_db
 
-def sa_string(string):
-        mb_string = 20
-        pro_string = 20
-        result_string = ['', '']
-        result = mb_string - len(string)
-        result_2 = pro_string - len(string)
-        for i in range(result):
-            result_string[0] += '-'
-        for i in range(result_2):
-            result_string[1] += ' '
-        return result_string
+
+def string_separate(string): # ID2233 iPhone 8 - переклейка, АКБ
+    result_list = []
+    space_split = string.lower().split(' - ') # ['ID2233 iPhone 8', 'переклейка, АКБ']
+    id_model = space_split[0].split(' ') # ['ID2233', 'iPhone', '8']
+    model = ''.join(space_split[0].split(f'{id_model[0]}')).strip() #'iPhone 8'
+    parts = space_split[1].split(',') # ['переклейка', ' АКБ']
+    parts = list(map(lambda x: x.strip().lower(), parts))
+    for part in parts:
+        db_result = iphone_db.select_desc(part)
+        if db_result:
+            result_list.append(f'{model} {db_result}')
+    return result_list
 
 
-def handler_wp(message):
+def string_separate_brackets(string):
+    dict_of_patrs = {}
+    if len(string.split('(')) == 1:
+        return None
+    split_bracket = string.split('(')[1].split(')')[0].split(',')
+    parts = list(map(lambda x: x.strip().lower(), split_bracket))
+    for part in parts:
+        part = part.split(' ')
+        if len(part) == 1:
+            number_part = 1
+            key_dict_of_parts = part[0]
+        else:
+            number_part = int(part[-1])
+            key_dict_of_parts = ' '.join(part[:-1])
+        dict_of_patrs[key_dict_of_parts] = number_part
+
+    return dict_of_patrs
+
+
+def handler_wp(message, user):
     marker = ''
     d = {
         'Готові': [],
@@ -32,34 +53,29 @@ def handler_wp(message):
         else:
             d[marker].append(msg)
 
-    # list_of_values = [v for value in d.values() for v in value]
-    list_of_values = []
+    list_of_values = [v for value in d.values() for v in value]
 
-    sum_strings = 0
-    for value in d.values():
-        for v in value:
-            list_of_values.append(v)
+    for string in list_of_values:
+        iphone_db.write_db_work_progress(user, *string_separate(string))
+        if string_separate_brackets(string):
+            iphone_db.write_db_work_progress(user, *string_separate_brackets(string).keys(), *string_separate_brackets(string).values())
 
-    work_progress = iphone_db.select_table_user('Ha3aVr')
+    work_progress = iphone_db.select_table_user(user)
 
-    
-    result_string = ''
-    if len(list_of_values) >= len(work_progress):
-        for row in range(len(list_of_values)):
-            if row > len(work_progress) - 1:
-                result_string += f'{row + 1}. {list_of_values[row]} {sa_string} {row + 1}. " "'
-            else:
-                result_string += f'{row + 1}. {list_of_values[row]} {sa_string} {row + 1}. {work_progress[row][0]}\n'
+    result_string_bot = ''
+    result_string_wp = ''
 
-    else:
-        for row in range(len(work_progress)):
-            if row > len(list_of_values) - 1:
-                result_string += f'{row + 1}. " " {sa_string("   ")} {row + 1}. {work_progress[row][0]}\n'
-            else:
-                result_string += f'{row + 1}. {work_progress[row][0] + sa_string(work_progress[row][0])[1]} {sa_string(work_progress[row][0])[0]} {row + 1}. {list_of_values[row]}\n'
+    for position in work_progress:
+        if position[1] < position[2]:
+            result_string_bot += f'Візьми з бота: {position[0]} - {position[2] - position[1]}шт\n'
+        elif position[1] > position[2]:
+            result_string_wp += f'Допиши в WProgress: {position[0]} - {position[1] - position[2]}шт\n'
 
 
-    return result_string.rstrip()
+    return result_string_bot + result_string_wp.rstrip()
 
 
+# print(string_separate('ID2233 iPhone 8 - переклейка, АКБ нова'))
 # print(handler_wp(engine.maket()))
+# print(string_separate_brackets('ID2233 iPhone 8 - переклейка, АКБ нова(клей акб 2, проклейка, поляр зад 3)'))
+# print(string_separate_brackets('ID2233 iPhone 8 - переклейка, АКБ нова'))

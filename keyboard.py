@@ -87,7 +87,7 @@ def list_ref_parts():
     return markup
 
 
-def other_key():
+def other_key(user):
     markup = types.InlineKeyboardMarkup()
-    markup.add( types.InlineKeyboardButton('WorkProgress', switch_inline_query=f'_wp\n{engine.maket()}'), types.InlineKeyboardButton('Зміна часу відсутніх позицій', switch_inline_query_current_chat='_time\n'))
+    markup.add( types.InlineKeyboardButton('WorkProgress', switch_inline_query_current_chat=f'_wp\n{iphone_db.select_work_progress(user)}'), types.InlineKeyboardButton('Зміна часу відсутніх позицій', switch_inline_query_current_chat='_time\n'))
     return markup

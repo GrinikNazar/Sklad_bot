@@ -4,12 +4,11 @@ import iphone_db
 import os
 
 path = os.path.join(os.path.dirname(__file__), os.path.pardir, 'GoogleAPI/mypython-351009-5d090fd9b043.json')
-# path = 'mypython-351009-5d090fd9b043.json'
 
 sa = gspread.service_account(filename=path)
 
-sh = sa.open('inStyle_parts')
-# sh = sa.open('Test_copy')
+# sh = sa.open('inStyle_parts')
+sh = sa.open('Test_parts')
 
 
 def gen_list_models_with_color(s, apple):
@@ -58,7 +57,7 @@ def get_thing_with_color(model, model_begin, value, workseet, sheet, *args):
                     workseet.update_cell(i + 1, 2, thing_value - value)
                     ost = remnant_part(thing_value, value, row[3])
 
-                    return [f'Взяв {sheet.lower()} на {apple} {model} {args[0].lower()} - {value} шт.\n{ost}', True, [apple, model, sheet, value]]
+                    return [f'Взяв {sheet.lower()} на {apple} {model} {args[0].lower()} - {value} шт.\n{ost}', True, [apple.lower(), model.lower(), sheet, value]]
 
 
 def gen_list_wth_color(s, apple):
@@ -83,7 +82,7 @@ def get_thing(model, model_begin, value, workseet, sheet):
                 workseet.update_cell(i + 1, 2, thing_value - value)
                 ost = remnant_part(thing_value, value, row[3])
 
-                return [f'Взяв {sheet.lower()} на {apple} {model} - {value} шт.\n{ost}', True, [apple, model, sheet, value]]
+                return [f'Взяв {sheet.lower()} на {apple} {model} - {value} шт.\n{ost}', True, [apple.lower(), model.lower(), sheet, value]]
 
 
 def get_null_things():
@@ -275,27 +274,3 @@ def change_time_null(string):
     string = string.split('\n')[1:]
     iphone_db.change_time(string)
 
-
-def maket():
-    st = [
-        'Переклеїв екранів -',
-        'Видано готових - ',
-        'Вдано клієнтських -',
-        'Не виданих - ',
-        '',
-        'Готові',
-        'iPhone 7 - АКБ нова',
-        'iPhone 6 - підсвітка',
-        '',
-        'Клієнтські',
-        'iPhone 8 - переклейка',
-        'iPhone X - переклейка сенсора',
-        'iPhone XsMax - переклейка сенсора',
-        '',
-        'Не видані',
-        '',
-    ]
-    result = ''
-    for s in st:
-        result += s + '\n'
-    return result

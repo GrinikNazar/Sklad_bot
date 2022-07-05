@@ -22,35 +22,86 @@ with sqlite3. connect(os.path.join(os.path.dirname(__file__), 'iphone_parts.db')
 #Запит для вибору кольору
     def choise_colors(search, model):
         return cb.execute(f'SELECT {search} FROM colors WHERE model = ?', (model,)).fetchall()[0][0]
-        
+
+
     def gen_keyboard(uk):
         return cb.execute('SELECT eng, list FROM keyboard WHERE uk = ?', (uk,)).fetchone()
     
+
     def ret_uk_request(en):
         return cb.execute('SELECT uk FROM keyboard WHERE eng = ?', (en,)).fetchone()[0]
 
+
     def all_sheets():
         return cb.execute('SELECT uk, round FROM keyboard').fetchall()
+
 
     def change_time(time, db = db):
         cb.execute(f'UPDATE time SET time = "{time}" WHERE count = 1')
         db.commit()
     
+
     def time_base():
         result = cb.execute('SELECT time FROM time WHERE count = 1').fetchall()[0]
         return result[0].split("'")[1]
+
+
+    def maket():
+        st = [
+            'Переклеїв екранів -',
+            'Видано готових - ',
+            'Вдано клієнтських -',
+            'Не виданих - ',
+            '',
+            'Готові',
+            '',
+            '',
+            'Клієнтські',
+            '',
+            '',
+            'Не видані',
+            '',
+        ]
+        result = ''
+        for s in st:
+            result += s + '\n'
+        return result
+
+
+    def select_work_progress(user):
+        try: 
+            return cb.execute(f"SELECT string_wp FROM {user}").fetchone()[0]
+        except TypeError:
+            return None
+
+
+    def update_work_progress(user, work_progress, db = db):
+        result = select_work_progress(user)
+        # result = '\n'.join(result.split('\n')[1:])
+        print(result)
+        cb.execute(f'UPDATE {user} SET string_wp = "{work_progress}" WHERE string_wp = "{result}"')
+        cb.execute(f'UPDATE {user} SET wp_number = 0')
+        db.commit()
+
 
     def tabble_for_hose(user, args, db = db):
         cb.execute(f"""CREATE TABLE IF NOT EXISTS {user} (
                 device TEXT,
                 number INTEGER,
                 wp_device TEXT,
-                wp_number
+                wp_number INTEGER,
+                string_wp TEXT
             )""")
-        
-        result = f'{args[0]} {args[1]} {args[2]}'
 
-        cb.execute(f"INSERT INTO {user} (device, number) VALUES ('{result}', {int(args[-1])})")
+        result = f'{args[0]} {args[1]} {args[2]}'
+        
+        if not select_work_progress(user):
+            cb.execute(f'INSERT INTO {user} (device, number, wp_device, wp_number, string_wp) VALUES ("{result}", {int(args[-1])}, "{result}", 0, "{maket()}")')
+
+        if cb.execute(f'SELECT device FROM {user} WHERE device = "{result}"').fetchone():
+            cb.execute(f'UPDATE {user} SET number = number + {int(args[-1])} WHERE device = "{result}"')
+        else:
+            cb.execute(f"INSERT INTO {user} (device, number, wp_device, wp_number) VALUES ('{result}', {int(args[-1])}, '{result}', 0)")
 
         
         db.commit()
@@ -62,10 +113,27 @@ with sqlite3. connect(os.path.join(os.path.dirname(__file__), 'iphone_parts.db')
 
 
     def select_table_user(user):
-        return cb.execute(f"SELECT device, number FROM {user}").fetchall()
+        return cb.execute(f"SELECT device, number, wp_number FROM {user}").fetchall()
+        
+    
+    def select_desc(parts):
+        result = cb.execute(f'SELECT category, description FROM desc WHERE description LIKE "%{parts}%"').fetchall()
+        if parts in result[0][1].split('\r\n'):
+            return result[0][0]
 
 
-# for i in select_table_user('Ha3aVr'):
-#     print(i)
-# print(choise_submodels('touch', 'mini'))
-# print(gen_keyboard('АКБ'))
+    def write_db_work_progress(user, string, number = 1, db = db):
+        if cb.execute(f'SELECT wp_device FROM {user} WHERE wp_device = "{string}"').fetchone():
+            cb.execute(f'UPDATE {user} SET wp_number = wp_number + {number} WHERE wp_device = "{string}"')
+        else:
+            if cb.execute(f'SELECT device FROM {user} WHERE device = "{string}"').fetchone():
+                cb.execute(f'UPDATE {user} SET wp_number = wp_number + {number} WHERE device = "{string}"')
+            else:
+                cb.execute(f"INSERT INTO {user} (wp_device, wp_number, device, number) VALUES ('{string}', {number}, '{string}', 0)")
+
+        db.commit()
+
+
+    
+# tabble_for_hose('Ha3aVr', ['iphone', '5', 'АКБ', 1])
+# print(select_work_progress('Ha3aVr'))
