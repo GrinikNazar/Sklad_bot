@@ -2,12 +2,20 @@ import engine
 import iphone_db
 
 
+def find_bracket(string):
+    if '(' in string:
+        return string[:string.find('(')]
+    else:
+        return string
+
+
 def string_separate(string): # ID2233 iPhone 8 - переклейка, АКБ
     result_list = []
     space_split = string.lower().split(' - ') # ['ID2233 iPhone 8', 'переклейка, АКБ']
     id_model = space_split[0].split(' ') # ['ID2233', 'iPhone', '8']
     model = ''.join(space_split[0].split(f'{id_model[0]}')).strip() #'iPhone 8'
-    parts = space_split[1].split(',') # ['переклейка', ' АКБ']
+    parts = find_bracket(space_split[1])
+    parts = parts.split(',') # ['переклейка', ' АКБ']
     parts = list(map(lambda x: x.strip().lower(), parts))
     for part in parts:
         db_result = iphone_db.select_desc(part)
@@ -20,22 +28,31 @@ def string_separate_brackets(string):
     dict_of_patrs = {}
     if len(string.split('(')) == 1:
         return None
+    space_split = string.lower().split(' - ') # ['ID2233 iPhone 8', 'переклейка, АКБ']
+    id_model = space_split[0].split(' ') # ['ID2233', 'iPhone', '8']
+    model = ''.join(space_split[0].split(f'{id_model[0]}')).strip() #'iPhone 8'
     split_bracket = string.split('(')[1].split(')')[0].split(',')
     parts = list(map(lambda x: x.strip().lower(), split_bracket))
     for part in parts:
-        part = part.split(' ')
-        if len(part) == 1:
-            number_part = 1
-            key_dict_of_parts = part[0]
+        part_split = part.split(' ')
+        if part_split[-1].isdigit():
+            number_part = int(part_split[-1])
+            key_dict_of_parts = ''.join(part_split[:-1])
         else:
-            number_part = int(part[-1])
-            key_dict_of_parts = ' '.join(part[:-1])
-        dict_of_patrs[key_dict_of_parts] = number_part
-
+            key_dict_of_parts = part
+            number_part = 1
+        key_dict_of_parts = f'{model} {iphone_db.select_desc(key_dict_of_parts)}'
+        if key_dict_of_parts in dict_of_patrs.keys():
+            dict_of_patrs[key_dict_of_parts] += number_part
+        else:
+            dict_of_patrs[key_dict_of_parts] = number_part
     return dict_of_patrs
 
 
 def handler_wp(message, user):
+
+    # message = iphone_db.select_work_progress(user)
+
     marker = ''
     d = {
         'Готові': [],
@@ -56,9 +73,14 @@ def handler_wp(message, user):
     list_of_values = [v for value in d.values() for v in value]
 
     for string in list_of_values:
-        iphone_db.write_db_work_progress(user, *string_separate(string))
-        if string_separate_brackets(string):
-            iphone_db.write_db_work_progress(user, *string_separate_brackets(string).keys(), *string_separate_brackets(string).values())
+        result_separate = string_separate(string)
+        if result_separate:
+            for string_result_separate in result_separate:
+                iphone_db.write_db_work_progress(user, string_result_separate)
+        result_separate_brackets = string_separate_brackets(string)
+        if result_separate_brackets:
+            for key, value in result_separate_brackets.items():
+                iphone_db.write_db_work_progress(user, key, value)
 
     work_progress = iphone_db.select_table_user(user)
 
@@ -73,9 +95,3 @@ def handler_wp(message, user):
 
 
     return result_string_bot + result_string_wp.rstrip()
-
-
-# print(string_separate('ID2233 iPhone 8 - переклейка, АКБ нова'))
-# print(handler_wp(engine.maket()))
-# print(string_separate_brackets('ID2233 iPhone 8 - переклейка, АКБ нова(клей акб 2, проклейка, поляр зад 3)'))
-# print(string_separate_brackets('ID2233 iPhone 8 - переклейка, АКБ нова'))

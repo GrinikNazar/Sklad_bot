@@ -62,35 +62,34 @@ with sqlite3. connect(os.path.join(os.path.dirname(__file__), 'iphone_parts.db')
             'Не видані',
             '',
         ]
-        result = ''
-        for s in st:
-            result += s + '\n'
-        return result
+        return '\n'.join(st)
 
 
     def select_work_progress(user):
-        try: 
-            return cb.execute(f"SELECT string_wp FROM {user}").fetchone()[0]
-        except TypeError:
-            return None
+        result = cb.execute(f"SELECT string_wp FROM {user}").fetchone()[0]
+        if result:
+            return result
+        else:
+            return maket()
 
 
-    def update_work_progress(user, work_progress, db = db):
-        result = select_work_progress(user)
-        # result = '\n'.join(result.split('\n')[1:])
-        print(result)
-        cb.execute(f'UPDATE {user} SET string_wp = "{work_progress}" WHERE string_wp = "{result}"')
-        cb.execute(f'UPDATE {user} SET wp_number = 0')
+    def update_work_progress(user, work_progress, st=True, db = db):
+        work_progress = '\n'.join(work_progress.split('\n')[1:])
+        cb.execute(f'UPDATE {user} SET string_wp = "{work_progress}" WHERE id = 1')
+        if st:
+            cb.execute(f'UPDATE {user} SET wp_number = 0')
         db.commit()
 
 
     def tabble_for_hose(user, args, db = db):
         cb.execute(f"""CREATE TABLE IF NOT EXISTS {user} (
+                id INTEGER,
                 device TEXT,
                 number INTEGER,
                 wp_device TEXT,
                 wp_number INTEGER,
-                string_wp TEXT
+                string_wp TEXT,
+                PRIMARY KEY("id")
             )""")
 
         result = f'{args[0]} {args[1]} {args[2]}'
@@ -118,8 +117,11 @@ with sqlite3. connect(os.path.join(os.path.dirname(__file__), 'iphone_parts.db')
     
     def select_desc(parts):
         result = cb.execute(f'SELECT category, description FROM desc WHERE description LIKE "%{parts}%"').fetchall()
-        if parts in result[0][1].split('\r\n'):
-            return result[0][0]
+        if result:
+            if parts in result[0][1].split('\r\n'):
+                return result[0][0]
+        else:
+            return None
 
 
     def write_db_work_progress(user, string, number = 1, db = db):
