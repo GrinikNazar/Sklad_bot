@@ -109,12 +109,14 @@ def some_func(message):
     elif message.text.split('\n')[0].rstrip() == '@FlarkenCatBot _wp':
         result = handler_wp.handler_wp(message.text, message.from_user.username)
         if result == '':
-            iphone_db.update_work_progress(message.from_user.username, message.text, False)
-            bot.send_message(message.chat.id, 'Все зійшлось', reply_markup=keyboard.confirm())
-            # iphone_db.delete_from_table(message.from_user.username)
-        else:
             iphone_db.update_work_progress(message.from_user.username, message.text)
-            # bot.delete_message(message.chat.id, message.message_id)
+            bot.send_message(message.chat.id, 'Все зійшлось', reply_markup=keyboard.confirm())
+        elif not result:
+            pass
+        else:
+            if result == True:
+                bot.send_message(message.chat.id, result[0])
+            iphone_db.update_work_progress(message.from_user.username, message.text)
             bot.send_message(message.chat.id, result)
         
     else:
@@ -132,12 +134,12 @@ def handler_mes(call):
         bot.edit_message_text(result, call.message.chat.id, message_id=call.message.message_id)
     
     elif call.data == 'confirm_button':
-        # iphone_db.delete_from_table(message.from_user.username)
         user = call.from_user.username
         wp_result = iphone_db.select_work_progress(user)
-        wp_result = '\n'.join(wp_result.split('\n')[1:])
+        wp_result = '\n'.join(wp_result.split('\n'))
         work_progress_finnaly = f"{user}\n{wp_result}"
         bot.send_message(-740139442, work_progress_finnaly)
+        # iphone_db.delete_from_table(user)
 
     elif call.data == 'clean_worksheet':
         engine.clean_worksheet()
