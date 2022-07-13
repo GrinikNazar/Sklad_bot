@@ -52,7 +52,7 @@ def string_separate_brackets(string):
 def get_count_glass_replace(message):
     message = message.split('\n')[1]
     count_glass = message.split('-')[-1]
-    if count_glass == '':
+    if count_glass == ' ':
         return 0
     else:
         return int(count_glass[-1])
@@ -107,6 +107,8 @@ def handler_wp(message, user):
 
     if not work_progress:
         return None
+
+    work_progress = sorted(work_progress, key=lambda wp: count_glass not in wp[0])
 
     result_replace_glass = ''
     result_string_bot = ''

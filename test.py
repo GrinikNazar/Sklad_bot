@@ -2,8 +2,7 @@ import time
 import threading
 import random
 
-s = 'rgerger 2'
-if s.split(' ')[-1].isdigit():
-    number = int(s.split(' ')[-1])
-    print(number)
-    print(type(number))
+wp = ['iphone 6 Скло', 'iphone x АКБ', 'iphone 7 Клей АКБ + проклейки', 'iphone 7 Скло', 'iphone 8 Скло']
+
+
+print(sorted(wp, key=lambda glass: 'Скло' not in glass))

@@ -184,5 +184,6 @@ with sqlite3. connect(os.path.join(os.path.dirname(__file__), 'iphone_parts.db')
 # tabble_for_hose('Ha3aVr', ['iphone', '5', 'Скло', 1])
 # print(select_work_progress('Ha3aVr'))
 # print(select_glass_count('Ha3aVr'))
-# k = select_glass_count('Ha3aVr')[0]
-# print(k, type(k))
+# x = select_table_user('Ha3aVr')
+# x = sorted(x, key=lambda x: 'Скло' not in x[0])
+# print(x)
