@@ -8,8 +8,9 @@ import time
 import threading
 import random
 import handler_wp
+import work_progress_db
 
-bot = telebot.TeleBot(conf.config['token'])
+bot = telebot.TeleBot(conf.conf_test['token'])
 
 users = {
     'Назар': 375385945,
@@ -94,7 +95,7 @@ def other_function(message):
 def some_func(message):
     global text_message
     text_message = message.text
-    if message.text.split('\n')[0].rstrip() == '@FlarkenCatBot _add_list':
+    if message.text.split('\n')[0].rstrip() == f'@{bot.get_me().username} _add_list':
         bot.send_message(message.chat.id, 'Секундочку...')
         try:
             engine.add_to_list(message.text)
@@ -102,11 +103,12 @@ def some_func(message):
         except IndexError:
             bot.send_message(message.chat.id, 'Невірний формат вводу, спробуй ще раз')
 
-    elif message.text.split('\n')[0].rstrip() == '@FlarkenCatBot _time':
+    elif message.text.split('\n')[0].rstrip() == f'@{bot.get_me().username} _time':
         engine.change_time_null(message.text)
         bot.send_message(message.chat.id, 'Час змінено\U0001F91F')
-        
-    elif message.text.split('\n')[0].rstrip() == '@FlarkenCatBot _wp':
+
+    # WorkProgress    
+    elif message.text.split('\n')[0].rstrip() == f'@{bot.get_me().username} _wp':
         result = handler_wp.handler_wp(message.text, message.from_user.username)
         if result == '':
             iphone_db.update_work_progress(message.from_user.username, message.text)
@@ -171,7 +173,8 @@ def handler_mes(call):
         if call.data.split('_')[1] == 'take':
             bot.edit_message_text(result_main[0], call.message.chat.id, message_id=call.message.message_id)
             if len(result_main) > 2:
-                iphone_db.tabble_for_hose(call.from_user.username, result_main[2])
+                # iphone_db.tabble_for_hose(call.from_user.username, result_main[2])
+                work_progress_db.tabble_for_hose(call.from_user.id, result_main[2])
             # if result_main[1]:
             #     bot.send_message(-674239373, f'{call.from_user.first_name}: {result_main[0]}')
 

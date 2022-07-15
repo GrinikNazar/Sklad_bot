@@ -1,8 +1,18 @@
 import time
 import threading
 import random
+from fuzzywuzzy import fuzz
 
-wp = ['iphone 6 Скло', 'iphone x АКБ', 'iphone 7 Клей АКБ + проклейки', 'iphone 7 Скло', 'iphone 8 Скло']
 
 
-print(sorted(wp, key=lambda glass: 'Скло' not in glass))
+
+# l = 'iphone 8Plus'
+# l2 = 'iphone 8plus'
+l = 'акб нова'
+l2 = 'ноe ак'
+
+x = fuzz.ratio(l.lower(), l2.lower())
+y = fuzz.token_sort_ratio(l, l2)
+
+print(x)
+print(y)
