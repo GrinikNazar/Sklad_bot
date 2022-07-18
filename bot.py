@@ -87,7 +87,7 @@ def get_null(message):
 @bot.message_handler(commands=['other'])
 @autorize_hose
 def other_function(message):
-    bot.send_message(message.chat.id, 'Додаткові можливості Флеркена', reply_markup=keyboard.other_key(message.from_user.username))
+    bot.send_message(message.chat.id, 'Додаткові можливості Флеркена', reply_markup=keyboard.other_key(message.from_user.id))
 
 
 @bot.message_handler(content_types=['text'])
@@ -109,16 +109,16 @@ def some_func(message):
 
     # WorkProgress    
     elif message.text.split('\n')[0].rstrip() == f'@{bot.get_me().username} _wp':
-        result = handler_wp.handler_wp(message.text, message.from_user.username)
+        result = handler_wp.handler_wp(message.text, message.from_user.id)
         if result == '':
-            iphone_db.update_work_progress(message.from_user.username, message.text)
+            work_progress_db.update_work_progress(message.from_user.id, message.text)
             bot.send_message(message.chat.id, 'Все зійшлось', reply_markup=keyboard.confirm())
         elif not result:
             pass
         else:
             if result == True:
                 bot.send_message(message.chat.id, result[0])
-            iphone_db.update_work_progress(message.from_user.username, message.text)
+            work_progress_db.update_work_progress(message.from_user.id, message.text)
             bot.send_message(message.chat.id, result)
         
     else:
