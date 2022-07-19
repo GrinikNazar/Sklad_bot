@@ -129,56 +129,60 @@ def handler_compare(user_id, values_from_message_bot): #повинна пове�
     return result_dict
     
 
-
-def handler_wp(message, user):
-# def handler_wp(user):
-
-    # message = work_progress_db.select_work_progress(user)
-
-    count_glass_replace = get_count_glass_replace(message)
-    work_progress_db.write_glass_count(user, count_glass_replace)
-    count_glass = 'Скло'
-
-    list_of_values = wp_handler_text(message)
-    dict_handler_compare = handler_compare(user, list_of_values)
-
-    for key, value in dict_handler_compare.items():
-        work_progress_db.write_db_work_progress(user, key, value)
-        if count_glass in key:
-            work_progress_db.write_glass_count(user, value)
-
-    work_progress = work_progress_db.select_table_user(user)
-    glass = work_progress_db.select_glass_count(user)
-
-    if not work_progress:
-        return None
-
-    work_progress = sorted(work_progress, key=lambda wp: count_glass not in wp[0])
-
-    # result_replace_glass = ''
+#порівняти дані
+def wp_position(work_progress):
     result_string_bot = ''
     result_string_wp = ''
-
     for position in work_progress:
         if position[1] < position[2]:
             result_string_bot += f'Візьми з бота: {position[0]} - {position[2] - position[1]}шт\n'
         elif position[1] > position[2]:
             result_string_wp += f'Допиши в WProgress: {position[0]} - {position[1] - position[2]}шт\n'
 
-    # if glass[0] < glass[1]:
-    #     result_replace_glass += f'З бота не взяв скло для переклейки - {glass[1] - glass[0]}шт\n'
-    # elif glass[0] > glass[1]:
-    #     result_replace_glass += f'Не дописав в WorkProgress переклейку - {glass[0] - glass[1]}шт\n'
-    # elif glass[0] == glass[1]:
-    #     list_glass = []
-    #     result_string_wp = result_string_wp.split('\n')
-    #     for gl in result_string_wp:
-    #         if count_glass not in gl:
-    #             list_glass.append(gl)
-    #     result_string_wp = '\n'.join(list_glass)
-
-
     return result_string_bot + result_string_wp.rstrip()
+
+
+def handler_wp(message, user):
+# def handler_wp(user):
+
+    # message = work_progress_db.select_work_progress(user)
+
+    count_glass_replace = get_count_glass_replace(message) #кількість скла з повідомлення зверху
+
+    list_of_values = wp_handler_text(message)
+    dict_handler_compare = handler_compare(user, list_of_values)
+
+    for key, value in dict_handler_compare.items():
+        work_progress_db.write_db_work_progress(user, key, value)
+
+    work_progress = work_progress_db.select_table_user(user)
+    work_progress_glass = work_progress_db.select_table_user_glass(user)
+
+    sum_bot = 0
+    sum_wp = count_glass_replace
+    for item in work_progress_glass:
+        sum_bot += item[1]
+        sum_wp += item[2]
+
+    if not work_progress and not work_progress_glass:
+        return None
+
+    result_work_progress = wp_position(work_progress)
+    result_string_glass = wp_position(work_progress_glass)
+
+    result_glass_count = ''
+    if sum_bot > sum_wp:
+        result_glass_count += f'Не дописав переклейку в WorkProgress - {sum_bot - sum_wp} шт\n'
+        result_string_glass = f'Можливо це скло з наступного списку:\n{result_string_glass}\n--------------'
+    elif sum_bot < sum_wp:
+        result_glass_count += f'Не взяв з бота скло - {sum_wp - sum_bot} шт\n'
+    else:
+        result_glass_count = ''
+        result_string_glass = ''
+
+    return result_glass_count + result_string_glass + '\n' + result_work_progress.rstrip()
+
+
 
 # print(handler_wp(375385945))
 

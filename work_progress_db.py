@@ -55,6 +55,10 @@ with sqlite3.connect(os.path.join(os.path.dirname(__file__), 'work_progress.db')
         #     return None
 
     
+    def select_table_user_glass(user):
+        return cb.execute(f"SELECT device, glass_from_bot, glass_wp FROM '{user}_glass'").fetchall()
+
+    
     #Функція для створення таблиці з макетом
     def create_table_users_maket(user_id, db = db):
         cb.execute(f"""CREATE TABLE IF NOT EXISTS '{user_id}_maket' (
@@ -112,20 +116,14 @@ with sqlite3.connect(os.path.join(os.path.dirname(__file__), 'work_progress.db')
         
         if args[2] == 'Скло':
             glass_count = int(args[-1])
-             #записувати в таблицю з склом
+            #записувати в таблицю з склом
             if cb.execute(f'SELECT device FROM "{user}_glass" WHERE device = "{result}"').fetchone():
                 if cb.execute(f"SELECT glass_from_bot FROM '{user}_glass' WHERE device = '{result}'").fetchone()[0]:
                     cb.execute(f'UPDATE "{user}_glass" SET glass_from_bot = glass_from_bot + {glass_count} WHERE device = "{result}"')
-                    if not cb.execute(f"SELECT glass_count FROM '{user}' WHERE id = 1").fetchone()[0]:
-                        cb.execute(f"UPDATE '{user}' SET glass_count = 0 WHERE id = 1")
-                    cb.execute(f'UPDATE "{user}" SET glass_count = glass_count + {glass_count} WHERE id = 1')
                 else:
                     cb.execute(f'UPDATE "{user}_glass" SET glass_from_bot = {glass_count} WHERE device = "{result}"')
-                    if not cb.execute(f"SELECT glass_count FROM '{user}' WHERE id = 1").fetchone()[0]:
-                        cb.execute(f"UPDATE '{user}' SET glass_count = 0 WHERE id = 1")
-                    cb.execute(f'UPDATE "{user}" SET glass_count = glass_count + {glass_count} WHERE id = 1')
             else:
-                cb.execute(f"INSERT INTO '{user}_glass' (device, glass_from_bot) VALUES ('{result}', {glass_count})")
+                cb.execute(f"INSERT INTO '{user}_glass' (device, glass_from_bot, glass_wp) VALUES ('{result}', {glass_count}, 0)")
         else:
             if cb.execute(f'SELECT device FROM "{user}" WHERE device = "{result}"').fetchone(): 
                 cb.execute(f'UPDATE "{user}" SET number = number + {int(args[-1])} WHERE device = "{result}"')   
@@ -140,9 +138,7 @@ with sqlite3.connect(os.path.join(os.path.dirname(__file__), 'work_progress.db')
         work_progress = '\n'.join(work_progress.split('\n')[1:])
         if select_work_progress(user) != work_progress:
             cb.execute(f"INSERT INTO '{user}_maket' (wp) VALUES ('{work_progress}')")
-        if st:
-            # cb.execute(f"UPDATE '{user}' SET wp_number = 0")
-            cb.execute(f"UPDATE '{user}' SET glass_count_wp = 0 WHERE id = 1")
+
         db.commit()
 
 
@@ -160,7 +156,7 @@ with sqlite3.connect(os.path.join(os.path.dirname(__file__), 'work_progress.db')
                 else:
                     cb.execute(f'UPDATE "{user}_glass" SET glass_wp = {number} WHERE device = "{string}"')
             else:
-                cb.execute(f"INSERT INTO '{user}_glass' (device, glass_wp) VALUES ('{string}', {number})")
+                cb.execute(f"INSERT INTO '{user}_glass' (device, glass_wp, glass_from_bot) VALUES ('{string}', {number}, 0)")
         #все інше
         else:
             if cb.execute(f'SELECT wp_device FROM "{user}" WHERE wp_device = "{string}"').fetchone():
@@ -172,23 +168,6 @@ with sqlite3.connect(os.path.join(os.path.dirname(__file__), 'work_progress.db')
                     cb.execute(f'INSERT INTO "{user}" (wp_device, wp_number, device, number) VALUES ("{string}", {number}, "{string}", 0)')
 
         db.commit()
-
-
-    def write_glass_count(user, number = 1, db = db):
-        cb.execute(f"UPDATE '{user}' SET glass_count_wp = glass_count_wp + {number} WHERE id = 1")
-        db.commit()
-
-
-    def select_glass_count(user):
-        result_list = []
-        result_db = cb.execute(f"SELECT glass_count, glass_count_wp FROM '{user}'").fetchone()
-        for glass in result_db:
-            if glass:
-                result_list.append(int(glass))
-            else:
-                result_list.append(0)
-        return result_list
-
 
     def reset_data_base():
         for user in users.values():
@@ -204,3 +183,4 @@ with sqlite3.connect(os.path.join(os.path.dirname(__file__), 'work_progress.db')
 # x = select_glass_count(375385945)
 
 # print(t(375385945))
+# print(select_table_user_glass(375385945))
