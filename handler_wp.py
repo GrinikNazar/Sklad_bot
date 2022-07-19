@@ -135,9 +135,9 @@ def wp_position(work_progress):
     result_string_wp = ''
     for position in work_progress:
         if position[1] < position[2]:
-            result_string_bot += f'Візьми з бота: {position[0]} - {position[2] - position[1]}шт\n'
+            result_string_bot += f'Візьми з бота: {position[0]} - {position[2] - position[1]} шт\n'
         elif position[1] > position[2]:
-            result_string_wp += f'Допиши в WProgress: {position[0]} - {position[1] - position[2]}шт\n'
+            result_string_wp += f'Допиши в WProgress: {position[0]} - {position[1] - position[2]} шт\n'
 
     return result_string_bot + result_string_wp.rstrip()
 
@@ -173,9 +173,16 @@ def handler_wp(message, user):
     result_glass_count = ''
     if sum_bot > sum_wp:
         result_glass_count += f'Не дописав переклейку в WorkProgress - {sum_bot - sum_wp} шт\n'
-        result_string_glass = f'Можливо це скло з наступного списку:\n{result_string_glass}\n--------------'
+        resul_join = result_string_glass.split('\n')[:result_string_glass.index('') + 1]
+        resul_join = list(map(lambda x: x.split(': ')[1], resul_join))
+        resul_join = '\n'.join(resul_join)
+        result_string_glass = f'Можливо це скло з наступного списку:\n{resul_join}\n--------------'
     elif sum_bot < sum_wp:
         result_glass_count += f'Не взяв з бота скло - {sum_wp - sum_bot} шт\n'
+        resul_join = result_string_glass.split('\n')[:result_string_glass.index('') + 1]
+        resul_join = list(map(lambda x: x.split(': ')[1], resul_join))
+        resul_join = '\n'.join(resul_join)
+        result_string_glass = f'Можливо це скло з наступного списку:\n{resul_join}\n--------------'
     else:
         result_glass_count = ''
         result_string_glass = ''
@@ -186,21 +193,17 @@ def handler_wp(message, user):
 
 # print(handler_wp(375385945))
 
-# x = """Переклеїв екранів - 
+# x = """@GusiGusiGagagaBot _wp
+# Переклеїв екранів - 
 # Видано готових - 
 # Вдано клієнтських - 
 # Не виданих - 
 
 # Готові
-# id111 iphone 5s - переклейка
-# id554 iphone 8 - переклейка
-# id3421 iphone 8 - переклейка(проклейка, клей акб)
-# id325 iphone 6 - основна камера
-# id1355 iphone 7 - нижній шлейф
+# id6637 iphone 6 - переклейка, акб нова
+# id2344 iphone 8 - переклейка
 
-# Клієнтські
-# id554 iphone 8 - переклейка
-# id3515 iphone 12 - кришка
-# id245 iphone 5 - нова акб"""
+# Клієнтські"""
 
-# print(handler_compare(375385945, wp_handler_text(x)))
+# print(handler_compare(239724045, wp_handler_text(x)))
+# print(handler_wp(x, 239724045))
