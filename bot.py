@@ -113,6 +113,7 @@ def some_func(message):
         if result == '':
             work_progress_db.update_work_progress(message.from_user.id, message.text)
             bot.send_message(message.chat.id, 'Все зійшлось', reply_markup=keyboard.confirm())
+            bot.answer_callback_query(message.chat.id, 'OK')
         elif not result:
             pass
         else:
@@ -136,12 +137,14 @@ def handler_mes(call):
         bot.edit_message_text(result, call.message.chat.id, message_id=call.message.message_id)
     
     elif call.data == 'confirm_button':
-        user = call.from_user.username
-        wp_result = iphone_db.select_work_progress(user)
-        wp_result = '\n'.join(wp_result.split('\n'))
+        user_id = call.from_user.id
+        for key, value in users.items():
+            if value == user_id:
+                user = key 
+        wp_result = work_progress_db.select_work_progress(user_id)
+        # wp_result = '\n'.join(wp_result.split('\n'))
         work_progress_finnaly = f"{user}\n{wp_result}"
         bot.send_message(-740139442, work_progress_finnaly)
-        # iphone_db.delete_from_table(user)
 
     elif call.data == 'clean_worksheet':
         engine.clean_worksheet()

@@ -176,18 +176,23 @@ def handler_wp(message, user):
         resul_join = result_string_glass.split('\n')[:result_string_glass.index('') + 1]
         resul_join = list(map(lambda x: x.split(': ')[1], resul_join))
         resul_join = '\n'.join(resul_join)
-        result_string_glass = f'Можливо це скло з наступного списку:\n{resul_join}\n--------------'
+        result_string_glass = f'Можливо це скло з наступного списку:\n{resul_join}\n--------------\n'
     elif sum_bot < sum_wp:
         result_glass_count += f'Не взяв з бота скло - {sum_wp - sum_bot} шт\n'
         resul_join = result_string_glass.split('\n')[:result_string_glass.index('') + 1]
         resul_join = list(map(lambda x: x.split(': ')[1], resul_join))
         resul_join = '\n'.join(resul_join)
-        result_string_glass = f'Можливо це скло з наступного списку:\n{resul_join}\n--------------'
+        result_string_glass = f'Можливо це скло з наступного списку:\n{resul_join}\n--------------\n'
     else:
         result_glass_count = ''
         result_string_glass = ''
 
-    return result_glass_count + result_string_glass + '\n' + result_work_progress.rstrip()
+    return result_glass_count + result_string_glass + result_work_progress.rstrip()
+
+
+#доробити відправку повідомлення в чат ++++++
+#зробити неявне порівняння
+#кнопку позручніше
 
 
 
