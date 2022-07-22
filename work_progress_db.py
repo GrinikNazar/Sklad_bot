@@ -169,6 +169,7 @@ with sqlite3.connect(os.path.join(os.path.dirname(__file__), 'work_progress.db')
 
         db.commit()
 
+
     def reset_data_base():
         for user in users.values():
             delete_from_table(user)

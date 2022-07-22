@@ -12,17 +12,24 @@ def find_bracket(string):
 
 def string_separate(string): # ID2233 iPhone 8 - переклейка, АКБ
     result_list = []
-    space_split = string.lower().split(' - ') # ['ID2233 iPhone 8', 'переклейка, АКБ']
+    space_split = string.lower().split('-') # ['ID2233 iPhone 8', 'переклейка, АКБ']
     id_model = space_split[0].split(' ') # ['ID2233', 'iPhone', '8']
-    model = ''.join(space_split[0].split(f'{id_model[0]}')).strip() #'iPhone 8'
+    id_model = [i for i in id_model if i != '']
+    id_model.remove(id_model[0])
+    model = ' '.join(id_model).strip()
+    #зробити не явне порівняння
     parts = find_bracket(space_split[1])
     parts = parts.split(',') # ['переклейка', ' АКБ']
     parts = list(map(lambda x: x.strip().lower(), parts))
+    print(parts)
     for part in parts:
         db_result = iphone_db.select_desc(part)
         if db_result:
             result_list.append(f'{model} {db_result}')
     return result_list 
+
+
+print(string_separate('id124 iphone 8 - переклейка, нова акб '))
 
 
 def string_separate_brackets(string):
@@ -197,18 +204,3 @@ def handler_wp(message, user):
 
 
 # print(handler_wp(375385945))
-
-# x = """@GusiGusiGagagaBot _wp
-# Переклеїв екранів - 
-# Видано готових - 
-# Вдано клієнтських - 
-# Не виданих - 
-
-# Готові
-# id6637 iphone 6 - переклейка, акб нова
-# id2344 iphone 8 - переклейка
-
-# Клієнтські"""
-
-# print(handler_compare(239724045, wp_handler_text(x)))
-# print(handler_wp(x, 239724045))

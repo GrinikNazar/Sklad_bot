@@ -1,5 +1,6 @@
 import sqlite3
 import os
+from fuzzywuzzy import fuzz
 
 with sqlite3. connect(os.path.join(os.path.dirname(__file__), 'iphone_parts.db'), check_same_thread=False) as db:
 
@@ -47,6 +48,13 @@ with sqlite3. connect(os.path.join(os.path.dirname(__file__), 'iphone_parts.db')
   
     
     def select_desc(parts):
+        list_for_compare = []
+        list_for_compare_db = cb.execute(f'SELECT description FROM desc').fetchall()
+        for string in list_for_compare_db:
+            list_for_compare.extend(string[0].split('\r\n'))
+
+        #пройтись по всьому списку і знайти елемент з найільшою схожістю
+        
         result = cb.execute(f'SELECT category, description FROM desc WHERE description LIKE "%{parts}%"').fetchall()
         if result:
             if parts in result[0][1].split('\r\n'):
@@ -54,6 +62,9 @@ with sqlite3. connect(os.path.join(os.path.dirname(__file__), 'iphone_parts.db')
         else:
             return None
 
+            
+
+print(select_desc('переклейка'))
 
 
 # tabble_for_hose('Ha3aVr', ['iphone', '5', 'Скло', 1])
