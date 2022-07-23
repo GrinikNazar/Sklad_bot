@@ -10,18 +10,21 @@ def find_bracket(string):
         return string
 
 
-def string_separate(string): # ID2233 iPhone 8 - переклейка, АКБ
-    result_list = []
-    space_split = string.lower().split('-') # ['ID2233 iPhone 8', 'переклейка, АКБ']
-    id_model = space_split[0].split(' ') # ['ID2233', 'iPhone', '8']
+#для знаходження моделі
+def choose_model_parse(space_split):
+    id_model = space_split[0].split(' ')
     id_model = [i for i in id_model if i != '']
     id_model.remove(id_model[0])
-    model = ' '.join(id_model).strip()
-    #зробити не явне порівняння
+    return ' '.join(id_model).strip()
+
+
+def string_separate(string):
+    result_list = []
+    space_split = string.lower().split('-')
+    model = choose_model_parse(space_split)
     parts = find_bracket(space_split[1])
-    parts = parts.split(',') # ['переклейка', ' АКБ']
+    parts = parts.split(',')
     parts = list(map(lambda x: x.strip().lower(), parts))
-    print(parts)
     for part in parts:
         db_result = iphone_db.select_desc(part)
         if db_result:
@@ -29,16 +32,12 @@ def string_separate(string): # ID2233 iPhone 8 - переклейка, АКБ
     return result_list 
 
 
-print(string_separate('id124 iphone 8 - переклейка, нова акб '))
-
-
 def string_separate_brackets(string):
     dict_of_patrs = {}
     if len(string.split('(')) == 1:
         return None
-    space_split = string.lower().split(' - ') # ['ID2233 iPhone 8', 'переклейка, АКБ']
-    id_model = space_split[0].split(' ') # ['ID2233', 'iPhone', '8']
-    model = ''.join(space_split[0].split(f'{id_model[0]}')).strip() #'iPhone 8'
+    space_split = string.lower().split('-')
+    model = choose_model_parse(space_split)
     split_bracket = string.split('(')[1].split(')')[0].split(',')
     parts = list(map(lambda x: x.strip().lower(), split_bracket))
     for part in parts:
@@ -149,9 +148,17 @@ def wp_position(work_progress):
     return result_string_bot + result_string_wp.rstrip()
 
 
+def get_additional_list_part(result_string_glass):
+    result_string_glass = result_string_glass.rstrip()
+    resul_join = result_string_glass.split('\n')
+    resul_join = list(map(lambda x: x.split(': ')[1], resul_join))
+    resul_join = '\n'.join(resul_join)
+
+    return f'Можливо це скло з наступного списку:\n{resul_join}\n--------------\n'
+
+
 def handler_wp(message, user):
 # def handler_wp(user):
-
     # message = work_progress_db.select_work_progress(user)
 
     count_glass_replace = get_count_glass_replace(message) #кількість скла з повідомлення зверху
@@ -180,16 +187,10 @@ def handler_wp(message, user):
     result_glass_count = ''
     if sum_bot > sum_wp:
         result_glass_count += f'Не дописав переклейку в WorkProgress - {sum_bot - sum_wp} шт\n'
-        resul_join = result_string_glass.split('\n')[:result_string_glass.index('') + 1]
-        resul_join = list(map(lambda x: x.split(': ')[1], resul_join))
-        resul_join = '\n'.join(resul_join)
-        result_string_glass = f'Можливо це скло з наступного списку:\n{resul_join}\n--------------\n'
+        result_string_glass = get_additional_list_part(result_string_glass)
     elif sum_bot < sum_wp:
         result_glass_count += f'Не взяв з бота скло - {sum_wp - sum_bot} шт\n'
-        resul_join = result_string_glass.split('\n')[:result_string_glass.index('') + 1]
-        resul_join = list(map(lambda x: x.split(': ')[1], resul_join))
-        resul_join = '\n'.join(resul_join)
-        result_string_glass = f'Можливо це скло з наступного списку:\n{resul_join}\n--------------\n'
+        result_string_glass = get_additional_list_part(result_string_glass)
     else:
         result_glass_count = ''
         result_string_glass = ''
@@ -198,9 +199,7 @@ def handler_wp(message, user):
 
 
 #доробити відправку повідомлення в чат ++++++
-#зробити неявне порівняння
+#зробити неявне порівняння +++++
 #кнопку позручніше
-
-
 
 # print(handler_wp(375385945))

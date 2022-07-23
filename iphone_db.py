@@ -6,19 +6,23 @@ with sqlite3. connect(os.path.join(os.path.dirname(__file__), 'iphone_parts.db')
 
     cb = db.cursor()
 
+
 #Запит на першому кроці
     def choise_models(search):
         result = cb.execute('SELECT model FROM models WHERE akb = ? OR glass = ? OR backlight = ? OR touch = ? OR frame = ? OR cover = ? OR copy = ? OR gluepr = ? OR other = ?', (search, search, search, search, search, search, search, search, search)).fetchall()
         return [i[0] for i in result]
 
+
     def artic(model):
         result = cb.execute('SELECT article FROM models WHERE model = ?',(model,)).fetchone()
         return result[0]
+        
         
 #Запит на другому кроці
     def choise_submodels(search, model):
         result = cb.execute(f'SELECT model, article FROM submodels WHERE akb = ? OR glass = ? OR backlight = ? OR touch = ? OR frame = ? OR cover = ? OR copy = ? OR gluepr = ? OR other = ?', (search, search, search, search, search, search, search, search, search,)).fetchall()
         return [i[0] for i in result if i[1] == model]
+
 
 #Запит для вибору кольору
     def choise_colors(search, model):
@@ -53,23 +57,26 @@ with sqlite3. connect(os.path.join(os.path.dirname(__file__), 'iphone_parts.db')
         for string in list_for_compare_db:
             list_for_compare.extend(string[0].split('\r\n'))
 
-        #пройтись по всьому списку і знайти елемент з найільшою схожістю
-        
-        result = cb.execute(f'SELECT category, description FROM desc WHERE description LIKE "%{parts}%"').fetchall()
-        if result:
-            if parts in result[0][1].split('\r\n'):
-                return result[0][0]
+        result_list = []
+        number_compare = 70
+        while number_compare != 100:
+            for i in list_for_compare:
+                if fuzz.ratio(i.lower(), parts.lower()) > number_compare:
+                    result_list.append(i)
+            if len(result_list) == 1:
+                break
+            else:
+                number_compare += 5
+                result_list = []
+
+        if len(result_list) == 1:
+            part = result_list[0]
+            result = cb.execute(f'SELECT category, description FROM desc WHERE description LIKE "%{part}%"').fetchall()
+            if result:
+                if part in result[0][1].split('\r\n'):
+                    return result[0][0]
         else:
             return None
 
             
-
-print(select_desc('переклейка'))
-
-
-# tabble_for_hose('Ha3aVr', ['iphone', '5', 'Скло', 1])
-# print(select_work_progress('Ha3aVr'))
-# print(select_glass_count('Ha3aVr'))
-# x = select_table_user('Ha3aVr')
-# x = sorted(x, key=lambda x: 'Скло' not in x[0])
-# print(x)
+# print(select_desc('акб'))

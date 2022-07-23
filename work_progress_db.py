@@ -19,11 +19,37 @@ with sqlite3.connect(os.path.join(os.path.dirname(__file__), 'work_progress.db')
                 id INTEGER,
                 device TEXT,
                 number INTEGER,
-                wp_device TEXT,
                 wp_number INTEGER,
-                string_wp TEXT,
-                glass_count	INTEGER,
-                glass_count_wp	INTEGER,
+                PRIMARY KEY("id")
+                )""")
+
+        db.commit()
+
+
+        #Функція для створення таблиці з макетом
+    def create_table_users_maket(user_id, db = db):
+        cb.execute(f"""CREATE TABLE IF NOT EXISTS '{user_id}_maket' (
+                id INTEGER,
+                wp TEXT,
+                PRIMARY KEY("id")
+                )""")
+
+        sel_maket = cb.execute(f"SELECT wp FROM '{user_id}_maket'").fetchone()
+        
+        if not sel_maket:
+            cb.execute(f"INSERT INTO '{user_id}_maket' (wp) VALUES ('{maket()}')")
+        else:
+            cb.execute(f"UPDATE '{user_id}_maket' SET wp = '{maket()}' WHERE id = 1")
+
+        db.commit()
+
+
+    def create_table_glass(user_id, db = db):
+        cb.execute(f"""CREATE TABLE IF NOT EXISTS '{user_id}_glass' (
+                id INTEGER,
+                device TEXT,
+                glass_from_bot INTEGER,
+                glass_wp INTEGER,
                 PRIMARY KEY("id")
                 )""")
 
@@ -59,36 +85,6 @@ with sqlite3.connect(os.path.join(os.path.dirname(__file__), 'work_progress.db')
         return cb.execute(f"SELECT device, glass_from_bot, glass_wp FROM '{user}_glass'").fetchall()
 
     
-    #Функція для створення таблиці з макетом
-    def create_table_users_maket(user_id, db = db):
-        cb.execute(f"""CREATE TABLE IF NOT EXISTS '{user_id}_maket' (
-                id INTEGER,
-                wp TEXT,
-                PRIMARY KEY("id")
-                )""")
-
-        sel_maket = cb.execute(f"SELECT wp FROM '{user_id}_maket'").fetchone()
-        
-        if not sel_maket:
-            cb.execute(f"INSERT INTO '{user_id}_maket' (wp) VALUES ('{maket()}')")
-        else:
-            cb.execute(f"UPDATE '{user_id}_maket' SET wp = '{maket()}' WHERE id = 1")
-
-        db.commit()
-
-
-    def create_table_glass(user_id, db = db):
-        cb.execute(f"""CREATE TABLE IF NOT EXISTS '{user_id}_glass' (
-                id INTEGER,
-                device TEXT,
-                glass_from_bot INTEGER,
-                glass_wp INTEGER,
-                PRIMARY KEY("id")
-                )""")
-
-        db.commit()
-
-
     def delete_from_table(user_id, db = db):
         cb.execute(f"DELETE FROM '{user_id}'")
         cb.execute(f"DELETE FROM '{user_id}_maket'")
@@ -128,7 +124,7 @@ with sqlite3.connect(os.path.join(os.path.dirname(__file__), 'work_progress.db')
             if cb.execute(f'SELECT device FROM "{user}" WHERE device = "{result}"').fetchone(): 
                 cb.execute(f'UPDATE "{user}" SET number = number + {int(args[-1])} WHERE device = "{result}"')   
             else:
-                cb.execute(f"INSERT INTO '{user}' (device, number, wp_device, wp_number) VALUES ('{result}', {int(args[-1])}, '{result}', 0)")
+                cb.execute(f"INSERT INTO '{user}' (device, number, wp_number) VALUES ('{result}', {int(args[-1])}, 0)")
 
         db.commit()
 
@@ -159,13 +155,13 @@ with sqlite3.connect(os.path.join(os.path.dirname(__file__), 'work_progress.db')
                 cb.execute(f"INSERT INTO '{user}_glass' (device, glass_wp, glass_from_bot) VALUES ('{string}', {number}, 0)")
         #все інше
         else:
-            if cb.execute(f'SELECT wp_device FROM "{user}" WHERE wp_device = "{string}"').fetchone():
-                cb.execute(f'UPDATE "{user}" SET wp_number = wp_number + {number} WHERE wp_device = "{string}"')
+            if cb.execute(f'SELECT device FROM "{user}" WHERE device = "{string}"').fetchone():
+                cb.execute(f'UPDATE "{user}" SET wp_number = wp_number + {number} WHERE device = "{string}"')
             else:
                 if cb.execute(f'SELECT device FROM "{user}" WHERE device = "{string}"').fetchone():
                     cb.execute(f'UPDATE "{user}" SET wp_number = wp_number + {number} WHERE device = "{string}"')
                 else:
-                    cb.execute(f'INSERT INTO "{user}" (wp_device, wp_number, device, number) VALUES ("{string}", {number}, "{string}", 0)')
+                    cb.execute(f'INSERT INTO "{user}" (wp_number, device, number) VALUES ({number}, "{string}", 0)')
 
         db.commit()
 
@@ -178,10 +174,5 @@ with sqlite3.connect(os.path.join(os.path.dirname(__file__), 'work_progress.db')
             create_table_glass(user)
 
 
-# reset_data_base()
+reset_data_base()
 # print(select_work_progress(375385945))
-# print(select_work_progress(239724045))
-# x = select_glass_count(375385945)
-
-# print(t(375385945))
-# print(select_table_user_glass(375385945))

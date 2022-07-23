@@ -7,7 +7,7 @@ from fuzzywuzzy import fuzz
 
 
 l = 'iphone 8Plus'
-l2 = 'iphone 8plus'
+l2 = 'iphone8plus'
 # l = 'акб нова'
 # l2 = 'ноe ак'
 
