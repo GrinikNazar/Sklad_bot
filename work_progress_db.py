@@ -26,7 +26,7 @@ with sqlite3.connect(os.path.join(os.path.dirname(__file__), 'work_progress.db')
         db.commit()
 
 
-        #Функція для створення таблиці з макетом
+    #Функція для створення таблиці з макетом
     def create_table_users_maket(user_id, db = db):
         cb.execute(f"""CREATE TABLE IF NOT EXISTS '{user_id}_maket' (
                 id INTEGER,
@@ -89,6 +89,16 @@ with sqlite3.connect(os.path.join(os.path.dirname(__file__), 'work_progress.db')
         cb.execute(f"DELETE FROM '{user_id}'")
         cb.execute(f"DELETE FROM '{user_id}_maket'")
         cb.execute(f"DELETE FROM '{user_id}_glass'")
+        db.commit()
+
+    
+    #обнулити дані з work_progress
+    def delete_user_work_progress(user_id, db = db):
+        cb.execute(f"UPDATE '{user_id}' SET wp_number = 0")
+        cb.execute(f"UPDATE '{user_id}_glass' SET glass_wp = 0")
+        cb.execute(f"DELETE FROM '{user_id}_maket'")
+        create_table_users_maket(user_id)
+
         db.commit()
 
 
@@ -174,5 +184,5 @@ with sqlite3.connect(os.path.join(os.path.dirname(__file__), 'work_progress.db')
             create_table_glass(user)
 
 
-reset_data_base()
+# reset_data_base()
 # print(select_work_progress(375385945))

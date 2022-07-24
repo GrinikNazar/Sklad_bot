@@ -148,13 +148,30 @@ def wp_position(work_progress):
     return result_string_bot + result_string_wp.rstrip()
 
 
-def get_additional_list_part(result_string_glass):
+#Список можливих варіантів скла для аналізу
+def get_additional_list_part(result_string_glass, string_for_chek):
+    bot = 'Візьми з бота'
+    wp = 'Допиши в WProgress'
+    result = []
     result_string_glass = result_string_glass.rstrip()
     resul_join = result_string_glass.split('\n')
-    resul_join = list(map(lambda x: x.split(': ')[1], resul_join))
-    resul_join = '\n'.join(resul_join)
+    if string_for_chek == 'wp':
+        for string in resul_join:
+            string = string.split(': ')
+            if string[0] == wp:
+                result.append(string[1])
+    elif string_for_chek == 'bot':
+        for string in resul_join:
+            string = string.split(': ')
+            if string[0] == bot:
+                result.append(string[1])
 
-    return f'Можливо це скло з наступного списку:\n{resul_join}\n--------------\n'
+    resul_join = '\n'.join(result)
+
+    if resul_join == '':
+        return ''
+
+    return f'Можливо це скло з наступного списку:\n{resul_join}\n\U0001F9A5\U0001F43E\U0001F9AB\U0001F43E\U0001F40D\U0001F40C\n'
 
 
 def handler_wp(message, user):
@@ -170,7 +187,7 @@ def handler_wp(message, user):
         work_progress_db.write_db_work_progress(user, key, value)
 
     work_progress = work_progress_db.select_table_user(user)
-    work_progress_glass = work_progress_db.select_table_user_glass(user)
+    work_progress_glass = work_progress_db.select_table_user_glass(user) #витягнути доні по склу
 
     sum_bot = 0
     sum_wp = count_glass_replace
@@ -187,16 +204,21 @@ def handler_wp(message, user):
     result_glass_count = ''
     if sum_bot > sum_wp:
         result_glass_count += f'Не дописав переклейку в WorkProgress - {sum_bot - sum_wp} шт\n'
-        result_string_glass = get_additional_list_part(result_string_glass)
+        result_string_glass = get_additional_list_part(result_string_glass, 'wp')  #тільки те що не дописав в переклейку
     elif sum_bot < sum_wp:
         result_glass_count += f'Не взяв з бота скло - {sum_wp - sum_bot} шт\n'
-        result_string_glass = get_additional_list_part(result_string_glass)
+        result_string_glass = get_additional_list_part(result_string_glass, 'bot') #тільки те що не взяв з бота
     else:
-        result_glass_count = ''
-        result_string_glass = ''
+        #дописати result_string_glass тільки те що треба взяти з бота
+        finally_string_glass = ''
+        for string_glass in result_string_glass.split('\n'):
+            if 'Візьми з бота' in string_glass:
+                finally_string_glass += string_glass + '\n'
+        result_string_glass = finally_string_glass
 
     return result_glass_count + result_string_glass + result_work_progress.rstrip()
 
+#проблема в тому що при рівній кількості скла не виводить те що треба
 
 #доробити відправку повідомлення в чат ++++++
 #зробити неявне порівняння +++++

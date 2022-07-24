@@ -112,8 +112,7 @@ def some_func(message):
         result = handler_wp.handler_wp(message.text, message.from_user.id)
         if result == '':
             work_progress_db.update_work_progress(message.from_user.id, message.text)
-            bot.send_message(message.chat.id, 'Все зійшлось', reply_markup=keyboard.confirm())
-            bot.answer_callback_query(message.chat.id, 'OK')
+            bot.send_message(message.chat.id, '\U0001F9A5Все зійшлось\U0001F9A5', reply_markup=keyboard.confirm())
         elif not result:
             pass
         else:
@@ -142,9 +141,14 @@ def handler_mes(call):
             if value == user_id:
                 user = key 
         wp_result = work_progress_db.select_work_progress(user_id)
-        # wp_result = '\n'.join(wp_result.split('\n'))
         work_progress_finnaly = f"{user}\n{wp_result}"
         bot.send_message(-740139442, work_progress_finnaly)
+        bot.answer_callback_query(call.id, '\U0001F916Відправив\U0001F91F')
+
+    elif call.data == 'reset_data_user':
+        user_id = call.from_user.id
+        work_progress_db.delete_user_work_progress(user_id)
+        bot.answer_callback_query(call.id, '\U0001F32AДанi скинуті в 0\U000026A1')
 
     elif call.data == 'clean_worksheet':
         engine.clean_worksheet()
@@ -191,8 +195,14 @@ def handler_mes(call):
 
 if __name__ == '__main__':
 
-    time_bud = iphone_db.time_base()
+    null_time = 'null_time'
+    reset_time = 'reset_time'
 
-    threading.Thread(target=engine.main_time, args=((time_bud, bot))).start()
+    time_bud = iphone_db.time_base(null_time)
+    time_reset_db_users = iphone_db.time_base(reset_time)
+
+    threading.Thread(target=engine.main_time, args=((time_bud, bot, null_time))).start() #список відсутніх позицій в 10:00
+
+    threading.Thread(target=engine.main_time, args=((time_reset_db_users, bot, reset_time))).start() #ресет бази даних
 
     bot.polling(non_stop=True, timeout=600)

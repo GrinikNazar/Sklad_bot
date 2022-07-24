@@ -2,6 +2,7 @@ import time
 import gspread
 import iphone_db
 import os
+import work_progress_db
 
 path = os.path.join(os.path.dirname(__file__), os.path.pardir, 'GoogleAPI/mypython-351009-5d090fd9b043.json')
 
@@ -239,7 +240,7 @@ def main(command):
 
     return result
 
-def main_time(time_b, bot):
+def main_time(time_b, bot, target):
     def time_mod(tm):
         time_b_list = tm.split(':')
         time_b_list = list(map(lambda x: int(x), time_b_list))
@@ -265,7 +266,10 @@ def main_time(time_b, bot):
     while True:
         time_sleep = sleep_time(time_mod(t), time_mod(time_b))
         time.sleep(time_sleep)
-        bot.send_message(-674239373, get_null_things())
+        if target == 'null_time':
+            bot.send_message(-674239373, get_null_things())
+        elif target == 'reset_time':
+            work_progress_db.reset_data_base()
         time.sleep(60)
         t = str_time_t()
 

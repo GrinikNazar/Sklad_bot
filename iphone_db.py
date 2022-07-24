@@ -46,9 +46,19 @@ with sqlite3. connect(os.path.join(os.path.dirname(__file__), 'iphone_parts.db')
         db.commit()
     
 
-    def time_base():
-        result = cb.execute('SELECT time FROM time WHERE count = 1').fetchall()[0]
+    def time_base(string_time_value):
+        count = 0
+        if string_time_value == 'null_time':
+            count = 1
+        elif string_time_value == 'reset_time':
+            count = 2
+        result = cb.execute(f'SELECT time FROM time WHERE count = {count}').fetchall()[0]
         return result[0].split("'")[1]
+
+
+    def select_hose():
+        result = cb.execute(f"SELECT * FROM users").fetchall()
+        return dict(result)
   
     
     def select_desc(parts):
@@ -80,3 +90,4 @@ with sqlite3. connect(os.path.join(os.path.dirname(__file__), 'iphone_parts.db')
 
             
 # print(select_desc('акб'))
+print(select_hose())

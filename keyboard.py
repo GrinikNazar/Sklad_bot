@@ -90,11 +90,14 @@ def list_ref_parts():
 
 def other_key(user):
     markup = types.InlineKeyboardMarkup()
-    markup.add(types.InlineKeyboardButton('WorkProgress', switch_inline_query_current_chat=f'_wp\n{work_progress_db.select_work_progress(user)}'), types.InlineKeyboardButton('Зміна часу відсутніх позицій', switch_inline_query_current_chat='_time\n'))
+    time_null = types.InlineKeyboardButton('Зміна часу відсутніх позицій', switch_inline_query_current_chat='_time\n')
+    work_progress = types.InlineKeyboardButton('WorkProgress', switch_inline_query_current_chat=f'_wp\n{work_progress_db.select_work_progress(user)}')
+    null_wp = types.InlineKeyboardButton('Обнулити свої дані', callback_data='reset_data_user')
+    markup.add(work_progress, null_wp, time_null)
     return markup
 
 
 def confirm():
     markup = types.InlineKeyboardMarkup()
-    markup.add(types.InlineKeyboardButton('Відправити в чат', callback_data='confirm_button'))
+    markup.add(types.InlineKeyboardButton('Відправити в чат \U0001F680', callback_data='confirm_button'))
     return markup
