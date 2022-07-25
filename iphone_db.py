@@ -59,6 +59,22 @@ with sqlite3. connect(os.path.join(os.path.dirname(__file__), 'iphone_parts.db')
     def select_hose():
         result = cb.execute(f"SELECT * FROM users").fetchall()
         return dict(result)
+
+
+    #функція для неявного порівняння
+    def compare_fuz(list_for_compare, part, variation):
+        result_list = []
+        number_compare = variation
+        while number_compare != 100:
+            for i in list_for_compare:
+                if fuzz.ratio(i.lower(), part.lower()) > number_compare:
+                    result_list.append(i)
+            if len(result_list) == 1:
+                break
+            else:
+                number_compare += 5
+                result_list = []
+        return result_list
   
     
     def select_desc(parts):
@@ -67,17 +83,7 @@ with sqlite3. connect(os.path.join(os.path.dirname(__file__), 'iphone_parts.db')
         for string in list_for_compare_db:
             list_for_compare.extend(string[0].split('\r\n'))
 
-        result_list = []
-        number_compare = 70
-        while number_compare != 100:
-            for i in list_for_compare:
-                if fuzz.ratio(i.lower(), parts.lower()) > number_compare:
-                    result_list.append(i)
-            if len(result_list) == 1:
-                break
-            else:
-                number_compare += 5
-                result_list = []
+        result_list = compare_fuz(list_for_compare, parts, 70)
 
         if len(result_list) == 1:
             part = result_list[0]
@@ -88,6 +94,22 @@ with sqlite3. connect(os.path.join(os.path.dirname(__file__), 'iphone_parts.db')
         else:
             return None
 
+    
+    #для визначення дозволу
+    def select_telephone_models():
+        result = cb.execute(f"SELECT name FROM telephone_models WHERE permission = 'yes'").fetchall()
+        result = [x[0] for x in result]
+        return result
+
+    
+    #використати для не явного порівняння
+    def select_all_telephone_name(model):
+        result = cb.execute(f"SELECT name FROM telephone_models").fetchall()
+        result = [x[0] for x in result]
+
+        result_list = compare_fuz(result, model, 60)
+
+        return result_list[0]
+
             
-# print(select_desc('акб'))
-print(select_hose())
+# print(select_desc(''))

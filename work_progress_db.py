@@ -1,14 +1,6 @@
 import sqlite3
 import os
-
-users = {
-    'Назар': 375385945,
-    'Ваня': 239724045,
-    'Саша': 350257882,
-    'Артур': 372369919,
-    'Льоша': 522646080,
-    'Вадим': 1318753542
-}
+import iphone_db
 
 with sqlite3.connect(os.path.join(os.path.dirname(__file__), 'work_progress.db'), check_same_thread=False) as db:
 
@@ -177,6 +169,7 @@ with sqlite3.connect(os.path.join(os.path.dirname(__file__), 'work_progress.db')
 
 
     def reset_data_base():
+        users = iphone_db.select_hose()
         for user in users.values():
             delete_from_table(user)
             create_table_users(user)
