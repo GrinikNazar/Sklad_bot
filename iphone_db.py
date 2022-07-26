@@ -96,7 +96,7 @@ with sqlite3. connect(os.path.join(os.path.dirname(__file__), 'iphone_parts.db')
 
     
     #для визначення дозволу
-    def select_telephone_models():
+    def select_telephone_models_where_yes():
         result = cb.execute(f"SELECT name FROM telephone_models WHERE permission = 'yes'").fetchall()
         result = [x[0] for x in result]
         return result

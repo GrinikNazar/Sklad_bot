@@ -46,6 +46,7 @@ def autorize_hose(func):
 @autorize_hose
 def send_message_welcome(message):
     bot.send_message(message.chat.id, 'Привіт, вибирай дію \U0001F916', reply_markup=keyboard.main_board())
+    # bot.send_message(message.chat.id, engine.open_read_me())
 
 
 @bot.message_handler(commands=['my_id'])
@@ -140,6 +141,15 @@ def handler_mes(call):
         user_id = call.from_user.id
         work_progress_db.delete_user_work_progress(user_id)
         bot.answer_callback_query(call.id, '\U0001F32AДанi скинуті в 0\U000026A1')
+
+    elif call.data == 'reset_all_data_user':
+        user_id = call.from_user.id
+        user_confirm_list = [users['Назар'], users['Ваня']]
+        if user_id in user_confirm_list:
+            work_progress_db.reset_data_base()
+            bot.answer_callback_query(call.id, 'Очищено')
+        else:
+            bot.answer_callback_query(call.id, 'Тобі не можна це робити, шланг')
 
     elif call.data == 'clean_worksheet':
         engine.clean_worksheet()

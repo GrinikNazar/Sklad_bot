@@ -143,29 +143,30 @@ with sqlite3.connect(os.path.join(os.path.dirname(__file__), 'work_progress.db')
     #Зберегти в таблиці запчастини які скидують в рогрес
     def write_db_work_progress(user, string, number = 1, db = db):
 
-        #записати в таблицю з склом
-        #заборонити добавляти скло у загальну табличку
-        glass = 'Скло'
-        #для скла своя таблиця
-        if glass in string:
-            if cb.execute(f'SELECT device FROM "{user}_glass" WHERE device = "{string}"').fetchone():
-                if cb.execute(f"SELECT glass_wp FROM '{user}_glass' WHERE device = '{string}'").fetchone()[0]:
-                    cb.execute(f'UPDATE "{user}_glass" SET glass_wp = glass_wp + {number} WHERE device = "{string}"')
+        #провіряти чи модель валідна
+        list_valid_model = iphone_db.select_telephone_models_where_yes()
+        if string.split(' ')[0] in list_valid_model:
+            glass = 'Скло'
+            #для скла своя таблиця
+            if glass in string:
+                if cb.execute(f'SELECT device FROM "{user}_glass" WHERE device = "{string}"').fetchone():
+                    if cb.execute(f"SELECT glass_wp FROM '{user}_glass' WHERE device = '{string}'").fetchone()[0]:
+                        cb.execute(f'UPDATE "{user}_glass" SET glass_wp = glass_wp + {number} WHERE device = "{string}"')
+                    else:
+                        cb.execute(f'UPDATE "{user}_glass" SET glass_wp = {number} WHERE device = "{string}"')
                 else:
-                    cb.execute(f'UPDATE "{user}_glass" SET glass_wp = {number} WHERE device = "{string}"')
-            else:
-                cb.execute(f"INSERT INTO '{user}_glass' (device, glass_wp, glass_from_bot) VALUES ('{string}', {number}, 0)")
-        #все інше
-        else:
-            if cb.execute(f'SELECT device FROM "{user}" WHERE device = "{string}"').fetchone():
-                cb.execute(f'UPDATE "{user}" SET wp_number = wp_number + {number} WHERE device = "{string}"')
+                    cb.execute(f"INSERT INTO '{user}_glass' (device, glass_wp, glass_from_bot) VALUES ('{string}', {number}, 0)")
+            #все інше
             else:
                 if cb.execute(f'SELECT device FROM "{user}" WHERE device = "{string}"').fetchone():
                     cb.execute(f'UPDATE "{user}" SET wp_number = wp_number + {number} WHERE device = "{string}"')
                 else:
-                    cb.execute(f'INSERT INTO "{user}" (wp_number, device, number) VALUES ({number}, "{string}", 0)')
+                    if cb.execute(f'SELECT device FROM "{user}" WHERE device = "{string}"').fetchone():
+                        cb.execute(f'UPDATE "{user}" SET wp_number = wp_number + {number} WHERE device = "{string}"')
+                    else:
+                        cb.execute(f'INSERT INTO "{user}" (wp_number, device, number) VALUES ({number}, "{string}", 0)')
 
-        db.commit()
+            db.commit()
 
 
     def reset_data_base():

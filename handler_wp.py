@@ -16,7 +16,10 @@ def choose_model_parse(space_split):
     id_model = [i for i in id_model if i != '']
     id_model.remove(id_model[0])
     model = id_model.pop(0)
-    model = iphone_db.select_all_telephone_name(model)
+    try:
+        model = iphone_db.select_all_telephone_name(model)
+    except IndexError:
+        model = model
     id_model.insert(0, model)
     return ' '.join(id_model).strip()
 
@@ -34,8 +37,6 @@ def string_separate(string):
             result_list.append(f'{model} {db_result}')
     return result_list 
 
-
-# print(string_separate('id151 iphone 8 - нова акб'))
 
 def string_separate_brackets(string):
     dict_of_patrs = {}
@@ -224,8 +225,8 @@ def handler_wp(message, user):
     return result_glass_count + result_string_glass + result_work_progress.rstrip()
 
 
-#добавити неявне порівняння для моделей
-#зробити можливість писати інші моделі і виключити їх із списку роспізнавання
+#добавити неявне порівняння для моделей +++++
+#зробити можливість писати інші моделі і виключити їх із списку роспізнавання ++++
 #проблема в тому що при рівній кількості скла не виводить те що треба ++++++
 #доробити відправку повідомлення в чат ++++++
 #зробити неявне порівняння +++++
