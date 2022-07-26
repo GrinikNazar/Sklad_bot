@@ -46,7 +46,12 @@ def autorize_hose(func):
 @autorize_hose
 def send_message_welcome(message):
     bot.send_message(message.chat.id, 'Привіт, вибирай дію \U0001F916', reply_markup=keyboard.main_board())
-    # bot.send_message(message.chat.id, engine.open_read_me())
+
+
+@bot.message_handler(commands=['readme'])
+@autorize_hose
+def send_message_welcome(message):
+    bot.send_message(message.chat.id, engine.open_read_me())
 
 
 @bot.message_handler(commands=['my_id'])
@@ -183,8 +188,8 @@ def handler_mes(call):
             if len(result_main) > 2:
                 # iphone_db.tabble_for_hose(call.from_user.username, result_main[2])
                 work_progress_db.tabble_for_hose(call.from_user.id, result_main[2])
-            # if result_main[1]:
-            #     bot.send_message(-674239373, f'{call.from_user.first_name}: {result_main[0]}')
+            if result_main[1]:
+                bot.send_message(-674239373, f'{call.from_user.first_name}: {result_main[0]}')
 
         elif call.data.split('_')[1] == 'search':
             bot.edit_message_text(result_main, call.message.chat.id, message_id=call.message.message_id)

@@ -83,7 +83,7 @@ with sqlite3. connect(os.path.join(os.path.dirname(__file__), 'iphone_parts.db')
         for string in list_for_compare_db:
             list_for_compare.extend(string[0].split('\r\n'))
 
-        result_list = compare_fuz(list_for_compare, parts, 70)
+        result_list = compare_fuz(list_for_compare, parts, 80)
 
         if len(result_list) == 1:
             part = result_list[0]

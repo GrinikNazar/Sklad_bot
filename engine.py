@@ -8,8 +8,8 @@ path = os.path.join(os.path.dirname(__file__), os.path.pardir, 'GoogleAPI/mypyth
 
 sa = gspread.service_account(filename=path)
 
-# sh = sa.open('inStyle_parts')
-sh = sa.open('Test_parts')
+sh = sa.open('inStyle_parts')
+# sh = sa.open('Test_parts')
 
 
 def gen_list_models_with_color(s, apple):
@@ -317,10 +317,6 @@ def open_read_me():
 Повна очистка бази даних буде відбуватись автоматично кожен день зранку о "08:45"
 3. "Зміна часу відсутніх позицій" - це якщо треба поміняти час коли скидується те чого нема. Короче не мав куди засунути цю функцію. Її не клацай.
 """
-    # with open(os.path.join(os.path.dirname(__file__), "instruction.txt"), "r") as readme:
-    #     text = readme.read()
-
-    
     return text
 
 # print(open_read_me())
