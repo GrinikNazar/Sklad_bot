@@ -52,6 +52,7 @@ def send_message_welcome(message):
 @autorize_hose
 def send_message_welcome(message):
     bot.send_message(message.chat.id, engine.open_read_me())
+    # bot.send_photo(message.chat.id, 'WP.jpg')
 
 
 @bot.message_handler(commands=['my_id'])
@@ -110,8 +111,9 @@ def some_func(message):
         if result == '':
             work_progress_db.update_work_progress(message.from_user.id, message.text)
             bot.send_message(message.chat.id, '\U0001F9A5Все зійшлось\U0001F9A5', reply_markup=keyboard.confirm())
-        elif not result:
-            pass
+        elif not result: #випадок коли нічого не взято бота і скидують прогрес
+            work_progress_db.update_work_progress(message.from_user.id, message.text)
+            bot.send_message(message.chat.id, '\U0001F9A5Все зійшлось\U0001F9A5', reply_markup=keyboard.confirm())
         else:
             if result == True:
                 bot.send_message(message.chat.id, result[0])
