@@ -9,6 +9,7 @@ import threading
 import random
 import handler_wp
 import work_progress_db
+import os
 
 bot = telebot.TeleBot(conf.conf_test['token'])
 
@@ -51,8 +52,8 @@ def send_message_welcome(message):
 @bot.message_handler(commands=['readme'])
 @autorize_hose
 def send_message_welcome(message):
-    bot.send_message(message.chat.id, engine.open_read_me())
-    # bot.send_photo(message.chat.id, 'WP.jpg')
+    with open(os.path.join(os.path.dirname(__file__), 'WP.jpg'), 'rb') as photo:
+        bot.send_photo(message.chat.id, photo)
 
 
 @bot.message_handler(commands=['my_id'])
@@ -108,6 +109,7 @@ def some_func(message):
     # WorkProgress    
     elif message.text.split('\n')[0].rstrip() == f'@{bot.get_me().username} _wp':
         result = handler_wp.handler_wp(message.text, message.from_user.id)
+        #TO DO: обєднати умови
         if result == '':
             work_progress_db.update_work_progress(message.from_user.id, message.text)
             bot.send_message(message.chat.id, '\U0001F9A5Все зійшлось\U0001F9A5', reply_markup=keyboard.confirm())
@@ -121,6 +123,7 @@ def some_func(message):
             bot.send_message(message.chat.id, result)
         
     else:
+        #TO DO: TypeError
         bot.send_message(message.chat.id, f'{message.text}', reply_markup=keyboard.action_menu_categories(message.text))
 
 
