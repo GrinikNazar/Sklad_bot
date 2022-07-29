@@ -182,7 +182,6 @@ def handler_mes(call):
         bot.edit_message_text(f'{text_message}:  {markup_key[1]}', call.message.chat.id, message_id=call.message.message_id, reply_markup=markup_key[0])
 
     elif len(call.data.split('_')) == 6 or call.data.split('_')[1] == 'search':
-        # bot.edit_message_text(call.data, call.message.chat.id, message_id=call.message.message_id)
         bot.edit_message_text(random.choice(expect), call.message.chat.id, message_id=call.message.message_id)
         result_main = engine.main(call.data)
 
@@ -191,8 +190,8 @@ def handler_mes(call):
                 bot.edit_message_text(result_main[0], call.message.chat.id, message_id=call.message.message_id)
                 if len(result_main) > 2:
                     work_progress_db.tabble_for_hose(call.from_user.id, result_main[2])
-            # if result_main[1]:
-            #     bot.send_message(-674239373, f'{call.from_user.first_name}: {result_main[0]}')
+                if result_main[1]:
+                    bot.send_message(-674239373, f'{call.from_user.first_name}: {result_main[0]}')
             except TypeError:
                 bot.edit_message_text('Ой, шось сталось', call.message.chat.id, message_id=call.message.message_id)
 

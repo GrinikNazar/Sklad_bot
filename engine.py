@@ -8,8 +8,8 @@ path = os.path.join(os.path.dirname(__file__), os.path.pardir, 'GoogleAPI/mypyth
 
 sa = gspread.service_account(filename=path)
 
-# sh = sa.open('inStyle_parts')
-sh = sa.open('Test_parts')
+sh = sa.open('inStyle_parts')
+# sh = sa.open('Test_parts')
 
 
 def gen_list_models_with_color(s, apple):
