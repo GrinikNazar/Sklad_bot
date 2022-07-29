@@ -109,11 +109,7 @@ def some_func(message):
     # WorkProgress    
     elif message.text.split('\n')[0].rstrip() == f'@{bot.get_me().username} _wp':
         result = handler_wp.handler_wp(message.text, message.from_user.id)
-        #TO DO: обєднати умови
-        if result == '':
-            work_progress_db.update_work_progress(message.from_user.id, message.text)
-            bot.send_message(message.chat.id, '\U0001F9A5Все зійшлось\U0001F9A5', reply_markup=keyboard.confirm())
-        elif not result: #випадок коли нічого не взято бота і скидують прогрес
+        if result == '' or not result:
             work_progress_db.update_work_progress(message.from_user.id, message.text)
             bot.send_message(message.chat.id, '\U0001F9A5Все зійшлось\U0001F9A5', reply_markup=keyboard.confirm())
         else:
@@ -123,8 +119,10 @@ def some_func(message):
             bot.send_message(message.chat.id, result)
         
     else:
-        #TO DO: TypeError
-        bot.send_message(message.chat.id, f'{message.text}', reply_markup=keyboard.action_menu_categories(message.text))
+        try:
+            bot.send_message(message.chat.id, f'{message.text}', reply_markup=keyboard.action_menu_categories(message.text))
+        except TypeError:
+            bot.send_message(users['Назар'], 'Поламалось на "keyboard.action_menu_categories"')
 
 
 @bot.callback_query_handler(func=lambda call: True)
@@ -189,12 +187,14 @@ def handler_mes(call):
         result_main = engine.main(call.data)
 
         if call.data.split('_')[1] == 'take':
-            bot.edit_message_text(result_main[0], call.message.chat.id, message_id=call.message.message_id)
-            if len(result_main) > 2:
-                # iphone_db.tabble_for_hose(call.from_user.username, result_main[2])
-                work_progress_db.tabble_for_hose(call.from_user.id, result_main[2])
-            if result_main[1]:
-                bot.send_message(-674239373, f'{call.from_user.first_name}: {result_main[0]}')
+            try:
+                bot.edit_message_text(result_main[0], call.message.chat.id, message_id=call.message.message_id)
+                if len(result_main) > 2:
+                    work_progress_db.tabble_for_hose(call.from_user.id, result_main[2])
+            # if result_main[1]:
+            #     bot.send_message(-674239373, f'{call.from_user.first_name}: {result_main[0]}')
+            except TypeError:
+                bot.edit_message_text('Ой, шось сталось', call.message.chat.id, message_id=call.message.message_id)
 
         elif call.data.split('_')[1] == 'search':
             bot.edit_message_text(result_main, call.message.chat.id, message_id=call.message.message_id)

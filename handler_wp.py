@@ -64,7 +64,8 @@ def string_separate_brackets(string):
 
 #Витягує кількісь скла з повідомлення яке скидають в work_progress
 def get_count_glass_replace(message):
-    message = message.split('\n')[1]
+    message_split = message.split('\n')
+    message = message_split[1]
     count_glass = message.split('-')[-1]
     if count_glass == ' ':
         return 0
@@ -182,7 +183,7 @@ def get_additional_list_part(result_string_glass, string_for_chek):
 
 def handler_wp(message, user):
 # def handler_wp(user):
-    # message = work_progress_db.select_work_progress(user)
+#     message = work_progress_db.select_work_progress(user)
 
     count_glass_replace = get_count_glass_replace(message) #кількість скла з повідомлення зверху
 
@@ -200,9 +201,6 @@ def handler_wp(message, user):
     for item in work_progress_glass:
         sum_bot += item[1]
         sum_wp += item[2]
-
-    if not work_progress and not work_progress_glass:
-        return None
 
     result_work_progress = wp_position(work_progress)
     result_string_glass = wp_position(work_progress_glass)
@@ -224,4 +222,15 @@ def handler_wp(message, user):
 
     return result_glass_count + result_string_glass + result_work_progress.rstrip()
 
-# print(handler_wp(375385945))
+# message = """@GusiGusiGagagaBot _wp
+# Переклеїв екранів - 
+# Видано готових - 
+# Вдано клієнтських - 
+# Не виданих - 
+
+# Готові
+
+
+# Клієнтські"""
+
+# print(handler_wp(message, 375385945))

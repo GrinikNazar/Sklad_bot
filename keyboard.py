@@ -69,12 +69,14 @@ def button_inine(call):
 def action_menu_categories(message):
     change_categories = iphone_db.gen_keyboard(message[1:])
     markup = types.InlineKeyboardMarkup()
-    # TO DO: зробити обробку виключення TypeError
-    if change_categories[1] == 'order':
-        markup.add(types.InlineKeyboardButton('Взяти', callback_data=f'{change_categories[0]}_take'), types.InlineKeyboardButton('Знайти', callback_data=f'{change_categories[0]}_search'), types.InlineKeyboardButton('Список', callback_data=f'list_order_{change_categories[0]}'))
-    else:
-        markup.add(types.InlineKeyboardButton('Взяти', callback_data=f'{change_categories[0]}_take'), types.InlineKeyboardButton('Знайти', callback_data=f'{change_categories[0]}_search'))
-    return markup
+    try:
+        if change_categories[1] == 'order':
+            markup.add(types.InlineKeyboardButton('Взяти', callback_data=f'{change_categories[0]}_take'), types.InlineKeyboardButton('Знайти', callback_data=f'{change_categories[0]}_search'), types.InlineKeyboardButton('Список', callback_data=f'list_order_{change_categories[0]}'))
+        else:
+            markup.add(types.InlineKeyboardButton('Взяти', callback_data=f'{change_categories[0]}_take'), types.InlineKeyboardButton('Знайти', callback_data=f'{change_categories[0]}_search'))
+        return markup
+    except TypeError:
+        print('Проблема з "order"')
     
 
 def add_to_list():
