@@ -54,7 +54,11 @@ def string_separate_brackets(string):
         else:
             key_dict_of_parts = part
             number_part = 1
-        key_dict_of_parts = f'{model} {iphone_db.select_desc(key_dict_of_parts)}'
+        select_desc_dictionary_part = iphone_db.select_desc(key_dict_of_parts)
+        if not select_desc_dictionary_part:
+            continue
+        #добавити умову яка буде робити пустий запис якщо результат запиту пустий 
+        key_dict_of_parts = f'{model} {select_desc_dictionary_part}' #формується ключ словника
         if key_dict_of_parts in dict_of_patrs.keys():
             dict_of_patrs[key_dict_of_parts] += number_part
         else:
@@ -123,7 +127,6 @@ def dict_wp_compare(list_compare):
 #треба зробити повернення з функції словника позицій які не сходяться
 def handler_compare(user_id, values_from_message_bot): #повинна повернути словник - різницю
     message = work_progress_db.select_work_progress(user_id) #отримуєм останнє значення з ворк прогрес бази даних
-    #value_list - список з повідомлення бота
     values_from_data_base = wp_handler_text(message)
 
     result_dict_from_db = dict_wp_compare(values_from_data_base) 
@@ -187,8 +190,8 @@ def handler_wp(message, user):
 
     count_glass_replace = get_count_glass_replace(message) #кількість скла з повідомлення зверху
 
-    list_of_values = wp_handler_text(message)
-    dict_handler_compare = handler_compare(user, list_of_values)
+    list_of_values = wp_handler_text(message)  #розпарсити те що прийшло з повідомлення
+    dict_handler_compare = handler_compare(user, list_of_values) # користувач/ список 
 
     for key, value in dict_handler_compare.items():
         work_progress_db.write_db_work_progress(user, key, value)
@@ -229,7 +232,7 @@ def handler_wp(message, user):
 # Не виданих - 
 
 # Готові
-
+# id111 iphone 8 - нижній шлейф(проклейка)
 
 # Клієнтські"""
 

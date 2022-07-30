@@ -37,6 +37,10 @@ with sqlite3. connect(os.path.join(os.path.dirname(__file__), 'iphone_parts.db')
         return cb.execute('SELECT uk FROM keyboard WHERE eng = ?', (en,)).fetchone()[0]
 
 
+    def get_smiles_from_db(en):
+        return cb.execute('SELECT smiles FROM keyboard WHERE eng = ?', (en,)).fetchone()[0]
+
+
     def all_sheets():
         return cb.execute('SELECT uk, round FROM keyboard').fetchall()
 
@@ -110,6 +114,3 @@ with sqlite3. connect(os.path.join(os.path.dirname(__file__), 'iphone_parts.db')
         result_list = compare_fuz(result, model, 60)
 
         return result_list[0]
-
-            
-# print(select_desc(''))

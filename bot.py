@@ -43,6 +43,12 @@ def autorize_hose(func):
     return wrapper
 
 
+def get_smile_and_uk_name(call):
+    message_description = iphone_db.ret_uk_request(call.data.split('_')[0])
+    smile = iphone_db.get_smiles_from_db(call.data.split('_')[0])
+    return f'{smile}{message_description}'
+
+
 @bot.message_handler(commands=['start'])
 @autorize_hose
 def send_message_welcome(message):
@@ -92,8 +98,6 @@ def other_function(message):
 @bot.message_handler(content_types=['text'])
 @autorize_hose
 def some_func(message):
-    global text_message
-    text_message = message.text
     if message.text.split('\n')[0].rstrip() == f'@{bot.get_me().username} _add_list':
         bot.send_message(message.chat.id, 'Секундочку...')
         try:
@@ -129,10 +133,10 @@ def some_func(message):
 def handler_mes(call):
     
     if call.data.split('_')[-1] == 'back' and len(call.data.split('_')) == 3:
-        bot.edit_message_text(text_message, call.message.chat.id, message_id=call.message.message_id, reply_markup=keyboard.action_menu_categories(text_message))
+        bot.edit_message_text(get_smile_and_uk_name(call), call.message.chat.id, message_id=call.message.message_id, reply_markup=keyboard.action_menu_categories(get_smile_and_uk_name(call)))
     
     elif call.data.split('_')[:2] == 'list_order'.split('_'):
-        result = engine.list_copy_and_battery(call.data.split('_')[-1], text_message)
+        result = engine.list_copy_and_battery(call.data.split('_')[-1], iphone_db.get_smiles_from_db(call.data.split('_')[-1]))
         bot.edit_message_text(result, call.message.chat.id, message_id=call.message.message_id)
     
     elif call.data == 'confirm_button':
@@ -179,7 +183,7 @@ def handler_mes(call):
 
     elif call.data.split('_')[-1] == 'back':
         markup_key = keyboard.button_inine(('_').join(call.data.split('_')[:-2]))
-        bot.edit_message_text(f'{text_message}:  {markup_key[1]}', call.message.chat.id, message_id=call.message.message_id, reply_markup=markup_key[0])
+        bot.edit_message_text(f'{get_smile_and_uk_name(call)}:  {markup_key[1]}', call.message.chat.id, message_id=call.message.message_id, reply_markup=markup_key[0])
 
     elif len(call.data.split('_')) == 6 or call.data.split('_')[1] == 'search':
         bot.edit_message_text(random.choice(expect), call.message.chat.id, message_id=call.message.message_id)
@@ -196,11 +200,11 @@ def handler_mes(call):
                 bot.edit_message_text('Ой, шось сталось', call.message.chat.id, message_id=call.message.message_id)
 
         elif call.data.split('_')[1] == 'search':
-            bot.edit_message_text(result_main, call.message.chat.id, message_id=call.message.message_id)
+            bot.edit_message_text(f"{iphone_db.get_smiles_from_db(call.data.split('_')[0])}{result_main}", call.message.chat.id, message_id=call.message.message_id)
 
     else:
         markup_key = keyboard.button_inine(call.data)
-        bot.edit_message_text(f'{text_message}:  {markup_key[1]}', call.message.chat.id, message_id=call.message.message_id, reply_markup=markup_key[0])
+        bot.edit_message_text(f'{get_smile_and_uk_name(call)}:  {markup_key[1]}', call.message.chat.id, message_id=call.message.message_id, reply_markup=markup_key[0])
 
 
 if __name__ == '__main__':
@@ -213,6 +217,6 @@ if __name__ == '__main__':
 
     threading.Thread(target=engine.main_time, args=((time_bud, bot, null_time))).start() #список відсутніх позицій в 10:00
 
-    threading.Thread(target=engine.main_time, args=((time_reset_db_users, bot, reset_time))).start() #ресет бази даних
+    threading.Thread(target=engine.main_time, args=((time_reset_db_users, bot, reset_time))).start() #ресет бази даних о 08:45
 
     bot.polling(non_stop=True, timeout=600)

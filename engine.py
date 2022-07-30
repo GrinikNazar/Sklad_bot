@@ -180,7 +180,7 @@ def list_ref_parts(*args):
 def list_copy_and_battery(part, emod):
     sheet = iphone_db.ret_uk_request(part)
     wk = sh.worksheet(sheet)
-    list_order = f'{emod[0]}{sheet}: Кількість до максимуму\n'
+    list_order = f'{emod}{sheet}: Кількість до максимуму\n'
     num = 0
     for row in wk.get_all_values()[1:]:
         row_max = int(row[2])
