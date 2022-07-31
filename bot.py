@@ -11,7 +11,7 @@ import handler_wp
 import work_progress_db
 import os
 
-bot = telebot.TeleBot(conf.conf_test['token'])
+bot = telebot.TeleBot(conf.config['token'])
 
 users = iphone_db.select_hose()
 
@@ -146,7 +146,7 @@ def handler_mes(call):
                 user = key 
         wp_result = work_progress_db.select_work_progress(user_id)
         work_progress_finnaly = f"{user}\n{wp_result}"
-        bot.send_message(-740139442, work_progress_finnaly)
+        bot.send_message(-1001618485038, work_progress_finnaly)
         bot.answer_callback_query(call.id, '\U0001F916Відправив\U0001F91F')
 
     elif call.data == 'reset_data_user':
