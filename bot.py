@@ -26,13 +26,15 @@ expect = [
     'Скидиш',
 ]
 
+сhat_work_progress = -1001618485038
+
 
 def autorize_hose(func):
     def wrapper(message):
         if message.from_user.id in users.values():
-            if message.chat.id == -740139442 and message.text.split('\n')[0].rstrip() == '@FlarkenCatBot _wp':
+            if message.chat.id == сhat_work_progress and message.text.split('\n')[0].rstrip() == '@FlarkenCatBot _wp':
                 result = func(message)
-            elif message.chat.id == -740139442:
+            elif message.chat.id == сhat_work_progress:
                 return None
             else:
                 result = func(message)
@@ -146,7 +148,7 @@ def handler_mes(call):
                 user = key 
         wp_result = work_progress_db.select_work_progress(user_id)
         work_progress_finnaly = f"{user}\n{wp_result}"
-        bot.send_message(-1001618485038, work_progress_finnaly)
+        bot.send_message(сhat_work_progress, work_progress_finnaly)
         bot.answer_callback_query(call.id, '\U0001F916Відправив\U0001F91F')
 
     elif call.data == 'reset_data_user':
