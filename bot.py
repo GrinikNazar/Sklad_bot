@@ -38,7 +38,7 @@ def autorize_hose(func):
                 return None
             else:
                 result = func(message)
-        elif message.from_user.id in users.values() and message.chat.id == сhat_work_progress: #для не ваторизованих
+        elif message.from_user.id not in users.values() and message.chat.id == сhat_work_progress: #для не ваторизованих
             return None
         else:
             result = bot.send_message(message.chat.id, 'Ти не авторизований, та й таке \U0001F4A9')
