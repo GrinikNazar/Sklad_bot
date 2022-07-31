@@ -34,10 +34,12 @@ def autorize_hose(func):
         if message.from_user.id in users.values():
             if message.chat.id == сhat_work_progress and message.text.split('\n')[0].rstrip() == '@FlarkenCatBot _wp':
                 result = func(message)
-            elif message.chat.id == сhat_work_progress:
+            elif message.chat.id == сhat_work_progress: #для авторизованих користувачів
                 return None
             else:
                 result = func(message)
+        elif message.from_user.id in users.values() and message.chat.id == сhat_work_progress: #для не ваторизованих
+            return None
         else:
             result = bot.send_message(message.chat.id, 'Ти не авторизований, та й таке \U0001F4A9')
             bot.send_message(users['Назар'], f'Спроба запуску бота:\n{message.from_user.first_name}\n{message.from_user.username}\n{message.from_user.id}')
