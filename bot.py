@@ -4,7 +4,6 @@ import iphone_db
 import conf
 import telebot
 from telebot import types
-import time
 import threading
 import random
 import handler_wp
@@ -12,6 +11,7 @@ import work_progress_db
 import os
 
 bot = telebot.TeleBot(conf.config['token'])
+# bot = telebot.TeleBot(conf.conf_test['token'])
 
 users = iphone_db.select_hose()
 
@@ -27,6 +27,7 @@ expect = [
 ]
 
 сhat_work_progress = -1001618485038
+# сhat_work_progress = -740139442
 
 
 def autorize_hose(func):
@@ -152,6 +153,8 @@ def handler_mes(call):
         work_progress_finnaly = f"{user}\n{wp_result}"
         bot.send_message(сhat_work_progress, work_progress_finnaly)
         bot.answer_callback_query(call.id, '\U0001F916Відправив\U0001F91F')
+        #викликається функція яка в iphone_db записує дані/ передати в функцію user_id
+        iphone_db.write_confirm_user(user_id)
 
     elif call.data == 'reset_data_user':
         user_id = call.from_user.id
@@ -215,12 +218,16 @@ if __name__ == '__main__':
 
     null_time = 'null_time'
     reset_time = 'reset_time'
+    wp_reminder = 'wp_reminder'
 
     time_bud = iphone_db.time_base(null_time)
     time_reset_db_users = iphone_db.time_base(reset_time)
+    time_wp_reminder = iphone_db.time_base(wp_reminder)
 
     threading.Thread(target=engine.main_time, args=((time_bud, bot, null_time))).start() #список відсутніх позицій в 10:00
 
     threading.Thread(target=engine.main_time, args=((time_reset_db_users, bot, reset_time))).start() #ресет бази даних о 08:45
+
+    threading.Thread(target=engine.main_time, args=((time_wp_reminder, bot, wp_reminder))).start()
 
     bot.polling(non_stop=True, timeout=600)

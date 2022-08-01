@@ -90,6 +90,7 @@ with sqlite3.connect(os.path.join(os.path.dirname(__file__), 'work_progress.db')
         cb.execute(f"UPDATE '{user_id}_glass' SET glass_wp = 0")
         cb.execute(f"DELETE FROM '{user_id}_maket'")
         create_table_users_maket(user_id)
+        iphone_db.reset_to_null_user_from_button(user_id)
 
         db.commit()
 
@@ -176,7 +177,5 @@ with sqlite3.connect(os.path.join(os.path.dirname(__file__), 'work_progress.db')
             create_table_users(user)
             create_table_users_maket(user)
             create_table_glass(user)
+            iphone_db.make_null_confirm_data()
 
-
-# reset_data_base()
-# print(select_work_progress(375385945))

@@ -240,6 +240,13 @@ def main(command):
 
     return result
 
+
+def handler_confirm_data(bot, users_null_list):
+    message = '🔴Скинь WorkProgress🔴'
+    for user in users_null_list:
+        bot.send_message(user, message)
+
+
 def main_time(time_b, bot, target):
     def time_mod(tm):
         time_b_list = tm.split(':')
@@ -270,6 +277,8 @@ def main_time(time_b, bot, target):
             bot.send_message(-674239373, get_null_things())
         elif target == 'reset_time':
             work_progress_db.reset_data_base()
+        elif target == 'wp_reminder':
+            handler_confirm_data(bot, iphone_db.get_users_where_confirm_null()) #нагадування за WP
         time.sleep(60)
         t = str_time_t()
 

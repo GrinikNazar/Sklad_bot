@@ -56,13 +56,40 @@ with sqlite3. connect(os.path.join(os.path.dirname(__file__), 'iphone_parts.db')
             count = 1
         elif string_time_value == 'reset_time':
             count = 2
+        elif string_time_value == 'wp_reminder':
+            count = 3
         result = cb.execute(f'SELECT time FROM time WHERE count = {count}').fetchall()[0]
         return result[0].split("'")[1]
 
 
     def select_hose():
-        result = cb.execute(f"SELECT * FROM users").fetchall()
+        result = cb.execute(f"SELECT name, telid FROM users").fetchall()
         return dict(result)
+
+
+    #функція запису в базу коли жмуть конфірм 
+    def write_confirm_user(user_id, db = db):
+        cb.execute(f'UPDATE users SET confirm = confirm + 1 WHERE telid = {user_id}')
+        db.commit()
+    
+
+    #функція яка витягує ід користувачів які не скинули WP
+    def get_users_where_confirm_null():
+        result = cb.execute("SELECT telid FROM users WHERE confirm = 0").fetchall()
+        result = [x[0] for x in result]
+        return result
+
+
+    #обнулення даних confirm
+    def make_null_confirm_data(db = db):
+        cb.execute(f'UPDATE users SET confirm = 0')
+        cb.execute(f"UPDATE users SET confirm = 1 WHERE name = 'Ваня'")
+        db.commit()
+
+
+    def reset_to_null_user_from_button(user_id, db = db):
+        cb.execute(f'UPDATE users SET confirm = 0 WHERE telid = {user_id}')
+        db.commit()
 
 
     #функція для неявного порівняння
