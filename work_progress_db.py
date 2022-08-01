@@ -178,4 +178,3 @@ with sqlite3.connect(os.path.join(os.path.dirname(__file__), 'work_progress.db')
             create_table_users_maket(user)
             create_table_glass(user)
             iphone_db.make_null_confirm_data()
-
