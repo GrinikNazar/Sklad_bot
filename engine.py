@@ -181,13 +181,11 @@ def list_copy_and_battery(part, emod):
     sheet = iphone_db.ret_uk_request(part)
     wk = sh.worksheet(sheet)
     list_order = f'{emod}{sheet}: Кількість до максимуму\n'
-    num = 0
     for row in wk.get_all_values()[1:]:
         row_max = int(row[2])
         row_avail = int(row[1])
         if row_avail < row_max:
-            num += 1
-            list_order += f'{num}. {row[0]} - {row_max - row_avail}\n'
+            list_order += f'{row[0]} - {row_max - row_avail}\n'
     return list_order.rstrip()
 
 
