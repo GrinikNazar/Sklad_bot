@@ -170,10 +170,22 @@ with sqlite3.connect(os.path.join(os.path.dirname(__file__), 'work_progress.db')
             db.commit()
 
 
+    def drop_table_user(user_id, db = db):
+        cb.execute(f"DROP TABLE '{user_id}'")
+        cb.execute(f"DROP TABLE '{user_id}_maket'")
+        cb.execute(f"DROP TABLE '{user_id}_glass'")
+        db.commit()
+
+
     def reset_data_base():
         users = iphone_db.select_hose()
         for user in users.values():
-            delete_from_table(user)
+            try:
+                delete_from_table(user)
+            except sqlite3.OperationalError: 
+                create_table_users(user)
+                create_table_users_maket(user)
+                create_table_glass(user)
             create_table_users(user)
             create_table_users_maket(user)
             create_table_glass(user)

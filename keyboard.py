@@ -106,3 +106,25 @@ def confirm():
     markup = types.InlineKeyboardMarkup()
     markup.add(types.InlineKeyboardButton('Відправити в чат \U0001F680', callback_data='confirm_button'))
     return markup
+
+
+def add_user(user_name, user_nick_name, user_id):
+    markup = types.InlineKeyboardMarkup()
+    markup.add(types.InlineKeyboardButton('Добавити \U00002795', callback_data=f'add-user-to-bot_{user_name}_{user_nick_name}_{user_id}'))
+    return markup
+
+
+def users_list_to_delete():
+    markup = types.InlineKeyboardMarkup()
+    users = iphone_db.select_hose()
+    for user, user_id in users.items():
+        markup.add(types.InlineKeyboardButton(f'{user}', callback_data=f'delete-user-from-bot_{user}_{user_id}'))
+    return markup
+
+
+def user_delete_confirm_button(user_name, user_id):
+    markup = types.InlineKeyboardMarkup()
+    yes = types.InlineKeyboardButton('Так \U00002714', callback_data=f'delete-user-from-bot-yes-or-no_yes_{user_name}_{user_id}')
+    no = types.InlineKeyboardButton('Ні \U0000274C', callback_data=f'delete-user-from-bot-yes-or-no_no_{user_name}_{user_id}')
+    markup.add(yes, no)
+    return markup

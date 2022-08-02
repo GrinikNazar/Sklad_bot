@@ -10,8 +10,8 @@ import handler_wp
 import work_progress_db
 import os
 
-bot = telebot.TeleBot(conf.config['token'])
-# bot = telebot.TeleBot(conf.conf_test['token'])
+# bot = telebot.TeleBot(conf.config['token'])
+bot = telebot.TeleBot(conf.conf_test['token'])
 
 users = iphone_db.select_hose()
 
@@ -69,9 +69,13 @@ def send_message_welcome(message):
 
 @bot.message_handler(commands=['my_id'])
 def get_my_id(message):
-    bot.send_message(375385945, f'{message.from_user.first_name}: {message.from_user.username}: {message.from_user.id}')
+    user_firs_name = message.from_user.first_name
+    user_nick_name = message.from_user.username
+    user_id = message.from_user.id
+    bot.send_message(users['Назар'], f'{user_firs_name}: {user_id}', reply_markup=keyboard.add_user(user_firs_name, user_nick_name, user_id))
+
     if message.from_user.id != message.chat.id:
-        bot.send_message(375385945, f'id чату:{message.chat.id}')
+        bot.send_message(users['Назар'], f'id чату:{message.chat.id}')
 
 
 @bot.message_handler(commands=['list_ref'])
@@ -98,6 +102,15 @@ def get_null(message):
 @autorize_hose
 def other_function(message):
     bot.send_message(message.chat.id, 'Додаткові можливості Флеркена', reply_markup=keyboard.other_key(message.from_user.id))
+
+
+@bot.message_handler(commands=['user_delete'])
+@autorize_hose
+def delete_users_from_bot(message):
+    if message.from_user.id == users['Ваня'] or message.from_user.id == users['Назар']:
+        bot.send_message(message.chat.id, 'Список користувачів \U0001F4DD', reply_markup=keyboard.users_list_to_delete())
+    else:
+        bot.send_message(message.chat.id, 'У тебе немає доступу \U0001F4A9')
 
 
 @bot.message_handler(content_types=['text'])
@@ -187,6 +200,31 @@ def handler_mes(call):
                 bot.send_message(call.message.chat.id, res)
             else:
                 bot.send_message(call.message.chat.id, result[-1])
+
+
+    elif call.data.split('_')[0] == 'add-user-to-bot':
+        user_name = call.data.split('_')[1]
+        user_nick_name = call.data.split('_')[2]
+        user_id = int(call.data.split('_')[-1])
+        last_name = ''
+        last_name = user_nick_name if user_name == 'None' else user_name
+        answer_db_request = iphone_db.write_new_user_to_data_base(last_name, user_id)
+        bot.answer_callback_query(call.id, answer_db_request)
+
+    elif call.data.split('_')[0] == 'delete-user-from-bot':
+        user_name = call.data.split('_')[1]
+        user_id = int(call.data.split('_')[-1])
+        bot.edit_message_text(f'Дійсно видалити користувача {user_name} ???', call.message.chat.id, message_id=call.message.message_id, reply_markup=keyboard.user_delete_confirm_button(user_name, user_id))
+
+    elif call.data.split('_')[0] == 'delete-user-from-bot-yes-or-no':
+        result = call.data.split('_')[1]
+        user_name = call.data.split('_')[2]
+        user_id = int(call.data.split('_')[-1])
+        if result == 'yes':
+            iphone_db.delete_from_db_users(user_id)
+            bot.edit_message_text(f'Користувача {user_name} видалено!', call.message.chat.id, message_id=call.message.message_id)
+        else:
+            bot.edit_message_text(f'Фух, пронесло \U0001F628', call.message.chat.id, message_id=call.message.message_id)
 
     elif call.data.split('_')[-1] == 'back':
         markup_key = keyboard.button_inine(('_').join(call.data.split('_')[:-2]))
