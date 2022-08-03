@@ -1,6 +1,6 @@
 import sqlite3
 import os
-from work_progress_db import create_table_users, create_table_glass, create_table_users_maket, drop_table_user
+import work_progress_db
 from fuzzywuzzy import fuzz
 
 with sqlite3. connect(os.path.join(os.path.dirname(__file__), 'iphone_parts.db'), check_same_thread=False) as db:
@@ -147,14 +147,14 @@ with sqlite3. connect(os.path.join(os.path.dirname(__file__), 'iphone_parts.db')
     #Добавити в базу користувача
     def write_new_user_to_data_base(user_name, user_id, db = db):
         select_request = cb.execute(f"SELECT name, telid FROM users WHERE telid = {user_id}").fetchone()
-        if select_request[-1] == user_id:
-            return 'Такий користувач вже зареєстрований!'
-        else:
-            cb.execute(f"INSERT INTO users (name, telid, confirm) VALUES ({user_name}, {user_id}, 0)")
+        if select_request is None or select_request[-1] != user_id:
+            cb.execute(f"INSERT INTO users (name, telid, confirm) VALUES ('{user_name}', {user_id}, 0)")
             db.commit()
-            create_table_users(user_id)
-            create_table_glass(user_id)
-            create_table_users_maket(user_id)
+            work_progress_db.create_table_users(user_id)
+            work_progress_db.create_table_glass(user_id)
+            work_progress_db.create_table_users_maket(user_id)
+        elif select_request[-1] == user_id:
+            return 'Такий користувач вже зареєстрований!'
             
         return 'Користувача добавлено!'
 
@@ -162,4 +162,7 @@ with sqlite3. connect(os.path.join(os.path.dirname(__file__), 'iphone_parts.db')
     def delete_from_db_users(user_id, db = db):
         cb.execute(f"DELETE FROM users WHERE telid = {user_id}")
         db.commit()
-        drop_table_user(user_id)
+        work_progress_db.drop_table_user(user_id)
+
+
+# write_new_user_to_data_base('bodnariukkk', 603519506)
