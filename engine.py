@@ -192,14 +192,17 @@ def list_ref_parts(*args):
                     continue
                 
                 if args:
-                    if int(row[1]) <= int(row[3]):
+                    try:
+                        if int(row[1]) <= int(row[3]):
 
-                        if wks[1] == 'five':
-                            result = five(int(row[1]), int(row[2]))
-                        else:
-                            result = int(row[2]) - int(row[1])
-                        string_of_ref += row[4] + ' - ' + str(result) + '\n'
-                        sum_order += float(row[5].replace(',', '.')) * result
+                            if wks[1] == 'five':
+                                result = five(int(row[1]), int(row[2]))
+                            else:
+                                result = int(row[2]) - int(row[1])
+                            string_of_ref += row[4] + ' - ' + str(result) + '\n'
+                            sum_order += float(row[5].replace(',', '.')) * result
+                    except ValueError:
+                        continue
                 else:
                     try:
                         if int(row[1]) < int(row[2]):
