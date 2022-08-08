@@ -215,6 +215,7 @@ with sqlite3.connect(os.path.join(os.path.dirname(__file__), 'work_progress.db')
         cb.execute(f"DROP TABLE '{user_id}'")
         cb.execute(f"DROP TABLE '{user_id}_maket'")
         cb.execute(f"DROP TABLE '{user_id}_glass'")
+        cb.execute(f"DROP TABLE '{user_id}_backup'")
         db.commit()
 
 
