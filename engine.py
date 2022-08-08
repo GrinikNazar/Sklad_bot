@@ -201,14 +201,17 @@ def list_ref_parts(*args):
                         string_of_ref += row[4] + ' - ' + str(result) + '\n'
                         sum_order += float(row[5].replace(',', '.')) * result
                 else:
-                    if int(row[1]) < int(row[2]):
+                    try:
+                        if int(row[1]) < int(row[2]):
 
-                        if wks[1] == 'five':
-                            result = five(int(row[1]), int(row[2]))
-                        else:
-                            result = int(row[2]) - int(row[1])
-                        string_of_ref += row[4] + ' - ' + str(result) + '\n'
-                        sum_order += float(row[5].replace(',', '.')) * result
+                            if wks[1] == 'five':
+                                result = five(int(row[1]), int(row[2]))
+                            else:
+                                result = int(row[2]) - int(row[1])
+                            string_of_ref += row[4] + ' - ' + str(result) + '\n'
+                            sum_order += float(row[5].replace(',', '.')) * result
+                    except ValueError:
+                        continue
 
                 if len(string_of_ref) >= 4000:
                     list_of_ref.append(string_of_ref.rstrip())
