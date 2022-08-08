@@ -91,14 +91,18 @@ def list_ref_parts():
 
 
 def other_key(user):
+    users = iphone_db.select_hose()
     markup = types.InlineKeyboardMarkup()
-    time_null = types.InlineKeyboardButton('Зміна часу відсутніх позицій', switch_inline_query_current_chat='_time\n')
+    # time_null = types.InlineKeyboardButton('Зміна часу відсутніх позицій', switch_inline_query_current_chat='_time\n')
     work_progress = types.InlineKeyboardButton('WorkProgress', switch_inline_query_current_chat=f'_wp\n{work_progress_db.select_work_progress(user)}')
-    null_wp = types.InlineKeyboardButton('Обнулити свої дані', callback_data='reset_data_user')
+    data_from_bot = types.InlineKeyboardButton('Скинути дані з бота', callback_data='reset-data-from-bot')
+    null_wp = types.InlineKeyboardButton('Обнулити дані WP', callback_data='reset_data_user')
     reset_db_all = types.InlineKeyboardButton('Ресет бази шлангів', callback_data='reset_all_data_user')
     markup.row(work_progress)
-    markup.add(null_wp, reset_db_all)
-    markup.row(time_null)
+    markup.add(null_wp, data_from_bot)
+    user_confirm_list = [users['Назар'], users['Ваня']]
+    if user in user_confirm_list:
+        markup.row(reset_db_all)
     return markup
 
 

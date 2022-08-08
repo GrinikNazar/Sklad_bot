@@ -18,7 +18,6 @@ with sqlite3.connect(os.path.join(os.path.dirname(__file__), 'work_progress.db')
         db.commit()
 
 
-    #Функція для створення таблиці з макетом
     def create_table_users_maket(user_id, db = db):
         cb.execute(f"""CREATE TABLE IF NOT EXISTS '{user_id}_maket' (
                 id INTEGER,
@@ -43,6 +42,18 @@ with sqlite3.connect(os.path.join(os.path.dirname(__file__), 'work_progress.db')
                 glass_from_bot INTEGER,
                 glass_wp INTEGER,
                 PRIMARY KEY("id")
+                )""")
+
+        db.commit()
+
+
+    def create_table_back_up_data_parts(user_id, db = db):
+        cb.execute(f"""CREATE TABLE IF NOT EXISTS '{user_id}_backup' (
+                sheet TEXT,
+                apple TEXT,
+                model TEXT,
+                color TEXT,
+                value INTEGER
                 )""")
 
         db.commit()
@@ -81,6 +92,7 @@ with sqlite3.connect(os.path.join(os.path.dirname(__file__), 'work_progress.db')
         cb.execute(f"DELETE FROM '{user_id}'")
         cb.execute(f"DELETE FROM '{user_id}_maket'")
         cb.execute(f"DELETE FROM '{user_id}_glass'")
+        cb.execute(f"DELETE FROM '{user_id}_backup'")
         db.commit()
 
     
@@ -170,6 +182,35 @@ with sqlite3.connect(os.path.join(os.path.dirname(__file__), 'work_progress.db')
             db.commit()
 
 
+    def write_backup_parts(user_id, part_dict, db = db):
+        result = cb.execute(f"SELECT sheet, apple, model, color FROM '{user_id}_backup' WHERE sheet = '{part_dict['sheet']}' AND apple = '{part_dict['apple']}' AND model = '{part_dict['model']}' AND color = '{part_dict['color']}'").fetchone()
+        if result:
+            cb.execute(f"UPDATE '{user_id}_backup' SET value = value + {part_dict['value']} WHERE sheet = '{part_dict['sheet']}' AND apple = '{part_dict['apple']}' AND model = '{part_dict['model']}' AND color = '{part_dict['color']}'")
+        else:
+            cb.execute(f"INSERT INTO '{user_id}_backup' (sheet, apple, model, color, value) VALUES ('{part_dict['sheet']}', '{part_dict['apple']}', '{part_dict['model']}', '{part_dict['color']}', {part_dict['value']})")
+        db.commit()
+
+
+    def select_back_up_parts(user_id):
+        result = cb.execute(f"SELECT * FROM '{user_id}_backup'").fetchall()
+        res_string_list = []
+        result_part_dict = {}
+        for item in result:
+            result_part_dict[item[0]] = []
+        for item in result:
+            color = item[3]
+            res_string_list.append(f'{item[0]} {item[1]} {item[2]} {color} - {item[-1]}')
+            result_part_dict[item[0]].append((item[1], item[2], color, item[-1]))
+        return result_part_dict, res_string_list
+        
+
+    def delete_from_back_up_parts(user_id):
+        cb.execute(f"DELETE FROM '{user_id}_backup'")
+        cb.execute(f"UPDATE '{user_id}' SET number = 0")
+        cb.execute(f"UPDATE '{user_id}_glass' SET glass_from_bot = 0")
+        db.commit()
+
+
     def drop_table_user(user_id, db = db):
         cb.execute(f"DROP TABLE '{user_id}'")
         cb.execute(f"DROP TABLE '{user_id}_maket'")
@@ -186,7 +227,9 @@ with sqlite3.connect(os.path.join(os.path.dirname(__file__), 'work_progress.db')
                 create_table_users(user)
                 create_table_users_maket(user)
                 create_table_glass(user)
+                create_table_back_up_data_parts(user)
             create_table_users(user)
             create_table_users_maket(user)
             create_table_glass(user)
+            create_table_back_up_data_parts(user)
             iphone_db.make_null_confirm_data()

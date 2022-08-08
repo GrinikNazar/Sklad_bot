@@ -10,8 +10,10 @@ import handler_wp
 import work_progress_db
 import os
 
-# bot = telebot.TeleBot(conf.config['token'])
-bot = telebot.TeleBot(conf.conf_test['token'])
+bot = telebot.TeleBot(conf.config['token'])
+
+сhat_work_progress = conf.сhat_work_progress
+chat_history_parts = conf.chat_history_parts
 
 users = iphone_db.select_hose()
 
@@ -25,9 +27,6 @@ expect = [
     'Вже майже майже...',
     'Скидиш',
 ]
-
-сhat_work_progress = -1001618485038
-# сhat_work_progress = -740139442
 
 
 def autorize_hose(func):
@@ -124,9 +123,11 @@ def some_func(message):
         except IndexError:
             bot.send_message(message.chat.id, 'Невірний формат вводу, спробуй ще раз')
 
-    elif message.text.split('\n')[0].rstrip() == f'@{bot.get_me().username} _time':
-        engine.change_time_null(message.text)
-        bot.send_message(message.chat.id, 'Час змінено\U0001F91F')
+    # Поки що вирубав
+    # зміна часу скидання в чат того що в 0 
+    # elif message.text.split('\n')[0].rstrip() == f'@{bot.get_me().username} _time':
+    #     engine.change_time_null(message.text)
+    #     bot.send_message(message.chat.id, 'Час змінено\U0001F91F')
 
     # WorkProgress    
     elif message.text.split('\n')[0].rstrip() == f'@{bot.get_me().username} _wp':
@@ -172,16 +173,32 @@ def handler_mes(call):
     elif call.data == 'reset_data_user':
         user_id = call.from_user.id
         work_progress_db.delete_user_work_progress(user_id)
-        bot.answer_callback_query(call.id, '\U0001F32AДанi скинуті в 0\U000026A1')
+        bot.edit_message_text('\U0001F32AДанi скинуті в 0\U000026A1', call.message.chat.id, message_id=call.message.message_id)
+        # bot.answer_callback_query(call.id, '\U0001F32AДанi скинуті в 0\U000026A1')
+
+    elif call.data == 'reset-data-from-bot':
+        user_id = call.from_user.id
+        string_for_bot_back_up = ''
+        tuple_result_db_select = work_progress_db.select_back_up_parts(user_id)
+        if len(tuple_result_db_select[0]) == 0:
+            bot.edit_message_text('Ти ще нічого з бота не брав!', call.message.chat.id, message_id=call.message.message_id)
+        else:
+            for string in tuple_result_db_select[1]:
+                string_for_bot_back_up += string + '\n'
+            string_for_bot_back_up = string_for_bot_back_up.rstrip()
+            bot.edit_message_text(string_for_bot_back_up, call.message.chat.id, message_id=call.message.message_id)
+            engine.search_parts_for_add_like_back_up(tuple_result_db_select[0]) #повернути на місце всі запчастини
+            work_progress_db.delete_from_back_up_parts(user_id) #очистка даних по запчастинах які взяли з бота
+            bot.send_message(call.message.chat.id, 'Дані очищені і повернуті на місце')
 
     elif call.data == 'reset_all_data_user':
         user_id = call.from_user.id
         user_confirm_list = [users['Назар'], users['Ваня']]
         if user_id in user_confirm_list:
             work_progress_db.reset_data_base()
-            bot.answer_callback_query(call.id, 'Очищено')
+            bot.edit_message_text('\U0001F32AОчищено\U000026A1', call.message.chat.id, message_id=call.message.message_id)
         else:
-            bot.answer_callback_query(call.id, 'Тобі не можна це робити, шланг')
+            bot.answer_callback_query(call.id, 'Тобі не можна це робити')
 
     elif call.data == 'clean_worksheet':
         engine.clean_worksheet()
@@ -239,8 +256,10 @@ def handler_mes(call):
                 bot.edit_message_text(result_main[0], call.message.chat.id, message_id=call.message.message_id)
                 if len(result_main) > 2:
                     work_progress_db.tabble_for_hose(call.from_user.id, result_main[2])
+                    work_progress_db.write_backup_parts(call.from_user.id, result_main[3])
                 if result_main[1]:
-                    bot.send_message(-674239373, f'{call.from_user.first_name}: {result_main[0]}')
+                    if chat_history_parts:
+                        bot.send_message(chat_history_parts, f'{call.from_user.first_name}: {result_main[0]}')
             except TypeError:
                 bot.edit_message_text('Ой, шось сталось', call.message.chat.id, message_id=call.message.message_id)
 

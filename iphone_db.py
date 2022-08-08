@@ -153,6 +153,7 @@ with sqlite3. connect(os.path.join(os.path.dirname(__file__), 'iphone_parts.db')
             work_progress_db.create_table_users(user_id)
             work_progress_db.create_table_glass(user_id)
             work_progress_db.create_table_users_maket(user_id)
+            work_progress_db.create_table_back_up_data_parts(user_id)
         elif select_request[-1] == user_id:
             return 'Такий користувач вже зареєстрований!'
             

@@ -215,7 +215,6 @@ def handler_wp(message, user):
         result_glass_count += f'Не взяв з бота скло - {sum_wp - sum_bot} шт\n'
         result_string_glass = get_additional_list_part(result_string_glass, 'bot') #тільки те що не взяв з бота
     else:
-        #дописати result_string_glass тільки те що треба взяти з бота
         finally_string_glass = ''
         for string_glass in result_string_glass.split('\n'):
             if 'Візьми з бота' in string_glass:
@@ -224,15 +223,3 @@ def handler_wp(message, user):
 
     return result_glass_count + result_string_glass + result_work_progress.rstrip()
 
-# message = """@GusiGusiGagagaBot _wp
-# Переклеїв екранів - 
-# Видано готових - 
-# Вдано клієнтських - 
-# Не виданих - 
-
-# Готові
-# id111 iphone 8 - нижній шлейф(проклейка)
-
-# Клієнтські"""
-
-# print(handler_wp(message, 375385945))

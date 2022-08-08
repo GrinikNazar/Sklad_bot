@@ -3,13 +3,13 @@ import gspread
 import iphone_db
 import os
 import work_progress_db
+import conf
 
 path = os.path.join(os.path.dirname(__file__), os.path.pardir, 'GoogleAPI/mypython-351009-5d090fd9b043.json')
 
 sa = gspread.service_account(filename=path)
 
-# sh = sa.open('inStyle_parts')
-sh = sa.open('Test_parts')
+sh = sa.open(conf.source)
 
 
 def gen_list_models_with_color(s, apple):
@@ -17,6 +17,12 @@ def gen_list_models_with_color(s, apple):
     s = s.lower().replace(' ', '')[len(apple):-len(ks)]
     s = s.split('/')
     return list(map(lambda x: apple + x + ks, s))
+
+
+def gen_list_wth_color(s, apple):
+    s = s.lower().replace(' ', '')[len(apple):]
+    s = s.split('/')
+    return list(map(lambda x: apple + x, s))    
 
 
 def circle_color_choose(availability, min_value):
@@ -39,6 +45,34 @@ def remnant_part(thing_value, value, min_value):
         return f'{circle_color_choose(remnant, min_value)} Залишилось {thing_value - value} шт! {circle_color_choose(remnant, min_value)}'
 
 
+def search_parts_for_add_like_back_up(dict_with_parts):
+    for part_key, part_value in dict_with_parts.items():
+        workseet = part_key
+        workseet = sh.worksheet(workseet)
+        for part in part_value:
+            apple = part[0]
+            model = part[1].lower()
+            color = part[2]
+            value = part[-1]
+            if color == '':
+                model_pat = apple + model
+            else:
+                color_mode = color.replace(' ', '')
+                model_pat = apple + model + color_mode
+                model_pat = model_pat.lower().replace(' ', '')
+
+            for i, row in enumerate(workseet.get_all_values()):
+                if model.lower() in row[0].lower().replace(' ', ''):
+                    if color == '':
+                        row_res = gen_list_wth_color(row[0], apple)
+                    else:
+                        row_res = gen_list_models_with_color(row[0], apple)
+                    if  model_pat in row_res:
+                        thing_value = int(row[1])
+                        workseet.update_cell(i + 1, 2, thing_value + value)
+                        break
+
+
 def get_thing_with_color(model, model_begin, value, workseet, sheet, *args):
     apple = iphone_db.artic(model_begin)
     color_mode = args[0].replace(' ', '')
@@ -48,7 +82,10 @@ def get_thing_with_color(model, model_begin, value, workseet, sheet, *args):
         if model.lower() in row[0].lower().replace(' ', ''):
             row_res = gen_list_models_with_color(row[0], apple)
             if  model_pat in row_res:
-                thing_value = int(row[1])
+                try:
+                    thing_value = int(row[1])
+                except ValueError:
+                    return ['Виникла помилка звязана з *', '']
                 value = int(value)
                 if thing_value == 0:
                     return [f'{circle_color_choose(thing_value, row[3])} {sheet} на {apple} {model} {color_mode} - закінчились! {circle_color_choose(thing_value, row[3])}', True]
@@ -58,13 +95,15 @@ def get_thing_with_color(model, model_begin, value, workseet, sheet, *args):
                     workseet.update_cell(i + 1, 2, thing_value - value)
                     ost = remnant_part(thing_value, value, row[3])
 
-                    return [f'Взяв {sheet.lower()} на {apple} {model} {args[0].lower()} - {value} шт.\n{ost}', True, [apple.lower(), model.lower(), sheet, value]]
+                    dict_of_wp_parts_back_up = {
+                    'sheet': sheet,
+                    'apple': apple,
+                    'model': model,
+                    'color': args[0].lower(),
+                    'value': value,
+                    }
 
-
-def gen_list_wth_color(s, apple):
-    s = s.lower().replace(' ', '')[len(apple):]
-    s = s.split('/')
-    return list(map(lambda x: apple + x, s))
+                    return [f'Взяв {sheet.lower()} на {apple} {model} {args[0].lower()} - {value} шт.\n{ost}', True, [apple.lower(), model.lower(), sheet, value], dict_of_wp_parts_back_up]
 
 
 def get_thing(model, model_begin, value, workseet, sheet):
@@ -73,7 +112,10 @@ def get_thing(model, model_begin, value, workseet, sheet):
     for i, row in enumerate(workseet.get_all_values()):
         row_res = gen_list_wth_color(row[0], apple)
         if  model_pat in row_res:
-            thing_value = int(row[1])
+            try:
+                thing_value = int(row[1])
+            except ValueError:
+                return ['Виникла помилка звязана з *', '']
             value = int(value)
             if thing_value == 0:
                 return [f'{circle_color_choose(thing_value, row[3])} {sheet} на {apple} {model} - закінчились! {circle_color_choose(thing_value, row[3])}', True]
@@ -83,7 +125,15 @@ def get_thing(model, model_begin, value, workseet, sheet):
                 workseet.update_cell(i + 1, 2, thing_value - value)
                 ost = remnant_part(thing_value, value, row[3])
 
-                return [f'Взяв {sheet.lower()} на {apple} {model} - {value} шт.\n{ost}', True, [apple.lower(), model.lower(), sheet, value]]
+                dict_of_wp_parts_back_up = {
+                    'sheet': sheet,
+                    'apple': apple,
+                    'model': model,
+                    'color': '',
+                    'value': value,
+                }
+
+                return [f'Взяв {sheet.lower()} на {apple} {model} - {value} шт.\n{ost}', True, [apple.lower(), model.lower(), sheet, value], dict_of_wp_parts_back_up]
 
 
 def get_null_things():
@@ -183,7 +233,10 @@ def list_copy_and_battery(part, emod):
     list_order = f'{emod}{sheet}: Кількість до максимуму\n'
     for row in wk.get_all_values()[1:]:
         row_max = int(row[2])
-        row_avail = int(row[1])
+        try:
+            row_avail = int(row[1])
+        except ValueError:
+            continue
         if row_avail < row_max:
             list_order += f'{row[0]} - {row_max - row_avail}\n'
     return list_order.rstrip()
@@ -284,7 +337,4 @@ def main_time(time_b, bot, target):
 def change_time_null(string):
     string = string.split('\n')[1:]
     iphone_db.change_time(string)
-
-
-# print(open_read_me())
 
