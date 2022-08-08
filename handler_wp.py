@@ -1,5 +1,6 @@
 import iphone_db
 import work_progress_db
+from bot import bot_error_message
 
 
 def find_bracket(string):
@@ -27,7 +28,11 @@ def string_separate(string):
     result_list = []
     space_split = string.lower().split('-')
     model = choose_model_parse(space_split)
-    parts = find_bracket(space_split[1])
+    try:
+        parts = find_bracket(space_split[1])
+    except IndexError:
+        bot_error_message(user_id_key, 'Шось не то написав, перевірь правильність запису!')
+        return
     parts = parts.split(',')
     parts = list(map(lambda x: x.strip().lower(), parts))
     for part in parts:
@@ -186,6 +191,9 @@ def get_additional_list_part(result_string_glass, string_for_chek):
 def handler_wp(message, user):
 # def handler_wp(user):
 #     message = work_progress_db.select_work_progress(user)
+
+    global user_id_key
+    user_id_key = user
 
     count_glass_replace = get_count_glass_replace(message) #кількість скла з повідомлення зверху
 

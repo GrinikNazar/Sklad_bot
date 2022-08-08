@@ -29,6 +29,11 @@ expect = [
 ]
 
 
+#для відправки в бот повідомлення про виключення/помилку
+def bot_error_message(user_id, message, bot = bot):
+    bot.send_message(user_id, message)
+
+
 def autorize_hose(func):
     def wrapper(message):
         if message.from_user.id in users.values():
