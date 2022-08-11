@@ -292,4 +292,10 @@ if __name__ == '__main__':
 
     threading.Thread(target=engine.main_time, args=((time_wp_reminder, bot, wp_reminder))).start()
 
-    bot.polling(non_stop=True, timeout=600)
+    # bot.polling(non_stop=True, timeout=600)
+    while True:
+        try:
+            bot.infinity_polling(timeout=10)
+        except ConnectionError:
+            print('Ой')
+            continue
