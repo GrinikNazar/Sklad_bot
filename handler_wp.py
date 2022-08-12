@@ -24,7 +24,7 @@ def choose_model_parse(space_split):
     return ' '.join(id_model).strip()
 
 
-def string_separate(string):
+def string_separate(string, *args):
     result_list = []
     space_split = string.lower().split('-')
     model = choose_model_parse(space_split)
@@ -35,9 +35,19 @@ def string_separate(string):
         return
     parts = parts.split(',')
     parts = list(map(lambda x: x.strip().lower(), parts))
+    sum_scores_user_job = 0
     for part in parts:
         db_result = iphone_db.select_desc(part)
-        if db_result:
+        if args:
+            args_func = args[0]
+            db_result = args_func(model, part) #балл за виконану роботу(одну)
+            sum_scores_user_job += db_result
+            db_result = sum_scores_user_job
+            if parts.index(part) == len(parts) - 1: #якщо останній елемент в масиві то запис в результат
+                if len(parts) > 1:
+                    db_result = db_result - (db_result * 0.15)
+                result_list.append(db_result)
+        elif db_result:
             result_list.append(f'{model} {db_result}')
     return result_list 
 
@@ -71,9 +81,12 @@ def string_separate_brackets(string):
 
 
 #Витягує кількісь скла з повідомлення яке скидають в work_progress
-def get_count_glass_replace(message):
+def get_count_glass_replace(message, from_massage = 'from_message'):
     message_split = message.split('\n')
-    message = message_split[1]
+    if from_massage == 'from_message':
+        message = message_split[1]
+    else:
+        message = message_split[0]
     count_glass = message.split('-')[-1]
     if count_glass == ' ':
         return 0
@@ -82,7 +95,7 @@ def get_count_glass_replace(message):
 
 
 #формує список з повідомлення
-def wp_handler_text(message):
+def wp_handler_text(message, *args):
     marker = ''
     d = {
         'Готові': [],
@@ -100,6 +113,9 @@ def wp_handler_text(message):
             d[marker].append(msg)
 
     list_of_values = [v for value in d.values() for v in value]
+
+    if args:
+        return d
 
     return list_of_values
 

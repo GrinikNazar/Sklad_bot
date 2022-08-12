@@ -167,13 +167,19 @@ def handler_mes(call):
         user_id = call.from_user.id
         for key, value in users.items():
             if value == user_id:
-                user = key 
+                user = key
+        #TODO: додати до даних макеті бали на кожен пункт 
         wp_result = work_progress_db.select_work_progress(user_id)
+        #з фінального макета переробити дані
+        
         work_progress_finnaly = f"{user}\n{wp_result}"
+        #TODO: Підрахування балів піся відправки в чат
+
+        #відправити в чат вже з підрахованими балами а також за кожен пункт
         bot.send_message(сhat_work_progress, work_progress_finnaly)
         bot.answer_callback_query(call.id, '\U0001F916Відправив\U0001F91F')
-        #викликається функція яка в iphone_db записує дані/ передати в функцію user_id
         iphone_db.write_confirm_user(user_id)
+
 
     elif call.data == 'reset_data_user':
         user_id = call.from_user.id
