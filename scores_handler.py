@@ -75,4 +75,4 @@ with sqlite3. connect(os.path.join(os.path.dirname(__file__), 'iphone_parts.db')
         return final_maket
 
 
-print(main_scores())
+# print(main_scores())
