@@ -2,9 +2,9 @@ import sqlite3
 import os
 from fuzzywuzzy import fuzz
 from iphone_db import compare_fuz
-from handler_wp import wp_handler_text, string_separate
-from work_progress_db import select_work_progress
-from handler_wp import get_count_glass_replace
+import handler_wp 
+import work_progress_db 
+import excel_score_handlen
 
 with sqlite3. connect(os.path.join(os.path.dirname(__file__), 'iphone_parts.db'), check_same_thread=False) as db:
 
@@ -30,48 +30,80 @@ with sqlite3. connect(os.path.join(os.path.dirname(__file__), 'iphone_parts.db')
         else:
             return None
 
+    # '!2.3'
+    def custom_scores_search(user_job: str):
+        user_job_symbol = '!'
+        user_job = user_job.split(user_job_symbol)
+        if len(user_job) > 1:
+            score = float(user_job[1])
+        else:
+            score = 0
+        return score
 
-    def main_scores():
+
+    def delete_custom_scores(string_split: str) -> str:
+        string_split = string_split.split('!')
+        return string_split[0].rstrip()
+
+
+    def main_scores(id_user = 375385945):
         dict_id_user_job = {}
-        final_maket = select_work_progress(375385945) #цей параметр має передаватись як аргумент. Запит до бази звідси видалити 
-        result = wp_handler_text(final_maket, 'need_dict')
-        glass_count = get_count_glass_replace(final_maket, from_massage='from_db')
+        final_maket = work_progress_db.select_work_progress(id_user)
+        result = handler_wp.wp_handler_text(final_maket, 'need_dict')
+        glass_count = handler_wp.get_count_glass_replace(final_maket, from_massage='from_db') #кількість переклейок зверху
         sum_glass_count = glass_count * 0.5 #сума балів за переклейки зверху
         
-        sum_user_job = 0
-        sum_instyle_job = 0
-        sum_client_job = 0
+        sum_user_job = 0 #загальна сума балів
+        sum_instyle_job = 0 #сума за наші
+        sum_client_job = 0 #сума за клієнтські
+        count_client = 0 #рахує кількість телефонів клієнтських
+        count_instyle = 0 #кількість телефонів наших
+
+        #Підрахунок балів
         for key, value in result.items():
             for user_job in value:
                 id_job = user_job.split(' ')[0]
-                score = string_separate(user_job, select_scores)[0]
+                custom_score = custom_scores_search(user_job) #пошук символа з балами які поставив користувач
+                if custom_score == 0:
+                    score = handler_wp.string_separate(user_job, select_scores)[0]
+                else:
+                    score = custom_score
                 if key == 'Клієнтські':
                     score += score * 0.2
                     score = round(score, 3)
                 dict_id_user_job[id_job] = score
                 sum_user_job += score
-                if key == 'Клієнтські':
-                    sum_client_job += score
-                elif key == 'Готові':
-                    sum_instyle_job += score
 
+                if key == 'Клієнтські': #загальні бали за клієнтські ремонти
+                    sum_client_job += score
+                    count_client += 1
+                elif key == 'Готові': #бали за готові ремонти
+                    sum_instyle_job += score
+                    count_instyle += 1
+
+        #Запис в кінечну форму балів
         split_maket = final_maket.split('\n')
         result_maket = []
         for string_split in split_maket:
             key_id = string_split.split(' ')[0]
+            string_split = delete_custom_scores(string_split)
             if key_id == 'Переклеїв' and sum_glass_count != 0:
                 sum_user_job += sum_glass_count
                 string_split += f' ({sum_glass_count})'
             elif 'Видано готових' in string_split:
-                string_split += f' ({round(sum_instyle_job, 3)})'
+                string_split += f' {count_instyle} ({round(sum_instyle_job, 3)})'
             elif 'Видано клієнтських' in string_split:
-                string_split += f' ({round(sum_client_job, 3)})'
+                string_split += f' {count_client} ({round(sum_client_job, 3)})'
             elif key_id in dict_id_user_job:
                 string_split += f' ({dict_id_user_job[key_id]})'
             result_maket.append(string_split)
         result_maket.append('')
         result_maket.append(f'Загальний результат - {round(sum_user_job, 3)}')
         final_maket = '\n'.join(result_maket)
+
+        score_tuple = (sum_instyle_job, sum_client_job, count_instyle, count_client, glass_count)
+        excel_score_handlen.main_excel(id_user, score_tuple)
+
         return final_maket
 
 
