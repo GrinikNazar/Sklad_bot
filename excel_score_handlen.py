@@ -1,4 +1,3 @@
-import time
 import datetime
 import gspread
 import os

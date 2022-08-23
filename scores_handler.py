@@ -102,7 +102,7 @@ with sqlite3. connect(os.path.join(os.path.dirname(__file__), 'iphone_parts.db')
         final_maket = '\n'.join(result_maket)
 
         score_tuple = (sum_instyle_job, sum_client_job, count_instyle, count_client, glass_count)
-        excel_score_handlen.main_excel(id_user, score_tuple)
+        excel_score_handlen.main_excel(id_user, score_tuple) #запис у excel таблицю
 
         return final_maket
 
