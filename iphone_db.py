@@ -76,6 +76,10 @@ with sqlite3. connect(os.path.join(os.path.dirname(__file__), 'iphone_parts.db')
 
     #функція яка витягує ід користувачів які не скинули WP
     def get_users_where_confirm_null():
+        dict_hose = select_hose()
+        #добавити одиничку в конфірм коли ніхто нічого не скидав у прогрес
+        for hose in dict_hose.values():
+            work_progress_db.chek_work_progress_user(hose)
         result = cb.execute("SELECT telid FROM users WHERE confirm = 0").fetchall()
         result = [x[0] for x in result]
         return result
@@ -88,6 +92,7 @@ with sqlite3. connect(os.path.join(os.path.dirname(__file__), 'iphone_parts.db')
         db.commit()
 
 
+    #обнуляє конфірм окремого користувача
     def reset_to_null_user_from_button(user_id, db = db):
         cb.execute(f'UPDATE users SET confirm = 0 WHERE telid = {user_id}')
         db.commit()

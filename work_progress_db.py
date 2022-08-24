@@ -234,3 +234,10 @@ with sqlite3.connect(os.path.join(os.path.dirname(__file__), 'work_progress.db')
             create_table_glass(user)
             create_table_back_up_data_parts(user)
             iphone_db.make_null_confirm_data()
+
+
+    #перевіряє чи був користувач на роботі
+    def chek_work_progress_user(user_id):
+        if select_work_progress(user_id) == maket():
+            iphone_db.write_confirm_user(user_id)
+

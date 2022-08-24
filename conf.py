@@ -9,6 +9,7 @@ import os
 # сhat_work_progress = -1001618485038
 # chat_history_parts = -674239373
 # source = 'inStyle_parts'
+# work_progress_table = 'WorkProgress'
 
 
 gusi_token = os.environ['MyFirstBot']
@@ -20,3 +21,4 @@ config = {
 сhat_work_progress = -740139442
 chat_history_parts = None
 source = 'Test_parts'
+work_progress_table = 'Test_parts'

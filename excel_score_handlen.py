@@ -7,9 +7,9 @@ path = os.path.join(os.path.dirname(__file__), os.path.pardir, 'GoogleAPI/mypyth
 
 sa = gspread.service_account(filename=path)
 
-sh = sa.open(conf.source)
+sh = sa.open(conf.work_progress_table)
 
-wks = sh.worksheet('Example') #лист приклад для копіювання
+wks = sh.worksheet('Example') #лист приклад для копіювання| цей лист завжди однаковий і береться як зразок
 
 now_data = datetime.datetime.date(datetime.datetime.now())
 data_string = datetime.datetime.strftime(now_data, '%m-%Y') #вибір назви нового листа
