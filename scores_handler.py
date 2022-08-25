@@ -69,7 +69,7 @@ with sqlite3. connect(os.path.join(os.path.dirname(__file__), 'iphone_parts.db')
                     score_tuple = handler_wp.string_separate(user_job, select_scores)
                     score = score_tuple[0][0]
                     for score_list in score_tuple[1]:
-                        check_score = float(score_list[-1])
+                        check_score = float(score_list.split(' ')[-1])
                         if check_score == 0.0:
                             list_null_score.append(f'{user_job} | {score_list}')
                 else:
@@ -100,9 +100,9 @@ with sqlite3. connect(os.path.join(os.path.dirname(__file__), 'iphone_parts.db')
                 sum_user_job += sum_glass_count
                 string_split += f' ({sum_glass_count})'
             elif 'Видано готових' in string_split:
-                string_split += f' {count_instyle} ({round(sum_instyle_job, 3)})'
+                string_split += f' {count_instyle} ({round(sum_instyle_job, 2)})'
             elif 'Видано клієнтських' in string_split:
-                string_split += f' {count_client} ({round(sum_client_job, 3)})'
+                string_split += f' {count_client} ({round(sum_client_job, 2)})'
             elif key_id in dict_id_user_job:
                 string_split += f' ({dict_id_user_job[key_id]})'
             result_maket.append(string_split)
