@@ -35,23 +35,28 @@ def string_separate(string, *args):
         return
     parts = parts.split(',')
     parts = list(map(lambda x: x.strip().lower(), parts))
+    all_scores = []
     sum_scores_user_job = 0
     for part in parts:
         db_result = iphone_db.select_desc(part)
         if args:
             args_func = args[0]
             db_result = args_func(model, part) #балл за виконану роботу(одну)
+            all_scores.append(f'{part} - {db_result}')
             sum_scores_user_job += db_result
             db_result = sum_scores_user_job
             if parts.index(part) == len(parts) - 1: #якщо останній елемент в масиві то запис в результат
                 if len(parts) > 1:
                     db_result = db_result - (db_result * 0.15)
                 result_list.append(db_result)
-            #TODO: переробити на словник - повертати назву роботи і кількість балів
-            print(part, db_result)
+            
         elif db_result:
             result_list.append(f'{model} {db_result}')
-    return result_list 
+
+    if args:
+        return result_list, all_scores
+    else:
+        return result_list 
 
 
 def string_separate_brackets(string):

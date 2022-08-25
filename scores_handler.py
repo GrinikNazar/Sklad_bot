@@ -66,9 +66,12 @@ with sqlite3. connect(os.path.join(os.path.dirname(__file__), 'iphone_parts.db')
                 id_job = user_job.split(' ')[0]
                 custom_score = custom_scores_search(user_job) #пошук символа з балами які поставив користувач
                 if custom_score == 0:
-                    score = handler_wp.string_separate(user_job, select_scores)[0]
-                    if score == 0:
-                        list_null_score.append(user_job)
+                    score_tuple = handler_wp.string_separate(user_job, select_scores)
+                    score = score_tuple[0][0]
+                    for score_list in score_tuple[1]:
+                        check_score = float(score_list[-1])
+                        if check_score == 0.0:
+                            list_null_score.append(f'{user_job} | {score_list}')
                 else:
                     score = custom_score
                 if key == 'Клієнтські':
