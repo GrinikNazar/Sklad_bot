@@ -28,7 +28,7 @@ with sqlite3. connect(os.path.join(os.path.dirname(__file__), 'iphone_parts.db')
                 result = 0
             return result
         else:
-            return None
+            return 0
 
     # '!2.3'
     def custom_scores_search(user_job: str):
@@ -46,7 +46,7 @@ with sqlite3. connect(os.path.join(os.path.dirname(__file__), 'iphone_parts.db')
         return string_split[0].rstrip()
 
 
-    def main_scores(id_user = 375385945):
+    def main_scores(id_user = 375385945, *args):
         dict_id_user_job = {}
         final_maket = work_progress_db.select_work_progress(id_user)
         result = handler_wp.wp_handler_text(final_maket, 'need_dict')
@@ -58,6 +58,7 @@ with sqlite3. connect(os.path.join(os.path.dirname(__file__), 'iphone_parts.db')
         sum_client_job = 0 #сума за клієнтські
         count_client = 0 #рахує кількість телефонів клієнтських
         count_instyle = 0 #кількість телефонів наших
+        list_null_score = []
 
         #Підрахунок балів
         for key, value in result.items():
@@ -66,6 +67,8 @@ with sqlite3. connect(os.path.join(os.path.dirname(__file__), 'iphone_parts.db')
                 custom_score = custom_scores_search(user_job) #пошук символа з балами які поставив користувач
                 if custom_score == 0:
                     score = handler_wp.string_separate(user_job, select_scores)[0]
+                    if score == 0:
+                        list_null_score.append(user_job)
                 else:
                     score = custom_score
                 if key == 'Клієнтські':
@@ -80,6 +83,9 @@ with sqlite3. connect(os.path.join(os.path.dirname(__file__), 'iphone_parts.db')
                 elif key == 'Готові': #бали за готові ремонти
                     sum_instyle_job += score
                     count_instyle += 1
+
+        if args:
+            return list_null_score
 
         #Запис в кінечну форму балів
         split_maket = final_maket.split('\n')

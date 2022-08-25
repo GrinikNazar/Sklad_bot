@@ -47,6 +47,8 @@ def string_separate(string, *args):
                 if len(parts) > 1:
                     db_result = db_result - (db_result * 0.15)
                 result_list.append(db_result)
+            #TODO: переробити на словник - повертати назву роботи і кількість балів
+            print(part, db_result)
         elif db_result:
             result_list.append(f'{model} {db_result}')
     return result_list 

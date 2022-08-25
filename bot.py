@@ -140,7 +140,16 @@ def some_func(message):
         result = handler_wp.handler_wp(message.text, message.from_user.id)
         if result == '' or not result:
             work_progress_db.update_work_progress(message.from_user.id, message.text)
-            bot.send_message(message.chat.id, '\U0001F9A5Все зійшлось\U0001F9A5', reply_markup=keyboard.confirm())
+            #TODO: добавити сюди текст з інформацією про те за що користувач не отримав бали
+            null_result_scores = scores_handler.main_scores(message.from_user.id, 'return-null-scores')
+            res_string = 'Список робіт за які не нараховані бали:\n'
+            if null_result_scores:
+                for value in null_result_scores:
+                    res_string += f'{value}\n'
+                res_string = res_string.rstrip()
+                bot.send_message(message.chat.id, res_string, reply_markup=keyboard.confirm())
+            else:
+                bot.send_message(message.chat.id, '\U0001F9A5Все зійшлось\U0001F9A5', reply_markup=keyboard.confirm())
         else:
             if result == True:
                 bot.send_message(message.chat.id, result[0])
