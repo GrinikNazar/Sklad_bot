@@ -54,7 +54,7 @@ with sqlite3. connect(os.path.join(os.path.dirname(__file__), 'iphone_parts.db')
         sum_glass_count = glass_count * 0.5 #сума балів за переклейки зверху
         
         sum_user_job = 0 #загальна сума балів
-        sum_instyle_job = 0 #сума за наші
+        sum_instyle_job = sum_glass_count #сума за наші
         sum_client_job = 0 #сума за клієнтські
         count_client = 0 #рахує кількість телефонів клієнтських
         count_instyle = 0 #кількість телефонів наших
@@ -112,8 +112,6 @@ with sqlite3. connect(os.path.join(os.path.dirname(__file__), 'iphone_parts.db')
 
         score_tuple = (sum_instyle_job, sum_client_job, count_instyle, count_client, glass_count)
         excel_score_handlen.main_excel(id_user, score_tuple) #запис у excel таблицю
+        #TODO: викликати функцію яка буде рахувати і записувати бест дей
 
         return final_maket
-
-
-# print(main_scores())
