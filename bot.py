@@ -140,7 +140,6 @@ def some_func(message):
         result = handler_wp.handler_wp(message.text, message.from_user.id)
         if result == '' or not result:
             work_progress_db.update_work_progress(message.from_user.id, message.text)
-            #TODO: добавити сюди текст з інформацією про те за що користувач не отримав бали
             null_result_scores = scores_handler.main_scores(message.from_user.id, 'return-null-scores')
             res_string = 'Список робіт за які не нараховані бали:\n'
             if null_result_scores:

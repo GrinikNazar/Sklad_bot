@@ -1,3 +1,4 @@
+from dataclasses import replace
 import datetime
 import gspread
 import os
@@ -23,11 +24,11 @@ except gspread.exceptions.WorksheetNotFound:
     wks_now = sh.worksheet(data_string)
 
 coordinate = {
-    (1, 6, 11, 16, 21, 26, 31): ['C', 'D', 'E', 'F', 'G'], 
-    (2, 7, 12, 17, 22, 27): ['I', 'J', 'K', 'L', 'M'],
-    (3, 8, 13, 18, 23, 28): ['O', 'P', 'Q', 'R', 'S'],
-    (4, 9, 14, 19, 24, 29): ['U', 'V', 'W', 'X', 'Y'],
-    (5, 10, 15, 20, 25, 30): ['AA', 'AB', 'AC', 'AD', 'AE']
+    (1, 6, 11, 16, 21, 26, 31): ['D', 'E', 'F', 'G', 'H'], 
+    (2, 7, 12, 17, 22, 27): ['J', 'K', 'L', 'M', 'N'],
+    (3, 8, 13, 18, 23, 28): ['P', 'Q', 'R', 'S', 'T'],
+    (4, 9, 14, 19, 24, 29): ['V', 'W', 'X', 'Y', 'Z'],
+    (5, 10, 15, 20, 25, 30): ['AB', 'AC', 'AD', 'AE', 'AF']
     }
 
 step = 12
@@ -66,8 +67,8 @@ def wks_coorditnate(id_user, now_data_int):
     return list_of_coordinate
 
 
-def dest_of_day(now_data_int):
-    begin_value = 8
+def best_of_day(wks = wks_now):
+    begin_value = 9
     step = 6
     coordinate_of_best_day = {
         (1, 6, 11, 16, 21, 26, 31): begin_value, 
@@ -77,22 +78,44 @@ def dest_of_day(now_data_int):
         (5, 10, 15, 20, 25, 30): begin_value + step * 4
     }
 
-    count_users = len(iphone_db.select_hose())
+    count_users = len(iphone_db.select_hose()) - 1 # мінус 1 тому що Ваня
     start_step = 11
     step = 12
     date_range_best = {
         (1, 2, 3, 4, 5) : (start_step, start_step + count_users), #два числа - 1:початок діапазону - 2:кінець
-        (6, 7, 8, 9, 10) : (start_step + step, start_step + count_users), 
-        (11, 12, 13, 14, 15): (start_step + step * 2, start_step + count_users),
+        (6, 7, 8, 9, 10) : (start_step + step, start_step + step + count_users), 
+        (11, 12, 13, 14, 15): (start_step + step * 2, start_step + step * 2 + count_users),
         (16, 17, 18, 19, 20): (start_step + step * 3, start_step + step * 3 + count_users),
-        (21, 22, 23, 24, 25): (start_step + step * 4, start_step + step * 4 + count_users+ count_users),
-        (26, 27, 28, 29, 30): (start_step + step * 5, start_step + step * 5 + count_users + count_users),
-        (31,): (start_step + step * 6, start_step + step * 6 + count_users + count_users),
+        (21, 22, 23, 24, 25): (start_step + step * 4, start_step + step * 4 + count_users),
+        (26, 27, 28, 29, 30): (start_step + step * 5, start_step + step * 5 + count_users),
+        (31,): (start_step + step * 6, start_step + step * 6 + count_users),
     }
 
     #треба дізнатись координати відповідно до дати
+    for key, value in coordinate_of_best_day.items():
+        if now_data_int in key:
+            value_collum_search = value
+            break
 
+    for key, value in date_range_best.items():
+        if now_data_int in key:
+            diapason_tuple = value
+            break
 
+    start_value, end_value = diapason_tuple
+    result_dict = {}
+    for i in range(start_value, end_value):
+        row_list = wks.row_values(i)
+        row_list_score = row_list[value_collum_search - 1].replace(',', '.')
+        score_float = float(row_list_score)
+        result_dict[row_list[1]] = score_float
+    
+    max_dict = max(result_dict.values())
+    for key, value in result_dict.items():
+        if value == max_dict:
+            end_coordinate = key
+            val = int(wks.acell(end_coordinate).value)
+            wks.update(end_coordinate, val + 1)
 
 
 def main_excel(user_id, score_tuple):
