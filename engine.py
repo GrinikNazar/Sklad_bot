@@ -334,10 +334,14 @@ def main_time(time_b, bot, target):
         if target == 'null_time':
             bot.send_message(-674239373, get_null_things())
         elif target == 'reset_time':
+            # якщо шланг не скинув у 20:30 то добавити в цій мітці ворк прогрес в табицю
+            # якщо все не зійшлось то записати + середній бал
             excel_score_handlen.best_of_day()
             work_progress_db.reset_data_base()
         elif target == 'wp_reminder':
             handler_confirm_data(bot, iphone_db.get_users_where_confirm_null()) #нагадування за WP
+        # TODO: Добавити нову часову мітку
+        # якщо не скинув прогрес то нагадати о 20:30
         time.sleep(60)
         t = str_time_t()
 

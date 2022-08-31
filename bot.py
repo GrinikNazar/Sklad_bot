@@ -140,7 +140,7 @@ def some_func(message):
         result = handler_wp.handler_wp(message.text, message.from_user.id)
         if result == '' or not result:
             work_progress_db.update_work_progress(message.from_user.id, message.text)
-            null_result_scores = scores_handler.main_scores(message.from_user.id, 'return-null-scores')
+            null_result_scores = scores_handler.main_scores(message.from_user.id, 'return-null-scores') # Показує інформацію за які роботи не нараховані бали
             res_string = 'Список робіт за які не нараховані бали:\n'
             if null_result_scores:
                 for value in null_result_scores:
@@ -188,7 +188,6 @@ def handler_mes(call):
         user_id = call.from_user.id
         work_progress_db.delete_user_work_progress(user_id)
         bot.edit_message_text('\U0001F32AДанi скинуті в 0\U000026A1', call.message.chat.id, message_id=call.message.message_id)
-        # bot.answer_callback_query(call.id, '\U0001F32AДанi скинуті в 0\U000026A1')
 
     elif call.data == 'reset-data-from-bot':
         user_id = call.from_user.id
@@ -297,7 +296,7 @@ if __name__ == '__main__':
 
     threading.Thread(target=engine.main_time, args=((time_bud, bot, null_time))).start() #список відсутніх позицій в 10:00
 
-    threading.Thread(target=engine.main_time, args=((time_reset_db_users, bot, reset_time))).start() #ресет бази даних о 08:45
+    threading.Thread(target=engine.main_time, args=((time_reset_db_users, bot, reset_time))).start() #ресет бази даних о 23:59
 
     threading.Thread(target=engine.main_time, args=((time_wp_reminder, bot, wp_reminder))).start()
 
