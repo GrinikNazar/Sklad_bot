@@ -1,7 +1,7 @@
 import sqlite3
 import os
 from fuzzywuzzy import fuzz
-from bot import bot_error_message
+import bot
 from iphone_db import compare_fuz
 import handler_wp 
 import work_progress_db 
@@ -42,7 +42,7 @@ with sqlite3. connect(os.path.join(os.path.dirname(__file__), 'iphone_parts.db')
                 score = float(user_job[1])
             except ValueError:
                 message = 'Свій варіант балів треба писати через точку "."'
-                bot_error_message(user_id, message)
+                bot.bot_error_message(user_id, message)
                 score = 0
         else:
             score = 0
