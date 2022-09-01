@@ -21,7 +21,7 @@ with sqlite3. connect(os.path.join(os.path.dirname(__file__), 'iphone_parts.db')
 
         if len(result_list) == 1:
             part = result_list[0]
-            result = cb.execute(f'SELECT "{model}" FROM scores WHERE part LIKE "%{part}%"').fetchall()
+            result = cb.execute(f'SELECT "{model}" FROM from_excel_table_score WHERE jobs LIKE "%{part}%"').fetchall()
             try:
                 result = float(result[0][0])
             except TypeError:
