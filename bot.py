@@ -79,9 +79,11 @@ def get_my_id(message):
     user_nick_name = message.from_user.username
     user_id = message.from_user.id
     bot.send_message(users['Назар'], f'{user_firs_name}: {user_id}', reply_markup=keyboard.add_user(user_firs_name, user_nick_name, user_id))
+    bot.send_message(users['Ваня'], f'{user_firs_name}: {user_id}', reply_markup=keyboard.add_user(user_firs_name, user_nick_name, user_id))
 
     if message.from_user.id != message.chat.id:
         bot.send_message(users['Назар'], f'id чату:{message.chat.id}')
+        bot.send_message(users['Ваня'], f'id чату:{message.chat.id}')
 
 
 @bot.message_handler(commands=['list_ref'])

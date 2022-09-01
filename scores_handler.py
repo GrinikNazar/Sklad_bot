@@ -1,6 +1,7 @@
 import sqlite3
 import os
 from fuzzywuzzy import fuzz
+from bot import bot_error_message
 from iphone_db import compare_fuz
 import handler_wp 
 import work_progress_db 
@@ -26,16 +27,23 @@ with sqlite3. connect(os.path.join(os.path.dirname(__file__), 'iphone_parts.db')
                 result = float(result[0][0])
             except TypeError:
                 result = 0
+            except ValueError:
+                result = 0
             return result
         else:
             return 0
 
     # '!2.3'
-    def custom_scores_search(user_job: str):
+    def custom_scores_search(user_job: str, user_id):
         user_job_symbol = '!'
         user_job = user_job.split(user_job_symbol)
         if len(user_job) > 1:
-            score = float(user_job[1])
+            try:
+                score = float(user_job[1])
+            except ValueError:
+                message = 'Свій варіант балів треба писати через точку "."'
+                bot_error_message(user_id, message)
+                score = 0
         else:
             score = 0
         return score
@@ -64,7 +72,7 @@ with sqlite3. connect(os.path.join(os.path.dirname(__file__), 'iphone_parts.db')
         for key, value in result.items():
             for user_job in value:
                 id_job = user_job.split(' ')[0]
-                custom_score = custom_scores_search(user_job) #пошук символа з балами які поставив користувач
+                custom_score = custom_scores_search(user_job, id_user) #пошук символа з балами які поставив користувач
                 if custom_score == 0:
                     score_tuple = handler_wp.string_separate(user_job, select_scores)
                     score = score_tuple[0][0]
