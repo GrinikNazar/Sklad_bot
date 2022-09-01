@@ -13,10 +13,9 @@ with sqlite3. connect(os.path.join(os.path.dirname(__file__), 'iphone_parts.db')
 
     def select_scores(model, user_job):
         list_for_compare = []
-        list_for_compare_db = cb.execute(f'SELECT part FROM scores').fetchall()
-        # TODO: придумати звязку таблиць по id
+        list_for_compare_db = cb.execute(f'SELECT jobs FROM from_excel_table_score').fetchall()
         for string in list_for_compare_db:
-            list_for_compare.extend(string[0].split('\r\n'))
+            list_for_compare.extend(string[0].split('\n'))
 
         result_list = compare_fuz(list_for_compare, user_job, 85)
 

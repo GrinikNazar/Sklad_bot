@@ -10,6 +10,7 @@ import handler_wp
 import work_progress_db
 import os
 import scores_handler
+import score_table_change
 
 bot = telebot.TeleBot(conf.config['token'])
 
@@ -114,6 +115,16 @@ def other_function(message):
 def delete_users_from_bot(message):
     if message.from_user.id == users['Ваня'] or message.from_user.id == users['Назар']:
         bot.send_message(message.chat.id, 'Список користувачів \U0001F4DD', reply_markup=keyboard.users_list_to_delete())
+    else:
+        bot.send_message(message.chat.id, 'У тебе немає доступу \U0001F4A9')
+
+
+@bot.message_handler(commands=['update_score'])
+@autorize_hose
+def update_score_table(message):
+    if message.from_user.id == users['Ваня'] or message.from_user.id == users['Назар']:
+        score_table_change.main()
+        bot.send_message(message.chat.id, 'Дані оновлені')
     else:
         bot.send_message(message.chat.id, 'У тебе немає доступу \U0001F4A9')
 

@@ -177,7 +177,7 @@ with sqlite3. connect(os.path.join(os.path.dirname(__file__), 'iphone_parts.db')
             result_request += f"'{model}' TEXT, "
         result_request = result_request.rstrip()[:-1]
 
-        cb.execute(f"CREATE TABLE IF NOT EXISTS from_excel_table_score (id INTEGER, {result_request}, PRIMARY KEY('id'))")
+        cb.execute(f"CREATE TABLE IF NOT EXISTS from_excel_table_score ({result_request})")
 
         db.commit()
 
@@ -211,4 +211,5 @@ with sqlite3. connect(os.path.join(os.path.dirname(__file__), 'iphone_parts.db')
 
         cb.execute(f"INSERT INTO from_excel_table_score ({request_models}) VALUES ({request_jobs})")
         db.commit()
+
 
