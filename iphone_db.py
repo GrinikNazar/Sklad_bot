@@ -171,4 +171,44 @@ with sqlite3. connect(os.path.join(os.path.dirname(__file__), 'iphone_parts.db')
         work_progress_db.drop_table_user(user_id)
 
 
-# write_new_user_to_data_base('bodnariukkk', 603519506)
+    def create_table_from_excel(list_models, db = db):
+        result_request = ''
+        for model in list_models:
+            result_request += f"'{model}' TEXT, "
+        result_request = result_request.rstrip()[:-1]
+
+        cb.execute(f"CREATE TABLE IF NOT EXISTS from_excel_table_score (id INTEGER, {result_request}, PRIMARY KEY('id'))")
+
+        db.commit()
+
+
+    def drop_table_from_excel(db = db):
+        cb.execute(f"DROP TABLE from_excel_table_score")
+        db.commit()
+
+
+    def insert_to_db_from_excel(list_models, row_list, db = db):
+        request_models = ''
+        for model in list_models:
+            request_models += f"'{model}', "
+        request_models = request_models.rstrip()[:-1]
+
+        if len(row_list) != len(list_models): #Добавити недостаючі елементи в список балів
+            while len(row_list) < len(list_models):
+                row_list.append('')
+        
+        request_jobs = ''
+        for score in row_list:
+            if score == '':
+                request_jobs += f"'0', "
+            else:
+                try:
+                    score = score.replace(',', '.')
+                    request_jobs += f"'{score}', "
+                except ValueError:
+                    request_jobs += f"'{score}', "
+        request_jobs = request_jobs.rstrip()[:-1]
+
+        cb.execute(f"INSERT INTO from_excel_table_score ({request_models}) VALUES ({request_jobs})")
+        db.commit()
+
