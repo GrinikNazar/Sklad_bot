@@ -16,10 +16,9 @@ now_data = datetime.datetime.date(datetime.datetime.now())
 data_string = datetime.datetime.strftime(now_data, '%m-%Y') #вибір назви нового листа
 now_data_int = int(datetime.datetime.strftime(now_data, '%d')) #цей день 
 
-# TODO: добавляти поточний місяць в Example
-
 try:
     wks_now = sh.worksheet(data_string)
+    wks_now.update_acell('X7', value="=ЕСЛИ(Y7 > Example!X7; Y7; Example!X7)")
 except gspread.exceptions.WorksheetNotFound:
     wks.duplicate(new_sheet_name=data_string)
     wks_now = sh.worksheet(data_string)
@@ -32,7 +31,9 @@ except gspread.exceptions.WorksheetNotFound:
         coord_finnaly = coord.replace('8', number_coord) #'D8:E8' > 'D7:D7' 
         example_formula = f"=ОКРУГЛ({coord_1}6*100/'{data_string}'!{coord_1}6;1)"
         wks.update_acell(coord_finnaly, value=example_formula)
-
+        record_example = max(wks.acell('X7').value, wks_now.acell('X7').value)
+        wks.update('X7', record_example)
+        
 coordinate = {
     (1, 6, 11, 16, 21, 26, 31): ['D', 'E', 'F', 'G', 'H'], 
     (2, 7, 12, 17, 22, 27): ['J', 'K', 'L', 'M', 'N'],
