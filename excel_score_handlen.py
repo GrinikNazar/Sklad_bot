@@ -6,35 +6,56 @@ import iphone_db
 
 path = os.path.join(os.path.dirname(__file__), os.path.pardir, 'GoogleAPI/mypython-351009-5d090fd9b043.json')
 
-sa = gspread.service_account(filename=path)
 
-sh = sa.open(conf.work_progress_table)
+def max_record(wks, wks_now):
+    record_cell = 'X7'
+    rec_now = wks_now.acell(record_cell).value
+    rec_ex = wks.acell(record_cell).value
+    rec_now = float(rec_now.replace(',', '.'))
+    rec_ex = float(rec_ex.replace(',', '.'))
+    print(rec_now, rec_ex, wks_now)
+    if rec_now > rec_ex: # якщо рекорд на поточному листі більший то занести його в екземпл
+        wks.update_acell(record_cell, rec_now)
 
-wks = sh.worksheet('Example') #лист приклад для копіювання| цей лист завжди однаковий і береться як зразок
 
-now_data = datetime.datetime.date(datetime.datetime.now())
-data_string = datetime.datetime.strftime(now_data, '%m-%Y') #вибір назви нового листа
-now_data_int = int(datetime.datetime.strftime(now_data, '%d')) #цей день 
+def get_wks_now():
+    sa = gspread.service_account(filename=path)
 
-try:
-    wks_now = sh.worksheet(data_string)
-    wks_now.update_acell('X7', value="=ЕСЛИ(Y7 > Example!X7; Y7; Example!X7)")
-except gspread.exceptions.WorksheetNotFound:
-    wks.duplicate(new_sheet_name=data_string)
-    wks_now = sh.worksheet(data_string)
-    col_val_coord = wks.col_values(2)
-    col_val_coord = list(set(col_val_coord))
-    col_val_coord = [x for x in col_val_coord if x != '']
-    number_coord = '7'
-    for coord in col_val_coord:
-        coord_1 = coord[0] #D6
-        coord_finnaly = coord.replace('8', number_coord) #'D8:E8' > 'D7:D7' 
-        example_formula = f"=ОКРУГЛ({coord_1}6*100/'{data_string}'!{coord_1}6;1)"
-        wks.update_acell(coord_finnaly, value=example_formula)
-        record_example = max(wks.acell('X7').value, wks_now.acell('X7').value)
-        wks.update('X7', record_example)
+    sh = sa.open(conf.work_progress_table)
+
+    wks = sh.worksheet('Example') #лист приклад для копіювання| цей лист завжди однаковий і береться як зразок
+
+    now_data = datetime.datetime.date(datetime.datetime.now())
+    data_string = datetime.datetime.strftime(now_data, '%m-%Y') #вибір назви нового листа
+    now_data_int = int(datetime.datetime.strftime(now_data, '%d')) #цей день 
+
+    try:
+        wks_now = sh.worksheet(data_string)
+        max_record(wks, wks_now)
+    except gspread.exceptions.WorksheetNotFound:
+        wks.duplicate(new_sheet_name=data_string)
+        wks_now = sh.worksheet(data_string)
+        col_val_coord = wks.col_values(2)
+        col_val_coord = list(set(col_val_coord))
+        col_val_coord = [x for x in col_val_coord if x != '']
+        number_coord = '7'
+        for coord in col_val_coord:
+            coord_1 = coord[0] #D6
+            coord_finnaly = coord.replace('8', number_coord) #'D8:E8' > 'D7:D7' 
+            example_formula = f"=ОКРУГЛ({coord_1}6*100/'{data_string}'!{coord_1}6;1)"
+            wks.update_acell(coord_finnaly, value=example_formula)
+        wks_now.update_acell('X7', value="=ЕСЛИ(Y7 > Example!X7; Y7; Example!X7)")
+        print(wks)
+        print(wks_now)
+        print(wks_now.acell('X7').value)
+        print(wks.acell('X7').value)
+        max_record(wks, wks_now)
+
+    return now_data_int, wks_now
+       
         
-coordinate = {
+def wks_coorditnate(id_user, now_data_int, wks_now):
+    coordinate = {
     (1, 6, 11, 16, 21, 26, 31): ['D', 'E', 'F', 'G', 'H'], 
     (2, 7, 12, 17, 22, 27): ['J', 'K', 'L', 'M', 'N'],
     (3, 8, 13, 18, 23, 28): ['P', 'Q', 'R', 'S', 'T'],
@@ -42,19 +63,17 @@ coordinate = {
     (5, 10, 15, 20, 25, 30): ['AB', 'AC', 'AD', 'AE', 'AF']
     }
 
-step = 12
-date_d = {
-    (1, 2, 3, 4, 5) : 0, 
-    (6, 7, 8, 9, 10) : step, 
-    (11, 12, 13, 14, 15): 2*step,
-    (16, 17, 18, 19, 20): 3*step,
-    (21, 22, 23, 24, 25): 4*step,
-    (26, 27, 28, 29, 30): 5*step,
-    (31,): 6*step,
-    }
+    step = 12
+    date_d = {
+        (1, 2, 3, 4, 5) : 0, 
+        (6, 7, 8, 9, 10) : step, 
+        (11, 12, 13, 14, 15): 2*step,
+        (16, 17, 18, 19, 20): 3*step,
+        (21, 22, 23, 24, 25): 4*step,
+        (26, 27, 28, 29, 30): 5*step,
+        (31,): 6*step,
+        }
 
-
-def wks_coorditnate(id_user, now_data_int):
     row_user_id = 1
     col_values_users = wks_now.col_values(1)
     for row in col_values_users:
@@ -78,7 +97,10 @@ def wks_coorditnate(id_user, now_data_int):
     return list_of_coordinate
 
 
-def best_of_day(wks = wks_now):
+def best_of_day():
+    tuple_wks = get_wks_now()
+    wks = tuple_wks[1]
+    now_data_int = tuple_wks[0]
     begin_value = 9
     step = 6
     coordinate_of_best_day = {
@@ -130,5 +152,11 @@ def best_of_day(wks = wks_now):
 
 
 def main_excel(user_id, score_tuple):
-    for ind, coor in enumerate(wks_coorditnate(user_id, now_data_int)):
+    tuple_wks = get_wks_now()
+    now_data_int = tuple_wks[0]
+    wks_now = tuple_wks[1]
+
+    coordinate = wks_coorditnate(user_id, now_data_int, wks_now) #список з координатами
+    for ind, coor in enumerate(coordinate):
         wks_now.update(coor, score_tuple[ind])
+    
