@@ -4,52 +4,54 @@ import os
 import conf
 import iphone_db
 
-path = os.path.join(os.path.dirname(__file__), os.path.pardir, 'GoogleAPI/mypython-351009-5d090fd9b043.json')
+
+def get_path_and_worksheet():
+    path = os.path.join(os.path.dirname(__file__), os.path.pardir, 'GoogleAPI/mypython-351009-5d090fd9b043.json')
+    sa = gspread.service_account(filename=path)
+    sh = sa.open(conf.work_progress_table)
+    wks = sh.worksheet('Example') #лист приклад для копіювання| цей лист береться як зразок
+
+    return {'wks': wks, 'sh': sh}
 
 
 def max_record(wks, wks_now):
     record_cell = 'X7'
+
     rec_now = wks_now.acell(record_cell).value
+    rec_now_float = float(rec_now.replace(',', '.'))
+
     rec_ex = wks.acell(record_cell).value
-    rec_now = float(rec_now.replace(',', '.'))
-    rec_ex = float(rec_ex.replace(',', '.'))
-    print(rec_now, rec_ex, wks_now)
-    if rec_now > rec_ex: # якщо рекорд на поточному листі більший то занести його в екземпл
+    rec_ex_folat = float(rec_ex.replace(',', '.'))
+
+    if rec_now_float > rec_ex_folat: # якщо рекорд на поточному листі більший то занести його в екземпл
         wks.update_acell(record_cell, rec_now)
 
 
 def get_wks_now():
-    sa = gspread.service_account(filename=path)
-
-    sh = sa.open(conf.work_progress_table)
-
-    wks = sh.worksheet('Example') #лист приклад для копіювання| цей лист завжди однаковий і береться як зразок
+    wks = get_path_and_worksheet()['wks']
 
     now_data = datetime.datetime.date(datetime.datetime.now())
     data_string = datetime.datetime.strftime(now_data, '%m-%Y') #вибір назви нового листа
     now_data_int = int(datetime.datetime.strftime(now_data, '%d')) #цей день 
 
     try:
+        sh = get_path_and_worksheet()['sh']
         wks_now = sh.worksheet(data_string)
-        max_record(wks, wks_now)
     except gspread.exceptions.WorksheetNotFound:
-        wks.duplicate(new_sheet_name=data_string)
-        wks_now = sh.worksheet(data_string)
+        wks_now = wks.duplicate(new_sheet_name=data_string)
+
         col_val_coord = wks.col_values(2)
         col_val_coord = list(set(col_val_coord))
-        col_val_coord = [x for x in col_val_coord if x != '']
+        col_val_coord = [x for x in col_val_coord if x != ''] # Знаходить координати кожного користувача
+
         number_coord = '7'
         for coord in col_val_coord:
-            coord_1 = coord[0] #D6
+            coord_1 = coord[0] # D
             coord_finnaly = coord.replace('8', number_coord) #'D8:E8' > 'D7:D7' 
             example_formula = f"=ОКРУГЛ({coord_1}6*100/'{data_string}'!{coord_1}6;1)"
-            wks.update_acell(coord_finnaly, value=example_formula)
+            wks.update_acell(coord_finnaly, value=example_formula) # запис в Example формулу з назвою поточного місяця
+
         wks_now.update_acell('X7', value="=ЕСЛИ(Y7 > Example!X7; Y7; Example!X7)")
-        print(wks)
-        print(wks_now)
-        print(wks_now.acell('X7').value)
-        print(wks.acell('X7').value)
-        max_record(wks, wks_now)
 
     return now_data_int, wks_now
        
@@ -157,6 +159,10 @@ def main_excel(user_id, score_tuple):
     wks_now = tuple_wks[1]
 
     coordinate = wks_coorditnate(user_id, now_data_int, wks_now) #список з координатами
+
+    wks = get_path_and_worksheet()['wks']
+    max_record(wks, wks_now)
+
     for ind, coor in enumerate(coordinate):
         wks_now.update(coor, score_tuple[ind])
     
