@@ -45,7 +45,7 @@ def autorize_hose(func):
                 return None
             else:
                 result = func(message)
-        elif message.from_user.id not in users.values() and message.chat.id == сhat_work_progress: #для не ваторизованих
+        elif message.from_user.id not in users.values() and message.chat.id == сhat_work_progress: #для не авторизованих
             return None
         else:
             result = bot.send_message(message.chat.id, 'Ти не авторизований, та й таке \U0001F4A9')
@@ -142,12 +142,6 @@ def some_func(message):
         except IndexError:
             bot.send_message(message.chat.id, 'Невірний формат вводу, спробуй ще раз')
 
-    # Поки що вирубав
-    # зміна часу скидання в чат того що в 0 
-    # elif message.text.split('\n')[0].rstrip() == f'@{bot.get_me().username} _time':
-    #     engine.change_time_null(message.text)
-    #     bot.send_message(message.chat.id, 'Час змінено\U0001F91F')
-
     # WorkProgress    
     elif message.text.split('\n')[0].rstrip() == f'@{bot.get_me().username} _wp':
         result = handler_wp.handler_wp(message.text, message.from_user.id)
@@ -196,7 +190,6 @@ def handler_mes(call):
         bot.answer_callback_query(call.id, '\U0001F916Відправив\U0001F91F')
         iphone_db.write_confirm_user(user_id)
 
-
     elif call.data == 'reset_data_user':
         user_id = call.from_user.id
         work_progress_db.delete_user_work_progress(user_id)
@@ -243,7 +236,6 @@ def handler_mes(call):
                 bot.send_message(call.message.chat.id, res)
             else:
                 bot.send_message(call.message.chat.id, result[-1])
-
 
     elif call.data.split('_')[0] == 'add-user-to-bot':
         user_name = call.data.split('_')[1]
@@ -302,10 +294,12 @@ if __name__ == '__main__':
     null_time = 'null_time'
     reset_time = 'reset_time'
     wp_reminder = 'wp_reminder'
+    wp_reminder_2 = 'wp_reminder_2'
 
     time_bud = iphone_db.time_base(null_time)
     time_reset_db_users = iphone_db.time_base(reset_time)
     time_wp_reminder = iphone_db.time_base(wp_reminder)
+    time_wp_reminder_2 = iphone_db.time_base(wp_reminder_2)
 
     threading.Thread(target=engine.main_time, args=((time_bud, bot, null_time))).start() #список відсутніх позицій в 10:00
 
@@ -313,10 +307,11 @@ if __name__ == '__main__':
 
     threading.Thread(target=engine.main_time, args=((time_wp_reminder, bot, wp_reminder))).start()
 
-    # bot.polling(non_stop=True, timeout=600)
+    threading.Thread(target=engine.main_time, args=((time_wp_reminder_2, bot, wp_reminder_2))).start()
+
+
     while True:
         try:
             bot.infinity_polling(timeout=10)
         except ConnectionError:
-            print('Ой')
             continue

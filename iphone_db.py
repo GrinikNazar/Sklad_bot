@@ -59,6 +59,8 @@ with sqlite3. connect(os.path.join(os.path.dirname(__file__), 'iphone_parts.db')
             count = 2
         elif string_time_value == 'wp_reminder':
             count = 3
+        elif string_time_value == 'wp_reminder_2':
+            count = 4
         result = cb.execute(f'SELECT time FROM time WHERE count = {count}').fetchall()[0]
         return result[0].split("'")[1]
 
@@ -211,5 +213,3 @@ with sqlite3. connect(os.path.join(os.path.dirname(__file__), 'iphone_parts.db')
 
         cb.execute(f"INSERT INTO from_excel_table_score ({request_models}) VALUES ({request_jobs})")
         db.commit()
-
-

@@ -1,6 +1,6 @@
 import iphone_db
 import work_progress_db
-from bot import bot_error_message
+import bot
 
 
 def find_bracket(string):
@@ -31,7 +31,7 @@ def string_separate(string, *args):
     try:
         parts = find_bracket(space_split[1])
     except IndexError:
-        bot_error_message(user_id_key, 'Шось не то написав, перевірь правильність запису!')
+        bot.bot_error_message(user_id_key, 'Шось не то написав, перевірь правильність запису!')
         return
     parts = parts.split(',')
     parts = list(map(lambda x: x.strip().lower(), parts))

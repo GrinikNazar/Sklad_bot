@@ -5,6 +5,7 @@ import os
 import work_progress_db
 import conf
 import excel_score_handlen
+import scores_handler
 
 path = os.path.join(os.path.dirname(__file__), os.path.pardir, 'GoogleAPI/mypython-351009-5d090fd9b043.json')
 
@@ -334,19 +335,15 @@ def main_time(time_b, bot, target):
         if target == 'null_time':
             bot.send_message(-674239373, get_null_things())
         elif target == 'reset_time':
-            # якщо шланг не скинув у 20:30 то добавити в цій мітці ворк прогрес в табицю
-            # якщо все не зійшлось то записати + середній бал
             excel_score_handlen.best_of_day()
+            list_null_confirm = iphone_db.get_users_where_confirm_null()
+            if list_null_confirm:
+                for user_id in list_null_confirm:
+                    scores_handler.main_scores(user_id)
             work_progress_db.reset_data_base()
         elif target == 'wp_reminder':
-            handler_confirm_data(bot, iphone_db.get_users_where_confirm_null()) #нагадування за WP
-        # TODO: Добавити нову часову мітку
-        # якщо не скинув прогрес то нагадати о 20:30
+            handler_confirm_data(bot, iphone_db.get_users_where_confirm_null())
+        elif target == 'wp_reminder_2':
+            handler_confirm_data(bot, iphone_db.get_users_where_confirm_null())
         time.sleep(60)
         t = str_time_t()
-
-
-def change_time_null(string):
-    string = string.split('\n')[1:]
-    iphone_db.change_time(string)
-
