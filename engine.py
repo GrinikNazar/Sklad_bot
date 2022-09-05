@@ -1,5 +1,6 @@
 import time
 import gspread
+import handler_wp
 import iphone_db
 import os
 import work_progress_db
@@ -333,13 +334,25 @@ def main_time(time_b, bot, target):
         time_sleep = sleep_time(time_mod(t), time_mod(time_b))
         time.sleep(time_sleep)
         if target == 'null_time':
-            bot.send_message(-674239373, get_null_things())
+            bot.send_message(conf.chat_history_parts, get_null_things())
+            list_of_reserved_message_users = iphone_db.select_reserv_users()
+            for message_reserved in list_of_reserved_message_users:
+                user_name = message_reserved[0]
+                message = message_reserved[1]
+                message_build = user_name + '\n' + message
+                bot.send_message(conf.chat_history_parts, message_build)
+                iphone_db.clear_reserv(user_name)
         elif target == 'reset_time':
             excel_score_handlen.best_of_day()
             list_null_confirm = iphone_db.get_users_where_confirm_null()
             if list_null_confirm:
                 for user_id in list_null_confirm:
                     scores_handler.main_scores(user_id)
+                    reserv = work_progress_db.select_work_progress(user_id) # витягнути останню інформацію з макета
+                    bot_name = f'@{bot.get_me().username} _wp\n' + reserv
+                    reserv_result = handler_wp.handler_wp(bot_name, user_id)
+                    if reserv_result:
+                        iphone_db.write_reserv(user_id, reserv_result) # покласт її в резерв
             work_progress_db.reset_data_base()
         elif target == 'wp_reminder':
             handler_confirm_data(bot, iphone_db.get_users_where_confirm_null())

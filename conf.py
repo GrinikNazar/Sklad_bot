@@ -20,7 +20,7 @@ score_table_change = 'WorkProgress'
 #     'token': gusi_token
 # }
 # сhat_work_progress = -740139442
-# chat_history_parts = None
+# chat_history_parts = -740139442
 # source = 'Test_parts'
 # work_progress_table = 'Test_parts'
 # score_table_change = 'Test_parts'

@@ -213,3 +213,17 @@ with sqlite3. connect(os.path.join(os.path.dirname(__file__), 'iphone_parts.db')
 
         cb.execute(f"INSERT INTO from_excel_table_score ({request_models}) VALUES ({request_jobs})")
         db.commit()
+
+
+    def write_reserv(user_id, reserv, db = db):
+        cb.execute(f"UPDATE users SET reserv = '{reserv}' WHERE telid = {user_id}")
+        db.commit()
+
+
+    def select_reserv_users():
+        return cb.execute("SELECT name, reserv FROM users WHERE reserv NOT NULL ").fetchall()
+
+    
+    def clear_reserv(user_name, db = db):
+        cb.execute(f"UPDATE users SET reserv = NULL WHERE name = '{user_name}'")
+        db.commit()

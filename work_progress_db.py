@@ -240,4 +240,3 @@ with sqlite3.connect(os.path.join(os.path.dirname(__file__), 'work_progress.db')
     def chek_work_progress_user(user_id):
         if select_work_progress(user_id) == maket():
             iphone_db.write_confirm_user(user_id)
-
