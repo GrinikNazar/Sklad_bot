@@ -146,6 +146,8 @@ def best_of_day():
         result_dict[row_list[1]] = score_float
     
     max_dict = max(result_dict.values())
+    if max_dict == 0:
+        return
     for key, value in result_dict.items():
         if value == max_dict:
             end_coordinate = key
