@@ -7,6 +7,7 @@ import work_progress_db
 import conf
 import excel_score_handlen
 import scores_handler
+import excel_statistic
 
 path = os.path.join(os.path.dirname(__file__), os.path.pardir, 'GoogleAPI/mypython-351009-5d090fd9b043.json')
 
@@ -334,6 +335,7 @@ def main_time(time_b, bot, target):
         time_sleep = sleep_time(time_mod(t), time_mod(time_b))
         time.sleep(time_sleep)
         if target == 'null_time':
+            excel_statistic.main(bot, conf.chat_history_parts) # статистика кожного 1 числа нового місяця
             bot.send_message(conf.chat_history_parts, get_null_things())
             list_of_reserved_message_users = iphone_db.select_reserv_users()
             for message_reserved in list_of_reserved_message_users:

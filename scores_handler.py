@@ -54,7 +54,7 @@ with sqlite3. connect(os.path.join(os.path.dirname(__file__), 'iphone_parts.db')
         return string_split[0].rstrip()
 
 
-    def main_scores(id_user = 375385945, *args):
+    def main_scores(id_user, *args):
         dict_id_user_job = {}
         final_maket = work_progress_db.select_work_progress(id_user)
         result = handler_wp.wp_handler_text(final_maket, 'need_dict')
