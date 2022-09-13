@@ -22,9 +22,13 @@ with sqlite3. connect(os.path.join(os.path.dirname(__file__), 'iphone_parts.db')
 
         if len(result_list) == 1:
             part = result_list[0]
-            result = cb.execute(f'SELECT "{model}" FROM from_excel_table_score WHERE jobs LIKE "%{part}%"').fetchall()
+            result = cb.execute(f'SELECT jobs, "{model}" FROM from_excel_table_score WHERE jobs LIKE "%{part}%"').fetchall()
+            d = {}
+            for i in result:
+                for v in i[0].split('\n'):
+                    d[v] = i[1]
             try:
-                result = float(result[0][0])
+                result = float(d[part])
             except TypeError:
                 result = 0
             except ValueError:
