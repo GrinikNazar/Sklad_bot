@@ -185,16 +185,18 @@ def handler_mes(call):
         for key, value in users.items():
             if value == user_id:
                 user = key
-        # TODO: дізнатись різницю між двома показниками
-        # тут перед
+
+        begin = excel_statistic.get_user_score_when_came_to_point(user_id)
+
         work_progress_finnaly = scores_handler.main_scores(user_id)
         work_progress_finnaly = f"{user}\n{work_progress_finnaly}"
         bot.send_message(сhat_work_progress, work_progress_finnaly)
         bot.answer_callback_query(call.id, '\U0001F916Відправив\U0001F91F')
         iphone_db.write_confirm_user(user_id)
-        # тут після
-        # TODO: викликати функцію яка буде приймати два значення і порівнювати чи перейшла чи досягля кількість балів планки
-        result_statistic = excel_statistic.get_user_score_when_came_to_point(user_id)
+        
+        end = excel_statistic.get_user_score_when_came_to_point(user_id)
+
+        result_statistic = excel_statistic.compare_scores(user, begin, end)
         if result_statistic:
             bot.send_message(chat_history_parts, result_statistic)
         

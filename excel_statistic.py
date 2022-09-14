@@ -2,13 +2,12 @@ import datetime
 import gspread
 import os
 import conf
-# import iphone_db
+import random
 
 
 def connect_to_excel():
     path = os.path.join(os.path.dirname(__file__), os.path.pardir, 'GoogleAPI/mypython-351009-5d090fd9b043.json')
     sa = gspread.service_account(filename=path)
-    # wks = sh.worksheet('Example')
     return sa.open(conf.work_progress_table)
 
 
@@ -46,25 +45,38 @@ def get_user_score_when_came_to_point(user_id):
             row_values = wks.row_values(i + 1)
             break
     user_coord = row_values[1]
-    user_name = row_values[2]
     user_coord = user_coord.replace('8', '2')
 
     return wks.acell(user_coord).value
-    # передавати ід користувача
-    # по ід находити імя і кількість балів
-    # якщо досягнуто якогось результату тоді повертати рядок з такою інформацією
+
+
+def get_variant_string(user_name, label, end):
+    variant_list = [
+        f'🏵🏵🏵{user_name}🏵🏵🏵\nНе дарма ходив на роботу і вже дійшов до позначки у {label} балів!\n👍👍Так тримати👍👍',
+        f'{user_name} набрав вже більше ніж {label} балів. Давай ще)',
+        f'{user_name} дійшов до позначки у {label} балів! У нього зараз {end} ̶с̶а̶н̶т̶и̶м̶е̶т̶р̶і̶в̶  балів 😎'
+    ]
+
+    return random.choice(variant_list)
+
+
+def compare_scores(user_name, begin_value: str, end_value: str) -> str:
+    begin_value = float(begin_value.replace(',', '.'))
+    end_value = float(end_value.replace(',', '.'))
+    table_score_label = (100, 120, 140, 160, 180, 200)
+    for label in table_score_label:
+        if begin_value < label and end_value >= label:
+            return get_variant_string(user_name, label, end_value)
 
 
 def get_now_day() -> int: 
     now_data = datetime.datetime.date(datetime.datetime.now())
-    # data_string = datetime.datetime.strftime(now_data, '%m-%Y') #вибір назви нового листа
     now_data_int = int(datetime.datetime.strftime(now_data, '%d')) #цей день 
 
     return now_data_int
 
 
 def total_scores():
-    
     pre_date = previos_date()
     wks = connect_to_excel().worksheet(pre_date) # конект до таблиці попереднього місяця
     coordinate = search_coordinate(wks) # [D8:E8, F8:G8, H8:I8, J8:K8, L8:M8]
@@ -130,7 +142,3 @@ def total_scores():
 def main(bot, chat): #Викликати 1 числа нового місяця о 10:00 на часовій мітці
     if get_now_day() == 1:
         bot.send_message(chat, total_scores())
-
-
-s = get_user_score_when_came_to_point(1318753542)
-print(s)
