@@ -198,7 +198,7 @@ def handler_mes(call):
 
         result_statistic = excel_statistic.compare_scores(user, begin, end)
         if result_statistic:
-            bot.send_message(chat_history_parts, result_statistic)
+            bot.send_message(сhat_work_progress, result_statistic)
         
 
     elif call.data == 'reset_data_user':

@@ -335,7 +335,7 @@ def main_time(time_b, bot, target):
         time_sleep = sleep_time(time_mod(t), time_mod(time_b))
         time.sleep(time_sleep)
         if target == 'null_time':
-            excel_statistic.main(bot, conf.chat_history_parts) # статистика кожного 1 числа нового місяця
+            excel_statistic.main(bot, conf.сhat_work_progress) # статистика кожного 1 числа нового місяця
             bot.send_message(conf.chat_history_parts, get_null_things())
             list_of_reserved_message_users = iphone_db.select_reserv_users()
             for message_reserved in list_of_reserved_message_users:
