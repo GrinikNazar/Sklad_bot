@@ -1,19 +1,11 @@
 import time
-import gspread
 import handler_wp
 import iphone_db
-import os
 import work_progress_db
 import conf
 import excel_score_handlen
 import scores_handler
 import excel_statistic
-
-path = os.path.join(os.path.dirname(__file__), os.path.pardir, 'GoogleAPI/mypython-351009-5d090fd9b043.json')
-
-sa = gspread.service_account(filename=path)
-
-sh = sa.open(conf.source)
 
 
 def gen_list_models_with_color(s, apple):
@@ -50,6 +42,7 @@ def remnant_part(thing_value, value, min_value):
 
 
 def search_parts_for_add_like_back_up(dict_with_parts):
+    sh = conf.source_google_sheet_api(conf.source)
     for part_key, part_value in dict_with_parts.items():
         workseet = part_key
         workseet = sh.worksheet(workseet)
@@ -141,6 +134,7 @@ def get_thing(model, model_begin, value, workseet, sheet):
 
 
 def get_null_things():
+    sh = conf.source_google_sheet_api(conf.source)
     sheets = iphone_db.all_sheets()
     string_of_null_list = ''
     string_of_null = '\U0000274C Все що зкінчилось \U0000274C' + '\n'
@@ -169,6 +163,7 @@ def five(num, max_num):
 
 
 def sum_parts():
+    sh = conf.source_google_sheet_api(conf.source)
     sheets = iphone_db.all_sheets()
     sum_order = 0
     for wks in sheets:
@@ -181,6 +176,7 @@ def sum_parts():
 
 
 def list_ref_parts(*args):
+    sh = conf.source_google_sheet_api(conf.source)
     sheets = iphone_db.all_sheets()
     sum_order = 0
     list_of_ref = []
@@ -238,6 +234,7 @@ def list_ref_parts(*args):
 
 
 def list_copy_and_battery(part, emod):
+    sh = conf.source_google_sheet_api(conf.source)
     sheet = iphone_db.ret_uk_request(part)
     wk = sh.worksheet(sheet)
     list_order = f'{emod}{sheet}: Кількість до максимуму\n'
@@ -264,6 +261,7 @@ def search_thing(wks, sheet):
 
 
 def add_to_list(string):
+    sh = conf.source_google_sheet_api(conf.source)
     workseet = sh.worksheet('Додатковий')
     string = string.split('\n')[1:]
     result_list = [f'{row[0]}*{row[1]}' for row in workseet.get_all_values()]
@@ -277,11 +275,13 @@ def add_to_list(string):
 
 
 def clean_worksheet():
+    sh = conf.source_google_sheet_api(conf.source)
     workseet = sh.worksheet('Додатковий')
     workseet.clear()
 
 
 def main(command):
+    sh = conf.source_google_sheet_api(conf.source)
     command = command.split('_')
 
     sheet = iphone_db.ret_uk_request(command[0])

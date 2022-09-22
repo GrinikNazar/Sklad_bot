@@ -78,10 +78,7 @@ with sqlite3.connect(os.path.join(os.path.dirname(__file__), 'work_progress.db')
     
     #Вибрати всі дані для порівняння
     def select_table_user(user):
-        # try:
         return cb.execute(f"SELECT device, number, wp_number FROM '{user}'").fetchall()
-        # except sqlite3.OperationalError:
-        #     return None
 
     
     def select_table_user_glass(user):
@@ -109,13 +106,8 @@ with sqlite3.connect(os.path.join(os.path.dirname(__file__), 'work_progress.db')
 
     #витягнути дані з макет останні або макет
     def select_work_progress(user):
-        # try:
         result = cb.execute(f"SELECT wp FROM '{user}_maket'").fetchall()
         return result[-1][0]
-        # except TypeError:
-        #     return maket()
-        # except sqlite3.OperationalError:
-        #     return maket()
 
     
     #Збереження значень кожної запчастини коли беруть з бота

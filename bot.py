@@ -3,7 +3,6 @@ import keyboard
 import iphone_db
 import conf
 import telebot
-from telebot import types
 import threading
 import random
 import handler_wp

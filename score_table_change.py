@@ -1,16 +1,10 @@
 import sqlite3
-import gspread
-import os
 import conf
 import iphone_db
 
 
 def main():
-    path = os.path.join(os.path.dirname(__file__), os.path.pardir, 'GoogleAPI/mypython-351009-5d090fd9b043.json')
-
-    sa = gspread.service_account(filename=path)
-
-    sh = sa.open(conf.score_table_change)
+    sh = conf.source_google_sheet_api(conf.score_table_change)
 
     wks = sh.worksheet('Таблиця оцінок v2.0')
 

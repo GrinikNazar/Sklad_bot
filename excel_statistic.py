@@ -1,14 +1,6 @@
 import datetime
-import gspread
-import os
 import conf
 import random
-
-
-def connect_to_excel():
-    path = os.path.join(os.path.dirname(__file__), os.path.pardir, 'GoogleAPI/mypython-351009-5d090fd9b043.json')
-    sa = gspread.service_account(filename=path)
-    return sa.open(conf.work_progress_table)
 
 
 # визначення попередньої дати
@@ -35,10 +27,11 @@ def search_coordinate(wks):
           
 
 def get_user_score_when_came_to_point(user_id):
+    sh = conf.source_google_sheet_api(conf.work_progress_table)
     user_id = str(user_id)
     now_data = datetime.datetime.date(datetime.datetime.now())
     data_string = datetime.datetime.strftime(now_data, '%m-%Y')
-    wks = connect_to_excel().worksheet(data_string)
+    wks = sh.worksheet(data_string)
     col_val_id = wks.col_values(1)
     for i, row in enumerate(col_val_id):
         if row == user_id:
@@ -104,8 +97,9 @@ def get_now_day() -> int:
 
 
 def total_scores():
+    sh = conf.source_google_sheet_api(conf.work_progress_table)
     pre_date = previos_date()
-    wks = connect_to_excel().worksheet(pre_date) # конект до таблиці попереднього місяця
+    wks = sh.worksheet(pre_date) # конект до таблиці попереднього місяця
     coordinate = search_coordinate(wks) # [D8:E8, F8:G8, H8:I8, J8:K8, L8:M8]
 
     score_money = {

@@ -1,15 +1,12 @@
 import datetime
 import gspread
-import os
 import conf
 import iphone_db
 
 
 def get_path_and_worksheet():
-    path = os.path.join(os.path.dirname(__file__), os.path.pardir, 'GoogleAPI/mypython-351009-5d090fd9b043.json')
-    sa = gspread.service_account(filename=path)
-    sh = sa.open(conf.work_progress_table)
-    wks = sh.worksheet('Example') #лист приклад для копіювання| цей лист береться як зразок
+    sh = conf.source_google_sheet_api(conf.work_progress_table)
+    wks = sh.worksheet('Example')
 
     return {'wks': wks, 'sh': sh}
 

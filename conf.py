@@ -1,4 +1,5 @@
 import os
+import gspread
 
 flarken_token = os.environ['FlarkenBot']
 config = {
@@ -24,3 +25,9 @@ score_table_change = 'WorkProgress'
 # source = 'Test_parts'
 # work_progress_table = 'Test_parts'
 # score_table_change = 'Test_parts'
+
+
+def source_google_sheet_api(resources):
+    path = os.path.join(os.path.dirname(__file__), os.path.pardir, 'GoogleAPI/mypython-351009-5d090fd9b043.json')
+    sa = gspread.service_account(filename=path)
+    return sa.open(resources)
