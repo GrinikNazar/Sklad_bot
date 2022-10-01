@@ -184,14 +184,18 @@ def handler_mes(call):
         for key, value in users.items():
             if value == user_id:
                 user = key
+        
+        # TODO: поправив конфірм
+        iphone_db.write_confirm_user(user_id)
 
         begin = excel_statistic.get_user_score_when_came_to_point(user_id)
 
         work_progress_finnaly = scores_handler.main_scores(user_id)
         work_progress_finnaly = f"{user}\n{work_progress_finnaly}"
         bot.send_message(сhat_work_progress, work_progress_finnaly)
-        bot.answer_callback_query(call.id, '\U0001F916Відправив\U0001F91F')
-        iphone_db.write_confirm_user(user_id)
+        bot.send_message(call.message.chat.id, '\U0001F916Відправив\U0001F91F')
+        # TODO: Ексепшн виникає можливо черех застарілий call.id - якщо хтось повторно не згенерував повідомлення з прогресом і нажав конфірм на раніше створене повідомлення
+        # bot.answer_callback_query(call.id, '\U0001F916Відправив\U0001F91F')
         
         end = excel_statistic.get_user_score_when_came_to_point(user_id)
 
