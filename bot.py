@@ -323,16 +323,10 @@ if __name__ == '__main__':
 
     threading.Thread(target=engine.main_time, args=((time_wp_reminder_2, bot, wp_reminder_2))).start()
 
-    error_log_from_bot = ''
+
     while True:
         try:
             bot.infinity_polling(timeout=10)
-            
-            if error_log_from_bot == '':
-                bot.send_message(users['Назар'], 'Я включився!')
-            else:
-                bot.send_message(users['Назар'], f'')
-                error_log_from_bot = ''
-        except ConnectionError as err:
-            error_log_from_bot += err
+        # except ConnectionError as err:
+        except BaseException:
             continue
