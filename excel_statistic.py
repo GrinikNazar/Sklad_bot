@@ -25,9 +25,17 @@ def search_coordinate(wks):
     col_val_coord = [x for x in col_val_coord if x != ''] # Знаходить координати кожного користувача
 
     return col_val_coord
+
+
+def get_path_and_worksheet():
+    sh = conf.source_google_sheet_api(conf.work_progress_table)
+    wks = sh.worksheet('Example')
+
+    return {'wks': wks, 'sh': sh}
           
 
 def get_user_score_when_came_to_point(user_id):
+    wks = get_path_and_worksheet()['wks']
     sh = conf.source_google_sheet_api(conf.work_progress_table)
     user_id = str(user_id)
     now_data = datetime.datetime.date(datetime.datetime.now())
