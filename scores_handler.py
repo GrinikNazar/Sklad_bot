@@ -114,16 +114,16 @@ with sqlite3. connect(os.path.join(os.path.dirname(__file__), 'iphone_parts.db')
             elif 'Видано готових' in string_split:
                 # TODO: проблема з багатьма цифрами після коми
                 # string_split += f' {count_instyle} ({round(sum_instyle_job, 2)})'
-                string_split += ' {} ({:.2})'.format(count_instyle, sum_instyle_job)
+                string_split += ' {} ({:.2})'.format(count_instyle, float(sum_instyle_job))
             elif 'Видано клієнтських' in string_split:
                 # string_split += f' {count_client} ({round(sum_client_job, 2)})'
-                string_split += ' {} ({:.2})'.format(count_client, sum_client_job)
+                string_split += ' {} ({:.2})'.format(count_client, float(sum_client_job))
             elif key_id in dict_id_user_job:
                 string_split += f' ({dict_id_user_job[key_id]})'
             result_maket.append(string_split)
         result_maket.append('')
         # result_maket.append('Загальний результат - {round(sum_user_job, 3)}')
-        result_maket.append('Загальний результат - {:.3}'.format(sum_user_job))
+        result_maket.append('Загальний результат - {:.3}'.format(float(sum_user_job)))
         final_maket = '\n'.join(result_maket)
 
         score_tuple = (sum_instyle_job, sum_client_job, count_instyle, count_client, glass_count)

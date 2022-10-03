@@ -328,5 +328,6 @@ if __name__ == '__main__':
         try:
             bot.infinity_polling(timeout=10)
         # except ConnectionError as err:
-        except BaseException:
+        except BaseException as err:
+            print(err)
             continue
