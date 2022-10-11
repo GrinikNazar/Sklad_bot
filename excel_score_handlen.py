@@ -153,15 +153,12 @@ def best_of_day():
 
 
 def main_excel(user_id, score_tuple):
-    tuple_wks = get_wks_now()
-    now_data_int = tuple_wks[0]
-    wks_now = tuple_wks[1]
+    now_data_int, wks_now = get_wks_now()
 
     coordinate = wks_coorditnate(user_id, now_data_int, wks_now) #список з координатами
 
-    wks = get_path_and_worksheet()['wks']
-    max_record(wks, wks_now)
-
     for ind, coor in enumerate(coordinate):
         wks_now.update(coor, score_tuple[ind])
+
+    max_record(get_path_and_worksheet()['wks'], wks_now)
     

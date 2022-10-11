@@ -45,6 +45,7 @@ def get_user_score_when_came_to_point(user_id):
     except gspread.exceptions.WorksheetNotFound:
         wks.duplicate(new_sheet_name=data_string)
         wks = sh.worksheet(data_string)
+        wks.update_acell('X7', value="=ЕСЛИ(Y7 > Example!X7; Y7; Example!X7)")
     col_val_id = wks.col_values(1)
     for i, row in enumerate(col_val_id):
         if row == user_id:

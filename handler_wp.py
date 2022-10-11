@@ -31,7 +31,7 @@ def string_separate(string, *args):
     try:
         parts = find_bracket(space_split[1])
     except IndexError:
-        bot.bot_error_message(user_id_key, 'Шось не то написав, перевірь правильність запису!')
+        bot.bot_error_message(user_id_key, 'Шось не то написав, перевір правильність запису!')
         return
     parts = parts.split(',')
     parts = list(map(lambda x: x.strip().lower(), parts))
