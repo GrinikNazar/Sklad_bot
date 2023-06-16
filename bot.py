@@ -296,7 +296,12 @@ def handler_mes(call):
                 bot.edit_message_text('Ой, шось сталось', call.message.chat.id, message_id=call.message.message_id)
 
         elif call.data.split('_')[1] == 'search':
-            bot.edit_message_text(f"{iphone_db.get_smiles_from_db(call.data.split('_')[0])}{result_main}", call.message.chat.id, message_id=call.message.message_id)
+            bot.edit_message_text(f"{iphone_db.get_smiles_from_db(call.data.split('_')[0])}{result_main[0]}", call.message.chat.id, message_id=call.message.message_id)
+            try:
+                for res_m in result_main[1:]:
+                    bot.send_message(call.message.chat.id, res_m)
+            except IndexError:
+                pass
 
     else:
         markup_key = keyboard.button_inine(call.data)
@@ -327,7 +332,5 @@ if __name__ == '__main__':
     while True:
         try:
             bot.infinity_polling(timeout=10)
-        # except ConnectionError as err:
         except BaseException as err:
-            print(err)
             continue

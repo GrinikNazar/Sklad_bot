@@ -251,13 +251,22 @@ def list_copy_and_battery(part, emod):
 
 #Пошук всього по категорії
 def search_thing(wks, sheet):
+    list_result = []
+
     string_of_things = ''
     string_of_things += f'{sheet}\n'
     for num, row in enumerate(wks.get_all_values()):
         if num != 0:
             string_of_things += f'{num}. {row[0]} - {row[1]}\n'
-  
-    return string_of_things.rstrip()
+
+        if len(string_of_things) > 4000:
+            list_result.append(string_of_things.rstrip())
+            string_of_things = ''
+
+    if not list_result:
+        list_result.append(string_of_things.rstrip())
+
+    return list_result
 
 
 def add_to_list(string):
