@@ -93,11 +93,11 @@ def get_thing_with_color(model, model_begin, value, workseet, sheet, *args):
                     ost = remnant_part(thing_value, value, row[3])
 
                     dict_of_wp_parts_back_up = {
-                    'sheet': sheet,
-                    'apple': apple,
-                    'model': model,
-                    'color': args[0].lower(),
-                    'value': value,
+                        'sheet': sheet,
+                        'apple': apple,
+                        'model': model,
+                        'color': args[0].lower(),
+                        'value': value,
                     }
 
                     return [f'Взяв {sheet.lower()} на {apple} {model} {args[0].lower()} - {value} шт.\n{ost}', True, [apple.lower(), model.lower(), sheet, value], dict_of_wp_parts_back_up]
@@ -108,7 +108,7 @@ def get_thing(model, model_begin, value, workseet, sheet):
     model_pat = apple + model.lower()    
     for i, row in enumerate(workseet.get_all_values()):
         row_res = gen_list_wth_color(row[0], apple)
-        if  model_pat in row_res:
+        if model_pat in row_res:
             try:
                 thing_value = int(row[1])
             except ValueError:
@@ -140,6 +140,8 @@ def get_null_things():
     string_of_null = '\U0000274C Все що зкінчилось \U0000274C' + '\n'
 
     for wks in sheets:
+        if wks[0] == 'Кришки':  # не показувати кришки в списку запчастин з 0
+            continue
         wk = sh.worksheet(wks[0])
         title = wks[0] + ':' + '\n'
         for row in wk.get_all_values():
@@ -249,7 +251,7 @@ def list_copy_and_battery(part, emod):
     return list_order.rstrip()
 
 
-#Пошук всього по категорії
+# Пошук всього по категорії
 def search_thing(wks, sheet):
     list_result = []
 
