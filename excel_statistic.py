@@ -22,7 +22,7 @@ def previos_date():
 def search_coordinate(wks):
     col_val_coord = wks.col_values(2)
     col_val_coord = list(set(col_val_coord))
-    col_val_coord = [x for x in col_val_coord if x != ''] # Знаходить координати кожного користувача
+    col_val_coord = [x for x in col_val_coord if x != '']  # Знаходить координати кожного користувача
 
     return col_val_coord
 
@@ -99,13 +99,13 @@ def compare_scores(user_name, begin_value: str, end_value: str) -> str:
     end_value = float(end_value.replace(',', '.'))
     table_score_label = (100, 120, 140, 160, 180, 200)
     for label in table_score_label:
-        if begin_value < label and end_value >= label:
+        if begin_value < label <= end_value:  # begin_value < label and end_value >= label:
             return get_variant_string(user_name, label)
 
 
 def get_now_day() -> int: 
     now_data = datetime.datetime.date(datetime.datetime.now())
-    now_data_int = int(datetime.datetime.strftime(now_data, '%d')) #цей день 
+    now_data_int = int(datetime.datetime.strftime(now_data, '%d'))  # цей день
 
     return now_data_int
 
@@ -113,16 +113,16 @@ def get_now_day() -> int:
 def total_scores():
     sh = conf.source_google_sheet_api(conf.work_progress_table)
     pre_date = previos_date()
-    wks = sh.worksheet(pre_date) # конект до таблиці попереднього місяця
-    coordinate = search_coordinate(wks) # [D8:E8, F8:G8, H8:I8, J8:K8, L8:M8]
+    wks = sh.worksheet(pre_date)  # конект до таблиці попереднього місяця
+    coordinate = search_coordinate(wks)  # [D8:E8, F8:G8, H8:I8, J8:K8, L8:M8]
 
     score_money = {
-        (100, 120): 300,
-        (120, 140): 500,
-        (140, 160): 700,
-        (160, 180): 1000,
-        (180, 200): 1500,
-        (200, 1000): 2000
+        (100, 120): 700,
+        (120, 140): 1000,
+        (140, 160): 1500,
+        (160, 180): 2000,
+        (180, 200): 2500,
+        (200, 1000): 3000
         }
 
     name_user = '1'
@@ -144,36 +144,41 @@ def total_scores():
         score_dict[user_name] = res_total_scores
 
         for key, value in score_money.items():
-            if res_total_scores >= key[0] and res_total_scores < key[1]:
-                sum_scores[user_name] = value + best_d * 30
+            if key[0] <= res_total_scores < key[1]:
+                if key[1] == 120 and res_total_scores < 110:
+                    value = 300
+                sum_scores[user_name] = value + best_d * (50 if res_total_scores >= 110 else 30)
                 break
             else:
                 if best_d == 0:
                     sum_scores[user_name] = '✋'
                 else:
-                    sum_scores[user_name] = best_d * 30
-    
+                    sum_scores[user_name] = best_d * (50 if res_total_scores >= 110 else 30)
+
     result_string_of_scores = ''
-    sorted_dict_to_list_keys= sorted(score_dict, key=score_dict.get, reverse=True) # повертає ключі посортованого словника по значеннях 
+    sorted_dict_to_list_keys = sorted(score_dict, key=score_dict.get, reverse=True)  # повертає ключі посортованого словника по значеннях
     for i, key in enumerate(sorted_dict_to_list_keys):
         number_user = i + 1
         sum_money_total = sum_scores[key]
         label_position = ''
         label_position_uah = 'грн'
         if number_user == 1:
-            sum_money_total += 700
+            sum_money_total += 1000 if score_dict[key] >= 110 else 700
             label_position = '👑'
         elif number_user == 2:
-            sum_money_total += 400
+            sum_money_total += 700 if score_dict[key] >= 110 else 500
             label_position = '🏅'
+        elif number_user == 3 and score_dict[key] >= 110:
+            sum_money_total += 500
+            label_position = '🥉'
         if sum_money_total == '✋':
             label_position_uah = ''
 
-        result_string_of_scores += f'{number_user}.{label_position}{key} ({score_dict[key]}-балів) (Best D.- {best_day_dict[key]}) {sum_money_total}{label_position_uah}\n'
+        result_string_of_scores += f'{number_user}.{label_position}{key} ({score_dict[key]}-балів) (Best D.- {best_day_dict[key]}) {sum_money_total}{label_position_uah}\n '
 
     return result_string_of_scores.rstrip()
 
 
-def main(bot, chat): #Викликати 1 числа нового місяця о 10:00 на часовій мітці
+def main(bot, chat):  # Викликати 1 числа нового місяця о 10:00 на часовій мітці
     if get_now_day() == 1:
         bot.send_message(chat, total_scores())
