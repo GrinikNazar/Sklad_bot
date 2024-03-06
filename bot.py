@@ -79,11 +79,9 @@ def get_my_id(message):
     user_nick_name = message.from_user.username
     user_id = message.from_user.id
     bot.send_message(users['Назар'], f'{user_firs_name}: {user_id}', reply_markup=keyboard.add_user(user_firs_name, user_nick_name, user_id))
-    bot.send_message(users['Ваня'], f'{user_firs_name}: {user_id}', reply_markup=keyboard.add_user(user_firs_name, user_nick_name, user_id))
 
     if message.from_user.id != message.chat.id:
         bot.send_message(users['Назар'], f'id чату:{message.chat.id}')
-        bot.send_message(users['Ваня'], f'id чату:{message.chat.id}')
 
 
 @bot.message_handler(commands=['list_ref'])
@@ -115,7 +113,7 @@ def other_function(message):
 @bot.message_handler(commands=['user_delete'])
 @autorize_hose
 def delete_users_from_bot(message):
-    if message.from_user.id == users['Ваня'] or message.from_user.id == users['Назар']:
+    if message.from_user.id == users['Назар']:
         bot.send_message(message.chat.id, 'Список користувачів \U0001F4DD', reply_markup=keyboard.users_list_to_delete())
     else:
         bot.send_message(message.chat.id, 'У тебе немає доступу \U0001F4A9')
