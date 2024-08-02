@@ -180,5 +180,5 @@ def total_scores():
 
 
 def main(bot, chat):  # Викликати 1 числа нового місяця о 10:00 на часовій мітці
-    if get_now_day() == 2:
+    if get_now_day() == 1:
         bot.send_message(chat, total_scores())
