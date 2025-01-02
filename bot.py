@@ -224,7 +224,7 @@ def handler_mes(call):
 
     elif call.data == 'reset_all_data_user':
         user_id = call.from_user.id
-        user_confirm_list = [users['Назар'], users['Ваня']]
+        user_confirm_list = [users['Назар']]
         if user_id in user_confirm_list:
             work_progress_db.reset_data_base()
             bot.edit_message_text('\U0001F32AОчищено\U000026A1', call.message.chat.id, message_id=call.message.message_id)

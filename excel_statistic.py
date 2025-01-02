@@ -151,7 +151,7 @@ def total_scores():
                 break
             else:
                 if best_d == 0:
-                    sum_scores[user_name] = '✋'
+                    sum_scores[user_name] = 0
                 else:
                     sum_scores[user_name] = best_d * (50 if res_total_scores >= 110 else 30)
 
@@ -171,8 +171,9 @@ def total_scores():
         elif number_user == 3 and score_dict[key] >= 110:
             sum_money_total += 500
             label_position = '🥉'
-        if sum_money_total == '✋':
-            label_position_uah = ''
+        if sum_money_total == 0:
+            label_position_uah = '✋'
+            sum_money_total = ''
 
         result_string_of_scores += f'{number_user}.{label_position}{key} ({score_dict[key]}-балів) (Best D.- {best_day_dict[key]}) {sum_money_total}{label_position_uah}\n '
 
@@ -180,5 +181,5 @@ def total_scores():
 
 
 def main(bot, chat):  # Викликати 1 числа нового місяця о 10:00 на часовій мітці
-    if get_now_day() == 2:
+    if get_now_day() == 1:
         bot.send_message(chat, total_scores())
